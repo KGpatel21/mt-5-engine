@@ -1,37 +1,81 @@
-<title>XAUUSD Historical Engine</title>
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>XAUUSD Historical Trading & Replay Engine</title>
 <style>
-:root{--bg0:#0f111a;--bg1:#131722;--bg2:#1e222d;--bg3:#2a2e39;--bg4:#363a45;--tx1:#d1d4dc;--tx2:#787b86;--tx3:#555962;--bd:#2a2e39;--ac:#2962ff;--ac2:#1e53e5;--gn:#26a69a;--rd:#ef5350;--gd:rgba(42,46,57,0.6);--ch:rgba(120,123,134,0.4);--vu:rgba(38,166,154,0.5);--vd:rgba(239,83,80,0.5);--ft:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;--mn:'SF Mono','Cascadia Code',Consolas,monospace}
-[data-theme=light]{--bg0:#f8f9fd;--bg1:#fff;--bg2:#f0f3fa;--bg3:#e0e3eb;--bg4:#d1d4dc;--tx1:#131722;--tx2:#787b86;--tx3:#9598a1;--bd:#e0e3eb;--gd:rgba(224,227,235,0.8);--ch:rgba(120,123,134,0.3);--vu:rgba(38,166,154,0.35);--vd:rgba(239,83,80,0.35)}
+:root,
+[data-theme="dark"]{
+--bg0:#0a0a0f;--bg1:#111118;--bg2:#16161f;--bg3:#1e1e2a;--bg4:#282838;
+--tx1:#e1e1e8;--tx2:#8b8b9e;--tx3:#5c5c70;--bd:#2a2a3a;
+--ac:#2962ff;--ac2:#1e4fcc;--gn:#26a69a;--rd:#ef5350;
+--gd:#3d3d50;--ch:#5c5c70;--vu:#26a69a;--vd:#ef5350;
+--ft:'Inter',system-ui,-apple-system,sans-serif;--mn:'JetBrains Mono','Fira Code',monospace
+}
+[data-theme="light"]{
+--bg0:#ffffff;--bg1:#f8f9fa;--bg2:#f0f1f3;--bg3:#e8e9ec;--bg4:#d1d4dc;
+--tx1:#131722;--tx2:#6a6d78;--tx3:#9598a1;--bd:#d1d4dc;
+--ac:#2962ff;--ac2:#1e4fcc;--gn:#089981;--rd:#f23645;
+--gd:#e0e3eb;--ch:#9598a1;--vu:rgba(8,153,129,.3);--vd:rgba(242,54,69,.3)
+}
+[data-theme="classic-dark"]{
+--bg0:#131722;--bg1:#1a1e2e;--bg2:#1e222d;--bg3:#2a2e39;--bg4:#363a45;
+--tx1:#d1d4dc;--tx2:#787b86;--tx3:#4c525e;--bd:#2a2e39;
+--ac:#2962ff;--ac2:#1e4fcc;--gn:#089981;--rd:#f23645;
+--gd:#363a45;--ch:#4c525e;--vu:#089981;--vd:#f23645
+}
+[data-theme="classic-light"]{
+--bg0:#ffffff;--bg1:#f0f3fa;--bg2:#e4e7f0;--bg3:#d6dce8;--bg4:#b2b5be;
+--tx1:#131722;--tx2:#6a6d78;--tx3:#9598a1;--bd:#c8ccd8;
+--ac:#1848cc;--ac2:#0d3399;--gn:#089981;--rd:#f23645;
+--gd:#e0e3eb;--ch:#9598a1;--vu:rgba(8,153,129,.4);--vd:rgba(242,54,69,.4)
+}
+[data-theme="midnight"]{
+--bg0:#050510;--bg1:#0a0a1a;--bg2:#0f0f24;--bg3:#15152e;--bg4:#1e1e3a;
+--tx1:#c8c8f0;--tx2:#7878a8;--tx3:#4a4a70;--bd:#1e1e3a;
+--ac:#6366f1;--ac2:#4f46e5;--gn:#34d399;--rd:#f87171;
+--gd:#1e1e3a;--ch:#4a4a70;--vu:#34d399;--vd:#f87171
+}
+[data-theme="high-contrast"]{
+--bg0:#000000;--bg1:#0a0a0a;--bg2:#141414;--bg3:#1e1e1e;--bg4:#333333;
+--tx1:#ffffff;--tx2:#cccccc;--tx3:#999999;--bd:#444444;
+--ac:#00aaff;--ac2:#0088cc;--gn:#00ff88;--rd:#ff4444;
+--gd:#333333;--ch:#666666;--vu:#00ff88;--vd:#ff4444
+}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:var(--ft);background:var(--bg1);color:var(--tx1);overflow:hidden;height:100vh;user-select:none}
 ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
+body{font-family:var(--ft);background:var(--bg0);color:var(--tx1);overflow:hidden;height:100vh}
 button{font-family:var(--ft)}
-input,select{font-family:var(--ft)}
-
-/* === SCREENS === */
+input,select,textarea{font-family:var(--ft);background:var(--bg3);color:var(--tx1);border:1px solid var(--bd);border-radius:4px;padding:4px 8px;font-size:12px}
+input[type="color"]{padding:1px 2px;height:26px;width:50px;cursor:pointer}
+label{font-size:11px;color:var(--tx2);display:block;margin:6px 0 2px}
+.mb{background:var(--ac);color:#fff;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500}
+.mb:hover{background:var(--ac2)}.mb.s{background:var(--bg3);color:var(--tx2);font-size:11px;padding:5px 12px}
+.mb.s:hover{background:var(--bg4);color:var(--tx1)}
+.chkr{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--tx2);margin:4px 0;cursor:pointer}
+.chkr input{margin:0;cursor:pointer}
 #upload-screen{display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:20px}
-#upload-screen h1{font-size:26px;font-weight:600;letter-spacing:-.5px}
-.upsub{color:var(--tx2);font-size:13px}
+.ulogo{font-size:22px;font-weight:700;color:var(--tx1);letter-spacing:.5px}
+.usub{font-size:12px;color:var(--tx3);margin-top:-10px}
 .upzone{width:460px;height:180px;border:2px dashed var(--bd);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;cursor:pointer;transition:.2s}
-.upzone:hover{border-color:var(--ac);background:rgba(41,98,255,.05)}
+.upzone:hover{border-color:var(--ac);background:var(--bg2)}
 .upzone svg{width:44px;height:44px;color:var(--tx2)}
-.upzone span{color:var(--tx2);font-size:13px}
-.ubtn{background:var(--ac);color:#fff;border:none;padding:8px 20px;border-radius:6px;font-size:13px;cursor:pointer;font-weight:500}
-.ubtn:hover{background:var(--ac2)}
-#file-input{display:none}
+.upzone p{font-size:13px;color:var(--tx2)}
+.upzone small{font-size:11px;color:var(--tx3)}
+.ufoot{font-size:10px;color:var(--tx3);text-align:center;margin-top:10px}
 #analysis-screen{display:none;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:14px;padding:40px}
 .abox{background:var(--bg2);border:1px solid var(--bd);border-radius:12px;padding:28px;max-width:560px;width:100%}
-.abox h2{font-size:18px;margin-bottom:16px;font-weight:600}
 .chk{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px;opacity:0;transform:translateY(6px);transition:.3s}
-.chk.show{opacity:1;transform:translateY(0)}
+.chk.v{opacity:1;transform:translateY(0)}
 .ci{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
-.ci.ok{background:var(--gn);color:#fff}.ci.w{background:#ff9800;color:#fff}.ci.e{background:var(--rd);color:#fff}
-.ocbtn{background:var(--ac);color:#fff;border:none;padding:10px 28px;border-radius:8px;font-size:14px;cursor:pointer;font-weight:500;margin-top:14px;opacity:0;transition:opacity .5s}
-.ocbtn.show{opacity:1}.ocbtn:hover{background:var(--ac2)}
-.dsum{margin-top:14px;padding-top:14px;border-top:1px solid var(--bd);font-size:12px;color:var(--tx2);line-height:1.8}
-.dsum strong{color:var(--tx1)}
+.ci.ok{background:var(--gn);color:#fff}.ci.wn{background:#ff9800;color:#fff}.ci.er{background:var(--rd);color:#fff}
+.di{font-size:11px;color:var(--tx2);margin-top:4px}
+.ds{background:var(--bg3);border:1px solid var(--bd);border-radius:8px;padding:14px;margin-top:12px}
+.ds h4{font-size:11px;color:var(--tx3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.drow{display:flex;justify-content:space-between;font-size:12px;padding:2px 0}.drow .dl{color:var(--tx2)}.drow .dv{font-family:var(--mn);font-weight:500}
+.g{color:var(--gn)}.w{color:#ff9800}.er{color:var(--rd)}
 
-/* === CHART LAYOUT === */
+/* Chart Screen */
 #chart-screen{display:none;height:100vh;flex-direction:column}
 .main-wrap{display:flex;flex:1;overflow:hidden}
 
@@ -55,13 +99,13 @@ input,select{font-family:var(--ft)}
 .src-add:hover{background:var(--bg3)}
 
 /* Chart area */
-.chart-area{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.chart-area{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;min-width:0}
 
 /* Toolbar */
-.toolbar{display:flex;align-items:center;height:38px;background:var(--bg2);border-bottom:1px solid var(--bd);padding:0 6px;gap:1px;flex-shrink:0}
+.toolbar{display:flex;align-items:center;height:38px;background:var(--bg2);border-bottom:1px solid var(--bd);padding:0 6px;gap:1px;flex-shrink:0;flex-wrap:nowrap;overflow-x:auto}
 .tg{display:flex;align-items:center;gap:1px;padding:0 3px}
-.ts{width:1px;height:18px;background:var(--bd);margin:0 3px}
-.tb{background:none;border:none;color:var(--tx2);padding:3px 7px;border-radius:3px;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:3px;height:26px;white-space:nowrap}
+.ts{width:1px;height:18px;background:var(--bd);margin:0 3px;flex-shrink:0}
+.tb{background:none;border:none;color:var(--tx2);padding:3px 7px;border-radius:3px;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:3px;height:26px;white-space:nowrap;position:relative}
 .tb:hover{background:var(--bg4);color:var(--tx1)}
 .tb.on{background:var(--ac);color:#fff}
 .tb.on:hover{background:var(--ac2)}
@@ -74,44 +118,97 @@ input,select{font-family:var(--ft)}
 .ol{color:var(--tx3)}.ov{font-weight:500}
 .ou{color:var(--gn)}.od{color:var(--rd)}
 
+/* Tooltip system */
+[data-tip]{position:relative}
+[data-tip]:hover::after{content:attr(data-tip);position:absolute;left:50%;top:calc(100% + 6px);transform:translateX(-50%);background:var(--bg3);color:var(--tx1);padding:4px 8px;border-radius:4px;font-size:10px;white-space:nowrap;z-index:1000;border:1px solid var(--bd);pointer-events:none;opacity:0;animation:tipIn .15s .35s forwards;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+[data-tip]:hover::before{content:'';position:absolute;left:50%;top:100%;transform:translateX(-50%);border:4px solid transparent;border-bottom-color:var(--bg3);z-index:1001;opacity:0;animation:tipIn .15s .35s forwards}
+@keyframes tipIn{to{opacity:1}}
+/* Draw toolbar tooltips — handled via JS to escape overflow */
+.db[data-tip]:hover::after{display:none}
+.db[data-tip]:hover::before{display:none}
+.dtb-tip{position:fixed;background:var(--bg3);color:var(--tx1);padding:4px 8px;border-radius:4px;font-size:10px;white-space:nowrap;z-index:9999;border:1px solid var(--bd);pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,.3);opacity:0;animation:tipIn .15s .25s forwards}
+
 /* Draw toolbar */
-.dtb{position:absolute;left:6px;top:6px;background:var(--bg2);border:1px solid var(--bd);border-radius:6px;padding:3px;display:flex;flex-direction:column;gap:1px;z-index:10;max-height:calc(100% - 12px);overflow-y:auto}
+.dtb{position:absolute;left:6px;top:6px;background:var(--bg2);border:1px solid var(--bd);border-radius:6px;padding:3px;display:flex;flex-direction:column;gap:1px;z-index:10;max-height:calc(100% - 12px);overflow-y:auto;overflow-x:hidden;scrollbar-width:none}
+.dtb::-webkit-scrollbar{display:none}
+.dtb.two-col{flex-direction:row;flex-wrap:wrap;width:68px;justify-content:center}
+.dtb.two-col .db{width:30px;height:28px}
+.dtb.two-col .dsep{width:100%;height:1px}
+.dtb.two-col .dtb-cat{display:none}
+.dtb-cat{font-size:8px;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;padding:3px 4px 1px;width:100%;text-align:center;cursor:default;user-select:none}
+.dtb-toggle{width:100%;height:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tx3);border-top:1px solid var(--bd);margin-top:2px;padding-top:2px;font-size:10px;transition:.15s}
+.dtb-toggle:hover{color:var(--tx1);background:var(--bg3);border-radius:3px}
+.dtb-toggle svg{transition:transform .2s}
+.dtb.two-col .dtb-toggle svg{transform:rotate(180deg)}
 .db{background:none;border:none;color:var(--tx2);width:28px;height:28px;border-radius:3px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;position:relative;flex-shrink:0}
 .db:hover{background:var(--bg4);color:var(--tx1)}
 .db.on{background:var(--ac);color:#fff}
-.db[data-tt]:hover::after{content:attr(data-tt);position:absolute;left:34px;top:50%;transform:translateY(-50%);background:var(--bg3);color:var(--tx1);padding:3px 7px;border-radius:3px;font-size:10px;white-space:nowrap;z-index:100;border:1px solid var(--bd);pointer-events:none}
 .dsep{height:1px;background:var(--bd);margin:2px 0;flex-shrink:0}
 
 /* Chart canvas */
-.cc{flex:1;position:relative;overflow:hidden}
+.cc{flex:1;position:relative;overflow:hidden;min-width:0;min-height:0}
 #cv{display:block}
 
-/* Replay */
+/* Replay bar */
 .rbar{display:none;align-items:center;height:34px;background:var(--bg2);border-top:1px solid var(--bd);padding:0 10px;gap:6px;flex-shrink:0}
 .rbar.vis{display:flex}
-.rb{background:none;border:none;color:var(--tx2);width:26px;height:26px;border-radius:3px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.rb{background:none;border:none;color:var(--tx2);width:28px;height:28px;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .rb:hover{background:var(--bg4);color:var(--tx1)}
-.rsp{font-size:11px;font-family:var(--mn);color:var(--tx2);cursor:pointer;padding:2px 5px;border-radius:3px;background:var(--bg3);border:1px solid var(--bd);min-width:38px;text-align:center}
-.rsp:hover{background:var(--bg4)}
-.ri{font-size:10px;color:var(--tx3);margin-left:auto;font-family:var(--mn)}
-.rex{background:var(--rd)!important;color:#fff!important;font-size:10px;padding:3px 8px!important;border-radius:3px;width:auto!important}
+.rb svg{width:20px;height:20px}
+.rinfo{font-size:10px;color:var(--tx2);font-family:var(--mn);flex:1}
+.rspd{font-size:11px;color:var(--ac);font-weight:700;cursor:pointer;padding:2px 6px;border-radius:3px;background:var(--bg3);border:none;min-width:40px;text-align:center}
+.rspd:hover{background:var(--bg4)}
 
-/* Status */
-.sbar{display:flex;align-items:center;height:22px;background:var(--bg2);border-top:1px solid var(--bd);padding:0 8px;font-size:10px;color:var(--tx3);gap:10px;flex-shrink:0}
+/* Status bar */
+.sbar{display:flex;align-items:center;height:22px;background:var(--bg2);border-top:1px solid var(--bd);padding:0 10px;gap:12px;flex-shrink:0;font-size:10px;color:var(--tx3);font-family:var(--mn)}
+.sbar span{display:flex;align-items:center;gap:4px}
+.sbar .sd{width:5px;height:5px;border-radius:50%;background:var(--gn)}
+
+/* Drawing settings panel */
+.dsp{position:absolute;left:42px;top:6px;background:var(--bg2);border:1px solid var(--bd);border-radius:8px;padding:10px;width:220px;z-index:15;display:none;box-shadow:0 4px 16px rgba(0,0,0,.3);max-height:80vh;overflow-y:auto}
+.dsp.show{display:block}
+.dsp h4{font-size:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.dsp h4 button{background:none;border:none;color:var(--tx3);cursor:pointer;font-size:14px;padding:2px}
+.dsp h4 button:hover{color:var(--tx1)}
+/* Magnet badge */
+.mag-badge{position:absolute;top:-2px;right:-2px;background:var(--ac);color:#fff;font-size:7px;padding:0 3px;border-radius:3px;line-height:12px;font-weight:700;pointer-events:none}
+/* Draw mode toggle */
+.draw-mode-btn{position:relative;font-size:9px !important;padding:2px 6px !important;min-width:24px}
+.draw-mode-btn.continuous{background:var(--ac) !important;color:#fff !important}
+/* Magnet settings modal */
+.mag-set{padding:12px}
+.mag-set label{display:block;font-size:11px;color:var(--tx2);margin:6px 0 2px}
+.mag-set .mag-row{display:flex;align-items:center;gap:8px;margin:4px 0}
+.mag-set .mag-row input[type=range]{flex:1}
+.mag-set .mag-row span{font-size:10px;color:var(--tx3);min-width:24px;text-align:right}
+.mag-set .chkr{font-size:11px;display:flex;align-items:center;gap:4px;margin:2px 0}
+/* Fibonacci level editor */
+.fib-level-row{display:flex;align-items:center;gap:4px;margin:2px 0;font-size:10px}
+.fib-level-row input[type=checkbox]{margin:0}
+.fib-level-row input[type=number]{width:50px;padding:1px 3px;font-size:10px;background:var(--bg1);color:var(--tx1);border:1px solid var(--bd);border-radius:3px}
+.fib-level-row input[type=color]{width:20px;height:16px;padding:0;border:none;cursor:pointer}
+.fib-level-row button{background:none;border:none;color:var(--rd);cursor:pointer;font-size:12px;padding:0 2px}
+
+/* Indicator panel */
+.ind-panel{position:absolute;right:80px;top:44px;background:var(--bg2);border:1px solid var(--bd);border-radius:8px;padding:10px;width:240px;z-index:20;display:none;box-shadow:0 4px 16px rgba(0,0,0,.3);max-height:60vh;overflow-y:auto}
+.ind-panel.show{display:block}
+.ind-cat{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;padding:6px 0 3px;font-weight:600}
+.ind-item{padding:6px 8px;border-radius:4px;cursor:pointer;font-size:12px;display:flex;align-items:center;gap:6px;color:var(--tx2)}
+.ind-item:hover{background:var(--bg3);color:var(--tx1)}
+.ai-row{display:flex;align-items:center;gap:4px;padding:3px 0;font-size:11px}
+.ai-row button{background:none;border:none;cursor:pointer;font-size:12px;padding:1px 3px;border-radius:2px;color:var(--tx3)}
+.ai-row button:hover{color:var(--tx1);background:var(--bg4)}
+.ai-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--tx2)}
+.dot{display:inline-block}
 
 /* Modals */
-.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}
-.mo.show{display:flex}
-.md{background:var(--bg2);border:1px solid var(--bd);border-radius:10px;padding:20px;min-width:340px;max-width:520px;max-height:90vh;overflow-y:auto}
-.md h3{font-size:15px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
-.md h3 button{background:none;border:none;color:var(--tx2);cursor:pointer;font-size:16px}
-.mi{width:100%;background:var(--bg1);border:1px solid var(--bd);color:var(--tx1);padding:7px 10px;border-radius:5px;font-size:13px;font-family:var(--mn);outline:none}
-.mi:focus{border-color:var(--ac)}
-.ma{display:flex;gap:6px;margin-top:14px;justify-content:flex-end}
-.mb{padding:7px 14px;border-radius:5px;border:none;font-size:12px;cursor:pointer}
-.mb.p{background:var(--ac);color:#fff}.mb.p:hover{background:var(--ac2)}
-.mb.s{background:var(--bg3);color:var(--tx1)}.mb.s:hover{background:var(--bg4)}
-.mh{font-size:11px;color:var(--tx3);margin-top:6px}
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:100;visibility:hidden;opacity:0;transition:.15s}
+.mo.show{visibility:visible;opacity:1}
+.mo-box{background:var(--bg2);border:1px solid var(--bd);border-radius:12px;padding:20px;min-width:340px;max-width:500px;max-height:80vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.mo-box h3{font-size:14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.mo-box h3 button{background:none;border:none;color:var(--tx3);cursor:pointer;font-size:16px;padding:2px 4px;border-radius:3px}
+.mo-box h3 button:hover{color:var(--tx1)}
+.ma{display:flex;gap:8px;margin-top:12px}
 
 /* Calendar */
 .cal{margin:10px 0}
@@ -127,125 +224,131 @@ input,select{font-family:var(--ft)}
 .cal-day.today{border:1px solid var(--ac)}
 .cal-day.out{color:var(--tx3);opacity:.4}
 .cal-day.dis{opacity:.2;pointer-events:none}
-.quick-dates{display:flex;flex-wrap:wrap;gap:4px;margin:10px 0}
-.qd{padding:4px 8px;font-size:11px;background:var(--bg3);border:1px solid var(--bd);border-radius:4px;cursor:pointer;color:var(--tx2)}
+.qd{display:inline-block;padding:4px 10px;border-radius:4px;background:var(--bg3);font-size:11px;cursor:pointer;margin:2px}
 .qd:hover{background:var(--bg4);color:var(--tx1)}
 
 /* Quality report */
-.qr{font-size:12px;line-height:1.7}
-.ql{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)}
-.ql:last-child{border-bottom:none}
-.qlb{color:var(--tx2)}.qlv{color:var(--tx1);font-family:var(--mn);font-weight:500}
-.qlv.g{color:var(--gn)}.qlv.w{color:#ff9800}
-
-/* Context menu */
-.ctx{display:none;position:fixed;background:var(--bg2);border:1px solid var(--bd);border-radius:6px;padding:3px;z-index:2000;min-width:200px;box-shadow:0 6px 20px rgba(0,0,0,.3)}
-.ctx.show{display:block}
-.ci2{display:flex;align-items:center;gap:6px;padding:5px 10px;font-size:12px;color:var(--tx1);cursor:pointer;border-radius:3px}
-.ci2:hover{background:var(--bg4)}
-.ci2 .sk{margin-left:auto;color:var(--tx3);font-size:10px;font-family:var(--mn)}
-.csep{height:1px;background:var(--bd);margin:2px 0}
-
-/* Drawing settings panel */
-.dsp{position:absolute;right:90px;top:6px;background:var(--bg2);border:1px solid var(--bd);border-radius:8px;padding:12px;z-index:15;width:220px;display:none;box-shadow:0 4px 16px rgba(0,0,0,.2)}
-.dsp.show{display:block}
-.dsp h4{font-size:12px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
-.dsp h4 button{background:none;border:none;color:var(--tx2);cursor:pointer;font-size:14px}
-.dsp label{font-size:11px;color:var(--tx2);display:block;margin:6px 0 3px}
-.dsp input[type=color]{width:100%;height:28px;border:1px solid var(--bd);border-radius:4px;background:var(--bg1);cursor:pointer;padding:2px}
-.dsp input[type=number],.dsp select{width:100%;background:var(--bg1);border:1px solid var(--bd);color:var(--tx1);padding:4px 6px;border-radius:4px;font-size:11px}
-.dsp .chkr{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--tx2);margin:4px 0;cursor:pointer}
-.dsp .chkr input{accent-color:var(--ac)}
-
-/* Indicator panel */
-.ind-panel{position:absolute;right:90px;top:6px;background:var(--bg2);border:1px solid var(--bd);border-radius:8px;padding:14px;z-index:15;width:280px;display:none;box-shadow:0 4px 16px rgba(0,0,0,.2);max-height:70vh;overflow-y:auto}
-.ind-panel.show{display:block}
-.ind-panel h4{font-size:13px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
-.ind-panel h4 button{background:none;border:none;color:var(--tx2);cursor:pointer;font-size:14px}
-.ind-search{width:100%;background:var(--bg1);border:1px solid var(--bd);color:var(--tx1);padding:6px 8px;border-radius:5px;font-size:12px;margin-bottom:8px;outline:none}
-.ind-search:focus{border-color:var(--ac)}
-.ind-cat{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;padding:6px 0 3px;font-weight:600}
-.ind-row{display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:4px;cursor:pointer;font-size:12px}
-.ind-row:hover{background:var(--bg3)}
-.ind-row .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-
-/* Active indicators list */
-.act-ind{border-top:1px solid var(--bd);margin-top:8px;padding-top:8px}
-.ai-row{display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:4px;font-size:11px}
-.ai-row:hover{background:var(--bg3)}
-.ai-row .ai-name{flex:1}
-.ai-row button{background:none;border:none;color:var(--tx2);cursor:pointer;font-size:12px;padding:1px 3px;border-radius:2px}
-.ai-row button:hover{color:var(--tx1);background:var(--bg4)}
-
-/* Indicator settings modal */
-.iset{width:260px}
-.iset label{font-size:11px;color:var(--tx2);display:block;margin:5px 0 2px}
-.iset input,.iset select{width:100%;background:var(--bg1);border:1px solid var(--bd);color:var(--tx1);padding:4px 6px;border-radius:4px;font-size:11px}
-.iset input[type=color]{height:26px;padding:2px}
+.ql{display:flex;justify-content:space-between;padding:3px 0;font-size:12px}
+.qlb{color:var(--tx2)}.qlv{font-family:var(--mn);font-weight:500}
 
 /* Chart settings panel */
-.cset{position:absolute;right:6px;top:6px;background:var(--bg2);border:1px solid var(--bd);border-radius:8px;padding:14px;z-index:15;width:240px;display:none;box-shadow:0 4px 16px rgba(0,0,0,.2);max-height:70vh;overflow-y:auto}
+.cset{position:absolute;right:6px;top:44px;background:var(--bg2);border:1px solid var(--bd);border-radius:8px;padding:12px;width:220px;z-index:20;display:none;box-shadow:0 4px 16px rgba(0,0,0,.3)}
 .cset.show{display:block}
-.cset h4{font-size:13px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
-.cset h4 button{background:none;border:none;color:var(--tx2);cursor:pointer;font-size:14px}
-.cset label{font-size:11px;color:var(--tx2);display:block;margin:5px 0 2px}
-.cset select,.cset input[type=number]{width:100%;background:var(--bg1);border:1px solid var(--bd);color:var(--tx1);padding:4px 6px;border-radius:4px;font-size:11px}
-.cset .chkr{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--tx2);margin:4px 0;cursor:pointer}
-.cset .chkr input{accent-color:var(--ac)}
-.csect{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;padding:8px 0 4px;font-weight:600;border-top:1px solid var(--bd);margin-top:6px}
+
+/* Context menu */
+.ctx{position:fixed;background:var(--bg2);border:1px solid var(--bd);border-radius:6px;padding:4px;min-width:160px;z-index:50;display:none;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.ctx.show{display:block}
+.ctx-item{padding:6px 12px;font-size:12px;cursor:pointer;border-radius:3px;color:var(--tx2);display:flex;align-items:center;gap:6px}
+.ctx-item:hover{background:var(--bg3);color:var(--tx1)}
+.ctx-sep{height:1px;background:var(--bd);margin:3px 0}
+
+/* Theme selector */
+.theme-sel{position:relative}
+.theme-sel select{background:var(--bg3);color:var(--tx1);border:1px solid var(--bd);border-radius:3px;padding:2px 4px;font-size:10px;cursor:pointer;height:26px}
+
+/* Custom theme modal */
+.ct-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px}
+.ct-item{display:flex;align-items:center;gap:6px}
+.ct-item label{font-size:10px;color:var(--tx2);margin:0;min-width:30px}
+.ct-item input[type="color"]{width:32px;height:22px;padding:0}
+
+/* Debug panel */
+.debug-panel{position:absolute;right:6px;bottom:28px;background:var(--bg2);border:1px solid var(--bd);border-radius:6px;padding:8px;width:280px;z-index:20;display:none;font-size:10px;font-family:var(--mn);color:var(--tx2);max-height:300px;overflow-y:auto;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.debug-panel.show{display:block}
+.debug-panel h5{font-size:10px;color:var(--tx3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;font-family:var(--ft)}
+.debug-row{display:flex;justify-content:space-between;padding:1px 0}
+.debug-row .dk{color:var(--tx3)}.debug-row .dv{color:var(--tx1)}
+
+/* Replay badge */
+.replay-badge{position:absolute;top:8px;right:88px;background:rgba(239,83,80,.85);color:#fff;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600;z-index:5;display:none;letter-spacing:.5px;pointer-events:none}
+.replay-badge.vis{display:flex;align-items:center;gap:6px}
+.replay-badge .rb-dot{width:6px;height:6px;border-radius:50%;background:#fff;animation:rbBlink 1s infinite}
+@keyframes rbBlink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* Responsive */
+@media(max-width:768px){
+.left-panel{width:0;border-right:none}
+.toolbar{height:auto;flex-wrap:wrap;padding:4px 6px}
+.obar{display:none}
+.mo-box{min-width:90vw;max-width:95vw}
+}
 </style>
+</head>
+<body>
 
-<!-- UPLOAD -->
+<!-- Upload Screen -->
 <div id="upload-screen">
-<h1>XAUUSD Historical Engine</h1>
-<p class="upsub">Upload MetaTrader 5 historical data</p>
+<div class="ulogo">XAUUSD Engine</div>
+<div class="usub">Historical Trading & Replay Engine</div>
 <div class="upzone" id="drop-zone">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-<span>Drop MT5 CSV/TSV/Excel file here</span>
-<button class="ubtn" onclick="document.getElementById('file-input').click()">Browse Files</button>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V4m0 0l-4 4m4-4l4 4M4 18h16"/></svg>
+<p>Drop MT5 CSV file here</p>
+<small>or click to browse • .csv .tsv .txt</small>
 </div>
-<input type="file" id="file-input" accept=".csv,.tsv,.txt,.xls,.xlsx" multiple>
-<p class="upsub" style="font-size:11px">CSV, TSV, XLS, XLSX — auto-detection</p>
+<input type="file" id="file-input" accept=".csv,.tsv,.txt,.xls,.xlsx" style="display:none">
+<div class="ufoot">Local-only • No uploads • All data stays in your browser</div>
 </div>
 
-<!-- ANALYSIS -->
+<!-- Analysis Screen -->
 <div id="analysis-screen">
-<div class="abox"><h2>Analyzing Data...</h2><div id="check-list"></div><div class="dsum" id="data-summary" style="display:none"></div>
-<button class="ocbtn" id="open-chart-btn" onclick="openChart()">Open Chart</button></div>
+<div class="abox">
+<div id="check-list"></div>
+<div id="data-summary" class="ds" style="display:none">
+<h4>Data Summary</h4>
+<div id="summary-content"></div>
+</div>
+<div class="ma" id="analysis-actions" style="display:none">
+<button class="mb" onclick="openChart()">Open Chart</button>
+</div>
+</div>
 </div>
 
-<!-- CHART -->
+<!-- Chart Screen -->
 <div id="chart-screen">
-<div class="toolbar" id="main-toolbar">
-<div class="tg"><button class="tb" onclick="toggleLeftPanel()" title="Data Sources">&#9776;</button></div>
-<div class="ts"></div>
-<div class="tg"><span class="sym" id="sym-label">XAUUSD</span></div>
+<!-- Top toolbar -->
+<div class="toolbar">
+<span class="sym">XAUUSD</span>
 <div class="ts"></div>
 <div class="tg" id="tf-group"></div>
 <div class="ts"></div>
-<div class="obar" id="obar">
-<span><span class="ol">O</span><span class="ov" id="o-o">—</span></span>
-<span><span class="ol">H</span><span class="ov" id="o-h">—</span></span>
-<span><span class="ol">L</span><span class="ov" id="o-l">—</span></span>
-<span><span class="ol">C</span><span class="ov" id="o-c">—</span></span>
-<span><span class="ol">V</span><span class="ov" id="o-v">—</span></span>
-<span><span class="ol">S</span><span class="ov" id="o-s">—</span></span>
-</div>
-<div style="flex:1"></div>
-<div class="tg">
-<button class="tb" id="btn-mag" onclick="toggleMagnet()" data-tt="Magnet">&#128231;</button>
-<button class="tb" id="btn-goto" onclick="showGoto()">&#128197; Go To</button>
-<button class="tb" id="btn-replay" onclick="toggleReplay()">&#9654; Replay</button>
-<button class="tb" id="btn-ind" onclick="toggleIndPanel()">&#128200; Indicators</button>
-<button class="tb" id="btn-qual" onclick="showQuality()">&#128196; Quality</button>
+<div class="obar" id="ohlc-bar">
+<span><span class="ol">O</span><span class="ov" id="o-val">—</span></span>
+<span><span class="ol">H</span><span class="ov" id="h-val">—</span></span>
+<span><span class="ol">L</span><span class="ov" id="l-val">—</span></span>
+<span><span class="ol">C</span><span class="ov" id="c-val">—</span></span>
+<span><span class="ol">V</span><span class="ov" id="v-val">—</span></span>
+<span id="s-val-wrap" style="display:none"><span class="ol">S</span><span class="ov" id="s-val">—</span></span>
 </div>
 <div class="ts"></div>
 <div class="tg">
-<button class="tb" id="btn-vol" onclick="toggleVol()">Vol</button>
-<button class="tb" id="btn-sprd" onclick="toggleSprd()">Sprd</button>
-<button class="tb" onclick="toggleCSet()">&#9881;</button>
-<button class="tb" onclick="toggleTheme()">&#9681;</button>
-<button class="tb" onclick="fitChart()">Fit</button>
+<button class="tb" id="btn-replay" data-tip="Start Replay" onclick="toggleReplay()">
+<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg> Replay
+</button>
+<button class="tb" id="btn-goto" data-tip="Go to Date" onclick="showGoto()">&#128197; GoTo</button>
+<button class="tb" id="btn-ind" data-tip="Add Indicator" onclick="toggleIndPanel()">&#128200; Ind</button>
+<button class="tb" id="btn-qual" data-tip="Data Quality Report" onclick="showQuality()">&#128196; Quality</button>
+</div>
+<div class="ts"></div>
+<div class="tg">
+<button class="tb" id="btn-vol" data-tip="Toggle Volume" onclick="toggleVol()">Vol</button>
+<button class="tb" id="btn-sprd" data-tip="Toggle Spread" onclick="toggleSprd()">Sprd</button>
+<button class="tb" id="btn-mag" data-tip="Magnet Mode: Snap to OHLC (M to cycle)" onclick="toggleMagnet()" style="position:relative">&#129522;<span class="mag-badge" id="mag-badge" style="display:none"></span></button>
+<button class="tb" data-tip="Chart Settings" onclick="toggleCSet()">&#9881;</button>
+<div class="theme-sel">
+<select id="theme-select" data-tip="Change Theme" onchange="switchTheme(this.value)">
+<option value="dark">Dark</option>
+<option value="light">Light</option>
+<option value="classic-dark">Classic TV Dark</option>
+<option value="classic-light">Classic TV Light</option>
+<option value="midnight">Midnight</option>
+<option value="high-contrast">High Contrast</option>
+<option value="custom">Custom...</option>
+</select>
+</div>
+<button class="tb" data-tip="Fit Chart to Screen" onclick="fitChart()">Fit</button>
+<button class="tb" id="btn-lp" data-tip="Toggle Data Sources Panel" onclick="toggleLeftPanel()">&#9776;</button>
+<button class="tb" id="btn-debug" data-tip="Debug Panel" onclick="toggleDebug()" style="font-size:10px">&#128027;</button>
+<button class="tb" id="btn-2col" data-tip="Toggle Two-Column Draw Toolbar" onclick="toggleDtbCols()">&#9638;</button>
 </div>
 </div>
 
@@ -268,219 +371,256 @@ input,select{font-family:var(--ft)}
 
 <!-- Indicator panel -->
 <div class="ind-panel" id="ind-panel">
-<h4>Indicators <button onclick="toggleIndPanel()">&#10005;</button></h4>
-<input class="ind-search" id="ind-search" placeholder="Search indicators..." oninput="filterInds(this.value)">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+<span style="font-size:12px;font-weight:600">Indicators</span>
+<button style="background:none;border:none;color:var(--tx3);cursor:pointer;font-size:14px" onclick="toggleIndPanel()">&#10005;</button>
+</div>
 <div id="ind-list"></div>
-<div class="act-ind" id="act-ind"></div>
+<div id="act-ind"></div>
 </div>
 
 <!-- Chart settings -->
 <div class="cset" id="cset">
-<h4>Chart Settings <button onclick="toggleCSet()">&#10005;</button></h4>
-<div class="csect" style="border:none;margin:0">Appearance</div>
-<label>Candle Up Color</label><input type="color" id="cs-up" value="#26a69a" onchange="updCS()">
-<label>Candle Down Color</label><input type="color" id="cs-dn" value="#ef5350" onchange="updCS()">
+<h4 style="font-size:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
+Chart Settings<button style="background:none;border:none;color:var(--tx3);cursor:pointer" onclick="toggleCSet()">&#10005;</button></h4>
+<label>Up Color</label><input type="color" id="cs-up" value="#26a69a" onchange="updCS()">
+<label>Down Color</label><input type="color" id="cs-dn" value="#ef5350" onchange="updCS()">
 <label class="chkr"><input type="checkbox" id="cs-grid" checked onchange="updCS()"> Show Grid</label>
 <label class="chkr"><input type="checkbox" id="cs-cross" checked onchange="updCS()"> Show Crosshair</label>
 <label class="chkr"><input type="checkbox" id="cs-vol" checked onchange="updCS()"> Show Volume</label>
 <label class="chkr"><input type="checkbox" id="cs-sprd" onchange="updCS()"> Show Spread</label>
 <label class="chkr"><input type="checkbox" id="cs-auto" checked onchange="updCS()"> Auto Scale</label>
-<div class="csect">Scale</div>
-<label>Price Precision</label>
-<select id="cs-prec" onchange="updCS()"><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option></select>
-<div class="csect">Timezone</div>
-<label>Display Time</label>
-<select id="cs-tz" onchange="updCS()"><option value="source">Broker/Source</option><option value="utc">UTC</option><option value="local">Local</option></select>
-<div style="font-size:10px;color:var(--tx3);margin-top:4px" id="tz-info">Timestamps as received from MT5</div>
+<label>Price Precision</label><input type="number" id="cs-prec" value="3" min="0" max="6" onchange="updCS()">
+<label>Timezone</label><select id="cs-tz" onchange="updCS()"><option value="source">Source</option><option value="utc">UTC</option><option value="local">Local</option></select>
+<div id="tz-info" style="font-size:10px;color:var(--tx3);margin-top:4px">Timestamps as received from MT5</div>
 </div>
 
-<!-- Canvas -->
-<div class="cc" id="cc"><canvas id="cv"></canvas></div>
+<!-- Replay badge -->
+<div class="replay-badge" id="replay-badge"><span class="rb-dot"></span><span id="rb-text">REPLAY</span></div>
+
+<!-- Debug panel -->
+<div class="debug-panel" id="debug-panel">
+<h5>Replay Debug</h5>
+<div id="debug-content"></div>
 </div>
+
+<!-- Canvas container -->
+<div class="cc" id="cc">
+<canvas id="cv"></canvas>
 </div>
 
 <!-- Replay bar -->
 <div class="rbar" id="rbar">
-<button class="rb" onclick="rStepBack()"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
-<button class="rb" id="rplay" onclick="rToggle()"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" id="ricon"><polygon points="5,3 19,12 5,21"/></svg></button>
-<button class="rb" onclick="rStepFwd()"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M16 6h2v12h-2zm-10 0l8.5 6L6 18z"/></svg></button>
-<div class="ts"></div>
-<button class="rsp" id="rspeed" onclick="rCycleSpd()">1x</button>
-<div class="ts"></div>
-<span class="ri" id="rinfo">—</span>
-<button class="rb rex" onclick="rExit()">Exit Replay</button>
+<button class="rb" data-tip="Step Back" onclick="rStepBack()"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12,4 4,12 12,20"/><rect x="14" y="4" width="3" height="16"/></svg></button>
+<button class="rb" id="rbtn-play" data-tip="Play/Pause" onclick="rToggle()"><svg viewBox="0 0 24 24" fill="currentColor" id="ricon"><polygon points="5,3 19,12 5,21"/></svg></button>
+<button class="rb" data-tip="Step Forward" onclick="rStepFwd()"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12,4 20,12 12,20"/><rect x="7" y="4" width="3" height="16"/></svg></button>
+<button class="rb" data-tip="Reset to Start" onclick="rReset()"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="4" height="16"/><polygon points="20,4 10,12 20,20"/></svg></button>
+<button class="rspd" id="rspeed" data-tip="Cycle Playback Speed" onclick="rCycleSpd()">1x</button>
+<span class="rinfo" id="rinfo">—</span>
+<button class="rb" data-tip="Exit Replay" onclick="rExit()" style="color:var(--rd)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" fill="none"/></svg></button>
+</div>
+</div>
 </div>
 
+<!-- Status bar -->
 <div class="sbar">
-<span id="st-rows">—</span>
+<span><span class="sd"></span>Ready</span>
+<span id="st-src">Source: —</span>
 <span id="st-tf">TF: M1</span>
+<span id="st-bars">Bars: —</span>
 <span id="st-tz">TZ: Source</span>
-<span id="st-range">—</span>
-<span style="margin-left:auto" id="st-cur">—</span>
 </div>
 </div>
 
-<!-- Go To Modal -->
+<!-- GoTo Modal -->
 <div class="mo" id="goto-modal">
-<div class="md" style="min-width:380px">
-<h3>Go To Date/Time <button onclick="closeMo()">&#10005;</button></h3>
+<div class="mo-box">
+<h3>Go to Date <button onclick="closeMo()">&#10005;</button></h3>
 <div class="cal" id="cal"></div>
-<div class="quick-dates" id="quick-dates"></div>
-<label style="font-size:11px;color:var(--tx2);margin-bottom:3px;display:block">Time (HH:MM)</label>
-<input class="mi" id="goto-time" placeholder="14:30" value="00:00" style="margin-bottom:8px">
-<p class="mh" id="goto-hint">Select date and time — snaps to nearest candle</p>
+<label>Time (HH:MM)</label>
+<input type="text" id="goto-time" placeholder="00:00" style="width:100%">
+<div id="goto-hint" style="font-size:10px;color:var(--tx3);margin-top:4px"></div>
+<div id="quick-dates" style="margin-top:8px"></div>
 <div class="ma">
+<button class="mb" onclick="gotoDate()">Go to Date</button>
+<button class="mb s" onclick="gotoReplay()">Start Replay Here</button>
 <button class="mb s" onclick="closeMo()">Cancel</button>
-<button class="mb p" onclick="gotoReplay()">Start Replay Here</button>
-<button class="mb p" onclick="gotoDate()">Go To</button>
 </div>
 </div>
 </div>
 
 <!-- Quality Modal -->
-<div class="mo" id="qual-modal">
-<div class="md" style="min-width:420px">
+<div class="mo" id="quality-modal">
+<div class="mo-box">
 <h3>Data Quality Report <button onclick="closeMo()">&#10005;</button></h3>
-<div class="qr" id="qr-content"></div>
+<div id="qr-content"></div>
 <div class="ma"><button class="mb s" onclick="closeMo()">Close</button></div>
 </div>
 </div>
 
 <!-- Indicator Settings Modal -->
 <div class="mo" id="iset-modal">
-<div class="md iset" id="iset-content"></div>
+<div class="mo-box">
+<div id="iset-content"></div>
+</div>
+</div>
+
+<!-- Custom Theme Modal -->
+<div class="mo" id="custom-theme-modal">
+<div class="mo-box" style="min-width:400px">
+<h3>Custom Theme Builder <button onclick="closeMo()">&#10005;</button></h3>
+<div class="ct-grid" id="ct-vars"></div>
+<div class="ma">
+<button class="mb" onclick="applyCustomTheme()">Apply</button>
+<button class="mb s" onclick="closeMo()">Cancel</button>
+</div>
+</div>
 </div>
 
 <!-- Context Menu -->
 <div class="ctx" id="ctx-menu">
-<div class="ci2" onclick="ctxA('hline')">Add Horizontal Line</div>
-<div class="ci2" onclick="ctxA('vline')">Add Vertical Line</div>
-<div class="ci2" onclick="ctxA('trendline')">Add Trend Line</div>
-<div class="ci2" onclick="ctxA('fib')">Add Fibonacci</div>
-<div class="ci2" onclick="ctxA('rect')">Add Rectangle</div>
-<div class="ci2" onclick="ctxA('text')">Add Text</div>
-<div class="ci2" onclick="ctxA('measure')">Measure <span class="sk">M</span></div>
-<div class="csep"></div>
-<div class="ci2" onclick="ctxA('delSel')">Delete Selected <span class="sk">Del</span></div>
-<div class="ci2" onclick="ctxA('delAll')">Delete All Drawings</div>
-<div class="csep"></div>
-<div class="ci2" onclick="ctxA('goto')">Go To Date/Time</div>
-<div class="ci2" onclick="ctxA('replayHere')">Start Replay Here</div>
-<div class="ci2" onclick="ctxA('fit')">Fit Chart <span class="sk">F</span></div>
-<div class="ci2" onclick="ctxA('settings')">Chart Settings</div>
+<div class="ctx-item" onclick="ctxA('hline')">&#8213; Horizontal Line</div>
+<div class="ctx-item" onclick="ctxA('vline')">&#9474; Vertical Line</div>
+<div class="ctx-item" onclick="ctxA('trendline')">&#9585; Trend Line</div>
+<div class="ctx-item" onclick="ctxA('fib')">&#9591; Fibonacci</div>
+<div class="ctx-item" onclick="ctxA('rect')">&#9633; Rectangle</div>
+<div class="ctx-item" onclick="ctxA('measure')">&#128207; Measure</div>
+<div class="ctx-sep"></div>
+<div class="ctx-item" onclick="ctxA('replayHere')">&#9654; Replay from Here</div>
+<div class="ctx-item" onclick="ctxA('goto')">&#128197; Go to Date</div>
+<div class="ctx-item" onclick="ctxA('fit')">&#9633; Fit Chart</div>
+<div class="ctx-item" onclick="ctxA('settings')">&#9881; Settings</div>
+<div class="ctx-sep"></div>
+<div class="ctx-item" onclick="ctxA('delSel')" style="color:var(--rd)">&#128465; Delete Selected</div>
+<div class="ctx-item" onclick="ctxA('delAll')" style="color:var(--rd)">&#128465; Delete All Drawings</div>
+<div class="ctx-sep"></div>
+<div class="ctx-item" onclick="ctxA('magSettings')">&#129522; Magnet Settings</div>
+</div>
+
+<div class="mo" id="mag-settings-modal">
+<div class="mag-set">
+<h3 style="font-size:13px;margin:0 0 8px">Magnet Settings</h3>
+<label>Mode</label>
+<div style="display:flex;gap:4px;margin:4px 0">
+<button class="mb s mag-mode-btn" data-mode="off" onclick="setMagMode('off')">Off</button>
+<button class="mb s mag-mode-btn" data-mode="weak" onclick="setMagMode('weak')">Weak</button>
+<button class="mb s mag-mode-btn" data-mode="strong" onclick="setMagMode('strong')">Strong</button>
+</div>
+<label>Weak Radius (px)</label>
+<div class="mag-row"><input type="range" min="5" max="40" value="15" id="mag-r-weak" oninput="S.magnetRadius.weak=+this.value;document.getElementById('mag-r-weak-v').textContent=this.value;saveState()"><span id="mag-r-weak-v">15</span></div>
+<label>Strong Radius (px)</label>
+<div class="mag-row"><input type="range" min="10" max="60" value="30" id="mag-r-strong" oninput="S.magnetRadius.strong=+this.value;document.getElementById('mag-r-strong-v').textContent=this.value;saveState()"><span id="mag-r-strong-v">30</span></div>
+<label>Snap Sources</label>
+<label class="chkr"><input type="checkbox" checked id="mag-src-o" onchange="S.magnetSources.o=this.checked;saveState()"> Open</label>
+<label class="chkr"><input type="checkbox" checked id="mag-src-h" onchange="S.magnetSources.h=this.checked;saveState()"> High</label>
+<label class="chkr"><input type="checkbox" checked id="mag-src-l" onchange="S.magnetSources.l=this.checked;saveState()"> Low</label>
+<label class="chkr"><input type="checkbox" checked id="mag-src-c" onchange="S.magnetSources.c=this.checked;saveState()"> Close</label>
+<div style="margin-top:10px;text-align:right"><button class="mb s" onclick="closeMo()">Done</button></div>
+</div>
 </div>
 
 <script>
-// ====================== CORE STATE ======================
+// ====================== STATE ======================
 const S={
-  sources:[],       // [{id,name,raw:[],info:{},tfCache:{}}]
-  activeIdx:-1,     // index into sources
-  raw:[],           // current active raw M1
-  info:{},
-  tfCache:{},
-  tf:'M1',
-  cand:[],          // display candles
-  allCand:[],
-  vStart:0,vEnd:0,
-  cw:8,cg:2,
-  pMin:0,pMax:0,autoScale:true,
-  W:0,H:0,
-  paW:76,taH:26,volH:55,
-  showVol:true,showSprd:false,showGrid:true,showCross:true,
-  mx:-1,my:-1,hoverIdx:-1,
-  // Replay
-  rOn:false,rCut:-1,rCutI:-1,rPlay:false,rSpd:1,rTmr:null,
-  rSpds:[.25,.5,1,2,5,10,20],rSpdI:2,
-  // Drawing
-  tool:'pointer',drawings:[],dip:null,selDraw:-1,
-  undo:[],redo:[],
-  isPan:false,panS:null,
-  magnet:false,
-  // Indicators
-  indicators:[],
-  // Settings
-  upColor:'#26a69a',dnColor:'#ef5350',
-  prec:3,tzMode:'source',
-  theme:'dark',
-  // Calendar
-  calYear:2026,calMonth:2,calDay:10,
-  // Left panel
-  lpOpen:true,
-  // Source counter
-  srcId:0
+sources:[],srcId:0,activeIdx:-1,raw:[],tf:'M1',
+cand:[],allCand:[],tfCache:{},
+W:800,H:600,cw:7,cg:2,
+vStart:0,vEnd:0,
+pMin:0,pMax:0,paW:70,taH:24,volH:60,
+showVol:true,showSprd:false,showGrid:true,showCross:true,autoScale:true,
+upColor:'#26a69a',dnColor:'#ef5350',
+prec:3,tzMode:'source',
+mx:-1,my:-1,hoverIdx:-1,
+tool:'pointer',dip:null,drawings:[],selDraw:-1,
+undo:[],redo:[],
+magnetMode:'off',magnetRadius:{weak:15,strong:30},magnetSources:{o:true,h:true,l:true,c:true},
+snapInfo:null,drawMode:'single',drawState:'idle',drawPreview:null,
+drawEditIdx:-1,drawEditAnchor:null,drawEditStart:null,
+indicators:[],
+info:{},
+// Replay state
+rOn:false,rCut:0,rCutI:0,rCutStart:0,rCutStartI:0,
+rPlay:false,rSpd:1,rTmr:null,
+rSpds:[.25,.5,1,2,5,10,20],rSpdI:2,
+// UI state
+lpOpen:true,isPan:false,panS:null,isYPan:false,yPanS:null,
+calYear:2025,calMonth:0,calDay:1,
+theme:'dark',
+dtb2col:false,showDebug:false,
+// Tool defaults (per tool type)
+toolDefaults:{},
+// Custom theme
+customTheme:null,
+_ctxTs:0,_ctxPr:0
 };
 
 const TFS=[
-{l:'1m',k:'M1',m:1},{l:'2m',k:'M2',m:2},{l:'3m',k:'M3',m:3},{l:'5m',k:'M5',m:5},
-{l:'10m',k:'M10',m:10},{l:'15m',k:'M15',m:15},{l:'20m',k:'M20',m:20},{l:'30m',k:'M30',m:30},
-{l:'1H',k:'H1',m:60},{l:'2H',k:'H2',m:120},{l:'4H',k:'H4',m:240},
-{l:'1D',k:'D1',m:1440},{l:'1W',k:'W1',m:10080}
+{k:'M1',l:'M1',m:1},{k:'M5',l:'M5',m:5},{k:'M15',l:'M15',m:15},{k:'M30',l:'M30',m:30},
+{k:'H1',l:'H1',m:60},{k:'H4',l:'H4',m:240},{k:'D1',l:'D1',m:1440},{k:'W1',l:'W1',m:10080}
 ];
+
 const FIBS=[0,.236,.382,.5,.618,.786,1,1.272,1.618];
 const cv=document.getElementById('cv');
 const cx=cv.getContext('2d');
 let dpr=window.devicePixelRatio||1;
 
-// ====================== DRAW TOOLS DEFINITION ======================
 const TOOLS=[
-{id:'pointer',tt:'Pointer',ic:'&#9650;'},
-{id:'crosshair_tool',tt:'Crosshair',ic:'+'},
+{id:'pointer',icon:'&#10132;',tt:'Pointer (select/drag)',cat:'Cursor'},
+{id:'crosshair_tool',icon:'+',tt:'Crosshair',cat:'Cursor'},
 {id:'_sep'},
-{id:'trendline',tt:'Trend Line',ic:'&#9585;'},
-{id:'ray',tt:'Ray',ic:'&#8594;&#9585;'},
-{id:'extended',tt:'Extended Line',ic:'&#8596;'},
-{id:'hline',tt:'Horizontal Line',ic:'&#8212;'},
-{id:'vline',tt:'Vertical Line',ic:'&#124;'},
-{id:'hray',tt:'Horizontal Ray',ic:'&#8594;'},
+{id:'trendline',icon:'&#9585;',tt:'Trend Line',cat:'Lines'},
+{id:'ray',icon:'&#8599;',tt:'Ray',cat:'Lines'},
+{id:'extended',icon:'&#8596;',tt:'Extended Line',cat:'Lines'},
+{id:'hline',icon:'&#8213;',tt:'Horizontal Line',cat:'Lines'},
+{id:'vline',icon:'&#9474;',tt:'Vertical Line',cat:'Lines'},
+{id:'hray',icon:'&#8594;',tt:'Horizontal Ray',cat:'Lines'},
+{id:'channel',icon:'&#9620;',tt:'Parallel Channel',cat:'Lines'},
 {id:'_sep'},
-{id:'channel',tt:'Channel',ic:'&#9587;'},
-{id:'rect',tt:'Rectangle',ic:'&#9633;'},
-{id:'circle',tt:'Circle/Ellipse',ic:'&#9675;'},
-{id:'triangle',tt:'Triangle',ic:'&#9651;'},
-{id:'srzone',tt:'S/R Zone',ic:'&#9632;'},
+{id:'rect',icon:'&#9633;',tt:'Rectangle',cat:'Shapes'},
+{id:'circle',icon:'&#9675;',tt:'Circle/Ellipse',cat:'Shapes'},
+{id:'triangle',icon:'&#9651;',tt:'Triangle',cat:'Shapes'},
+{id:'srzone',icon:'&#9632;',tt:'Support/Resistance Zone',cat:'Shapes'},
 {id:'_sep'},
-{id:'fib',tt:'Fib Retracement',ic:'F'},
-{id:'fibext',tt:'Fib Extension',ic:'FE'},
+{id:'fib',icon:'&#9591;',tt:'Fibonacci Retracement',cat:'Fibonacci'},
+{id:'fibext',icon:'&#9592;',tt:'Fibonacci Extension',cat:'Fibonacci'},
 {id:'_sep'},
-{id:'arrow',tt:'Arrow',ic:'&#8599;'},
-{id:'text',tt:'Text',ic:'T'},
-{id:'pricelabel',tt:'Price Label',ic:'$'},
-{id:'datelabel',tt:'Date Label',ic:'D'},
-{id:'measure',tt:'Measure',ic:'&#128207;'},
+{id:'arrow',icon:'&#10148;',tt:'Arrow',cat:'Annotation'},
+{id:'text',icon:'T',tt:'Text Label',cat:'Annotation'},
+{id:'pricelabel',icon:'$',tt:'Price Label',cat:'Annotation'},
+{id:'datelabel',icon:'D',tt:'Date Label',cat:'Annotation'},
 {id:'_sep'},
-{id:'longpos',tt:'Long Position',ic:'&#9650;L'},
-{id:'shortpos',tt:'Short Position',ic:'&#9660;S'},
+{id:'measure',icon:'&#128207;',tt:'Measure Tool (distance, bars, %)',cat:'Measurement'},
+{id:'longpos',icon:'&#9650;',tt:'Long Position',cat:'Measurement'},
+{id:'shortpos',icon:'&#9660;',tt:'Short Position',cat:'Measurement'},
 {id:'_sep'},
-{id:'_undo',tt:'Undo',ic:'&#8630;',fn:'undo'},
-{id:'_redo',tt:'Redo',ic:'&#8631;',fn:'redo'},
-{id:'_delall',tt:'Delete All',ic:'&#10005;',fn:'delAll',cls:'rd'}
+{id:'undo',icon:'&#8634;',tt:'Undo Last Drawing',cls:'util',cat:'Utility'},
+{id:'redo',icon:'&#8635;',tt:'Redo Drawing',cls:'util',cat:'Utility'},
+{id:'delall',icon:'&#128465;',tt:'Delete All Drawings',cls:'util',cat:'Utility'}
 ];
 
-// ====================== INDICATOR DEFINITIONS ======================
 const IND_DEFS=[
-{id:'ema',name:'EMA',cat:'Trend',params:{period:20,source:'close',color:'#2962ff',width:1.5,style:'solid',visible:true}},
-{id:'sma',name:'SMA',cat:'Trend',params:{period:50,source:'close',color:'#ff9800',width:1.5,style:'solid',visible:true}},
-{id:'bb',name:'Bollinger Bands',cat:'Volatility',params:{period:20,stddev:2,source:'close',basisColor:'#2962ff',upperColor:'#787b86',lowerColor:'#787b86',fillColor:'rgba(41,98,255,0.06)',width:1,visible:true}},
-{id:'vwap',name:'VWAP',cat:'Volume',params:{color:'#e040fb',width:1.5,style:'solid',visible:true}},
-{id:'pivot',name:'Pivot Points',cat:'Levels',params:{type:'classic',tf:'D1',pivotColor:'#ff9800',rColor:'#ef5350',sColor:'#26a69a',width:1,style:'dashed',visible:true}}
+{id:'ema',name:'EMA',cat:'Moving Averages',desc:'Exponential Moving Average — reacts faster to recent price changes',params:{period:20,source:'close',color:'#2962ff',width:1.5,style:'solid',visible:true}},
+{id:'sma',name:'SMA',cat:'Moving Averages',desc:'Simple Moving Average — equal weight to all periods',params:{period:20,source:'close',color:'#e91e63',width:1.5,style:'solid',visible:true}},
+{id:'bb',name:'Bollinger Bands',cat:'Volatility',desc:'Shows price volatility with upper/lower bands around a moving average',params:{period:20,stddev:2,source:'close',basisColor:'#ff9800',upperColor:'#2196f3',lowerColor:'#2196f3',width:1,style:'solid',visible:true}},
+{id:'vwap',name:'VWAP',cat:'Volume',desc:'Volume-Weighted Average Price — institutional benchmark (uses tick volume for CFD)',params:{color:'#ab47bc',width:1.5,style:'solid',visible:true}},
+{id:'pivot',name:'Pivot Points',cat:'Support/Resistance',desc:'Classic/Fibonacci/Woodie pivot levels for S/R trading',params:{type:'classic',pivotColor:'#ff9800',rColor:'#ef5350',sColor:'#26a69a',width:1,style:'dashed',visible:true}}
 ];
 
 // ====================== DATA PARSER ======================
 function detectDelim(t){const l=t.split(/\r?\n/)[0];const a=(l.match(/\t/g)||[]).length,b=(l.match(/,/g)||[]).length,c=(l.match(/;/g)||[]).length;if(a>=b&&a>=c&&a>0)return'\t';if(b>=c&&b>0)return',';if(c>0)return';';return'\t'}
 function normH(h){return h.replace(/[<>]/g,'').trim().toLowerCase()}
-function mapCols(hdrs){const m={};const n=hdrs.map(normH);const p={date:/^(date|datum|day)$/,time:/^(time|zeit)$/,datetime:/^(datetime|date.?time|timestamp)$/,open:/^(open|o)$/,high:/^(high|h|max)$/,low:/^(low|l|min)$/,close:/^(close|c|last)$/,tickvol:/^(tickvol|tick.?vol|tick.?volume)$/,vol:/^(vol|volume|real.?vol)$/,spread:/^(spread|sprd)$/};for(const[f,rx] of Object.entries(p)){const i=n.findIndex(x=>rx.test(x));if(i!==-1)m[f]=i}if(m.datetime!==undefined&&m.date===undefined)m.date=m.datetime;return m}
+function mapCols(hs){const m={};hs.forEach((h,i)=>{const n=normH(h);if(n.includes('date'))m.date=i;if(n.includes('time')&&!n.includes('stamp'))m.time=i;if(n==='open'||n==='o')m.open=i;if(n==='high'||n==='h')m.high=i;if(n==='low'||n==='l')m.low=i;if(n==='close'||n==='c')m.close=i;if(n.includes('tick')&&n.includes('vol'))m.tickvol=i;if((n==='volume'||n==='vol')&&!n.includes('tick'))m.vol=i;if(n.includes('spread'))m.spread=i});return m}
 function parseDT(ds,ts){let d=ds.replace(/[\/\-]/g,'.');let p=d.split('.');let y,mo,da;if(p[0].length===4){y=+p[0];mo=+p[1];da=+p[2]}else{da=+p[0];mo=+p[1];y=+p[2]}let h=0,m=0,s=0;if(ts){const tp=ts.split(':');h=+tp[0]||0;m=+tp[1]||0;s=+tp[2]||0}return new Date(y,mo-1,da,h,m,s)}
 
 function parseCSV(text){
 const delim=detectDelim(text);
 const lines=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n').filter(l=>l.trim());
-if(lines.length<2)throw new Error('Insufficient data');
+if(lines.length<2)return{data:[],info:{rows:0,invalid:0,duplicates:0}};
 const headers=lines[0].split(delim);
 const cm=mapCols(headers);
 const req=['open','high','low','close'];
 const miss=req.filter(r=>cm[r]===undefined);
-if(miss.length)throw new Error('Missing columns: '+miss.join(', '));
-if(cm.date===undefined)throw new Error('No date column');
+if(miss.length)return{data:[],info:{rows:lines.length-1,invalid:lines.length-1,error:'Missing columns: '+miss.join(', ')}};
 
 const data=[];let inv=0,dup=0,prev=0;
 for(let i=1;i<lines.length;i++){
@@ -494,78 +634,73 @@ const tv=cm.tickvol!==undefined?(parseInt(c[cm.tickvol])||0):0;
 const v=cm.vol!==undefined?(parseInt(c[cm.vol])||0):0;
 const s=cm.spread!==undefined?(parseFloat(c[cm.spread])||0):0;
 if(ts===prev){dup++;continue}
-prev=ts;data.push({t:ts,o,h,l,c:cl,tv,v,s});
-}catch(e){inv++}}
+data.push({t:ts,o,h,l,c:cl,tv,v,s});prev=ts;
+}catch(e){inv++;}}
+
 data.sort((a,b)=>a.t-b.t);
-
 const gaps=[];let mn=Infinity,mx=-Infinity;
-for(let i=0;i<data.length;i++){
-if(data[i].l<mn)mn=data[i].l;if(data[i].h>mx)mx=data[i].h;
-if(i>0){const df=(data[i].t-data[i-1].t)/60000;
-if(df>2){const d1=new Date(data[i-1].t),d2=new Date(data[i].t);
+for(let i=1;i<data.length;i++){
+const diff=data[i].t-data[i-1].t;
+if(diff>300000){const d1=new Date(data[i-1].t),d2=new Date(data[i].t);
 const w=d1.getDay()===5||d1.getDay()===6||d2.getDay()===0||d2.getDay()===1;
-gaps.push({from:data[i-1].t,to:data[i].t,min:df,wk:w||df>1440})}}}
+if(!w)gaps.push({from:d1,to:d2,dur:diff})}
+mn=Math.min(mn,data[i].l);mx=Math.max(mx,data[i].h);
+}
+if(data.length)mn=Math.min(mn,data[0].l),mx=Math.max(mx,data[0].h);
 
-return{data,info:{rows:data.length,invalid:inv,duplicates:dup,
+return{data,info:{rows:lines.length-1,valid:data.length,invalid:inv,duplicates:dup,
 first:data.length?new Date(data[0].t):null,last:data.length?new Date(data[data.length-1].t):null,
-minP:mn,maxP:mx,gaps,wkGaps:gaps.filter(g=>g.wk).length,trGaps:gaps.filter(g=>!g.wk).length,
-hasVol:data.some(d=>d.v>0),hasTV:data.some(d=>d.tv>0),hasSprd:data.some(d=>d.s>0),
-delim:delim==='\t'?'TAB':delim===','?'COMMA':'SEMI',
-cols:headers.map(h=>h.replace(/[<>]/g,'').trim())}}}
+gaps,pMin:mn,pMax:mx}}
+}
 
 // ====================== TIMEFRAME AGGREGATION ======================
 function aggTF(m1,mins,cut){
 const ck=mins+'_'+(cut||'a');
 if(S.tfCache[ck])return S.tfCache[ck];
 const src=cut?m1.filter(d=>d.t<=cut):m1;
+if(!src.length){S.tfCache[ck]=[];return[]}
 if(mins===1){S.tfCache[ck]=src;return src}
-if(!src.length)return[];
 const ms=mins*60000;
 function barStart(ts){
-if(mins<1440){const d=new Date(ts);const ds=new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime();return ds+Math.floor((ts-ds)/ms)*ms}
-if(mins===1440){const d=new Date(ts);return new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime()}
+if(mins>=10080){// weekly
 const d=new Date(ts);const dy=d.getDay();const df=dy===0?6:dy-1;const mn=new Date(d.getFullYear(),d.getMonth(),d.getDate()-df);return mn.getTime()}
-
+return Math.floor(ts/ms)*ms}
 const r=[];let cs=barStart(src[0].t);
 let b={t:cs,o:src[0].o,h:src[0].h,l:src[0].l,c:src[0].c,tv:src[0].tv,v:src[0].v,s:src[0].s};
-for(let i=1;i<src.length;i++){const d=src[i];const bs=barStart(d.t);
-if(bs===cs){b.h=Math.max(b.h,d.h);b.l=Math.min(b.l,d.l);b.c=d.c;b.tv+=d.tv;b.v+=d.v;b.s=Math.max(b.s,d.s)}
-else{r.push(b);cs=bs;b={t:bs,o:d.o,h:d.h,l:d.l,c:d.c,tv:d.tv,v:d.v,s:d.s}}}
+for(let i=1;i<src.length;i++){const ns=barStart(src[i].t);
+if(ns!==cs){r.push(b);cs=ns;b={t:ns,o:src[i].o,h:src[i].h,l:src[i].l,c:src[i].c,tv:src[i].tv,v:src[i].v,s:src[i].s}}
+else{b.h=Math.max(b.h,src[i].h);b.l=Math.min(b.l,src[i].l);b.c=src[i].c;b.tv+=src[i].tv;b.v+=src[i].v;b.s=src[i].s}}
 r.push(b);S.tfCache[ck]=r;return r}
 
 function tfMin(k){const t=TFS.find(x=>x.k===k);return t?t.m:1}
 
 // ====================== BINARY SEARCH ======================
 function findIdx(cands,ts){
-if(!cands.length)return-1;let lo=0,hi=cands.length-1;
-while(lo<=hi){const m=(lo+hi)>>1;if(cands[m].t===ts)return m;if(cands[m].t<ts)lo=m+1;else hi=m-1}
-if(lo>=cands.length)return cands.length-1;if(hi<0)return 0;
-return Math.abs(cands[lo].t-ts)<Math.abs(cands[hi].t-ts)?lo:hi}
+if(!cands.length)return-1;
+let lo=0,hi=cands.length-1;
+while(lo<hi){const mid=(lo+hi+1)>>1;if(cands[mid].t<=ts)lo=mid;else hi=mid-1}
+return lo}
 
-// ====================== INDICATOR CALCULATIONS ======================
+// ====================== INDICATORS ======================
 function calcEMA(cands,period,srcKey){
 const vals=cands.map(c=>srcVal(c,srcKey));
 const k=2/(period+1);const r=new Array(cands.length);
-r[0]=vals[0];
-for(let i=1;i<vals.length;i++)r[i]=vals[i]*k+r[i-1]*(1-k);
-return r}
+r[0]=vals[0];for(let i=1;i<cands.length;i++)r[i]=vals[i]*k+r[i-1]*(1-k);return r}
 
 function calcSMA(cands,period,srcKey){
 const vals=cands.map(c=>srcVal(c,srcKey));
 const r=new Array(cands.length);let sum=0;
-for(let i=0;i<vals.length;i++){sum+=vals[i];if(i>=period)sum-=vals[i-period];
-r[i]=i>=period-1?sum/period:sum/(i+1)}
-return r}
+for(let i=0;i<cands.length;i++){sum+=vals[i];if(i>=period)sum-=vals[i-period];
+r[i]=i>=period-1?sum/period:sum/(i+1)}return r}
 
 function calcBB(cands,period,stddev,srcKey){
 const sma=calcSMA(cands,period,srcKey);
 const vals=cands.map(c=>srcVal(c,srcKey));
 const upper=new Array(cands.length);const lower=new Array(cands.length);
-for(let i=0;i<cands.length;i++){
-if(i<period-1){upper[i]=sma[i];lower[i]=sma[i];continue}
+for(let i=0;i<cands.length;i++){if(i<period-1){upper[i]=sma[i];lower[i]=sma[i];continue}
 let sum2=0;for(let j=i-period+1;j<=i;j++){const d=vals[j]-sma[i];sum2+=d*d}
 const sd=Math.sqrt(sum2/period);
-upper[i]=sma[i]+stddev*sd;lower[i]=sma[i]-stddev*sd}
+upper[i]=sma[i]+sd*stddev;lower[i]=sma[i]-sd*stddev}
 return{basis:sma,upper,lower}}
 
 function calcVWAP(cands){
@@ -575,12 +710,10 @@ const d=new Date(cands[i].t);const day=d.getDate()+d.getMonth()*100;
 if(day!==lastDay){cumTPV=0;cumV=0;lastDay=day}
 const tp=(cands[i].h+cands[i].l+cands[i].c)/3;
 const vol=cands[i].tv||cands[i].v||1;
-cumTPV+=tp*vol;cumV+=vol;
-r[i]=cumTPV/cumV}
-return r}
+cumTPV+=tp*vol;cumV+=vol;r[i]=cumTPV/cumV}return r}
 
 function calcPivots(cands,tfMins){
-// Get previous period's HLC
+if(!cands.length)return null;
 const pivotTF=tfMins>=1440?10080:1440;
 const pbars=aggTF(S.raw,pivotTF);
 if(pbars.length<2)return null;
@@ -594,72 +727,74 @@ return{pp,r1,r2,r3,s1,s2,s3}}
 function srcVal(c,k){
 switch(k){case'open':return c.o;case'high':return c.h;case'low':return c.l;case'hl2':return(c.h+c.l)/2;case'hlc3':return(c.h+c.l+c.c)/3;case'ohlc4':return(c.o+c.h+c.l+c.c)/4;default:return c.c}}
 
-// ====================== FILE HANDLING ======================
+// ====================== FILE HANDLING & SOURCE MANAGEMENT ======================
 const dropZ=document.getElementById('drop-zone');
 const fInput=document.getElementById('file-input');
 const srcInput=document.getElementById('src-file-input');
-
+dropZ.addEventListener('click',()=>fInput.click());
 dropZ.addEventListener('dragover',e=>{e.preventDefault();dropZ.style.borderColor='var(--ac)'});
-dropZ.addEventListener('dragleave',()=>{dropZ.style.borderColor=''});
-dropZ.addEventListener('drop',e=>{e.preventDefault();dropZ.style.borderColor='';handleFiles(e.dataTransfer.files)});
-fInput.addEventListener('change',e=>{if(e.target.files.length)handleFiles(e.target.files)});
-srcInput.addEventListener('change',e=>{if(e.target.files.length){for(const f of e.target.files)addSource(f);srcInput.value=''}});
+dropZ.addEventListener('dragleave',()=>{dropZ.style.borderColor='var(--bd)'});
+dropZ.addEventListener('drop',e=>{e.preventDefault();dropZ.style.borderColor='var(--bd)';handleFiles(e.dataTransfer.files)});
+fInput.addEventListener('change',e=>handleFiles(e.target.files));
+srcInput.addEventListener('change',e=>{for(const f of e.target.files)addSource(f)});
 
 function handleFiles(files){
+if(!files.length)return;
 document.getElementById('upload-screen').style.display='none';
 document.getElementById('analysis-screen').style.display='flex';
 const f=files[0];
 const reader=new FileReader();
-reader.onload=e=>{try{runAnalysis(e.target.result,f.name)}catch(err){addChk('e','Error: '+err.message)}};
+const fname=f.name;
+reader.onload=async e=>{
+addChk('ok','File loaded: '+fname);
+await dl(300);addChk('ok','Parsing CSV structure...');
+const text=e.target.result;
+addChk('ok','Delimiter detected: '+detectDelim(text));
+await dl(200);
+const result=parseCSV(text);
+const src={id:++S.srcId,name:fname.replace(/\.\w+$/,''),raw:result.data,info:result.info,tfCache:{}};
+S.sources.push(src);S.activeIdx=S.sources.length-1;
+addChk('ok','Columns mapped successfully');
+await dl(200);
+addChk(result.info.invalid?'wn':'ok','Rows: '+result.info.rows+' | Valid: '+(result.info.valid||result.data.length)+' | Invalid: '+(result.info.invalid||0));
+if(result.info.duplicates)addChk('wn','Duplicates removed: '+result.info.duplicates);
+addChk('ok','Date range: '+fmtD(result.info.first)+' — '+fmtD(result.info.last));
+if(result.info.gaps&&result.info.gaps.length)addChk('wn','Gaps detected: '+result.info.gaps.length);
+addChk('ok','Price range: '+(result.info.pMin||0).toFixed(S.prec)+' — '+(result.info.pMax||0).toFixed(S.prec));
+await dl(200);addChk('ok','Ready to chart');
+
+const sum=document.getElementById('data-summary');sum.style.display='block';
+document.getElementById('summary-content').innerHTML=`
+<div class="drow"><span class="dl">Symbol</span><span class="dv">XAUUSD</span></div>
+<div class="drow"><span class="dl">File</span><span class="dv">${fname}</span></div>
+<div class="drow"><span class="dl">Records</span><span class="dv">${(result.info.valid||result.data.length).toLocaleString()}</span></div>
+<div class="drow"><span class="dl">Period</span><span class="dv">${fmtD(result.info.first)} — ${fmtD(result.info.last)}</span></div>`;
+document.getElementById('analysis-actions').style.display='flex';
+};
 reader.readAsText(f);
 }
 
 function addChk(type,text){
 const list=document.getElementById('check-list');
 const div=document.createElement('div');div.className='chk';
-div.innerHTML=`<span class="ci ${type==='ok'?'ok':type==='w'?'w':'e'}">${type==='ok'?'&#10003;':type==='w'?'!':'&#10005;'}</span><span>${text}</span>`;
-list.appendChild(div);setTimeout(()=>div.classList.add('show'),30);return div}
-
-async function runAnalysis(text,fname){
-await dl(150);addChk('ok','File: '+fname);await dl(100);
-const result=parseCSV(text);
-const src={id:++S.srcId,name:fname.replace(/\.\w+$/,''),raw:result.data,info:result.info,tfCache:{}};
-S.sources.push(src);S.activeIdx=S.sources.length-1;
-S.raw=src.raw;S.info=src.info;S.tfCache=src.tfCache;
-
-addChk('ok','Delimiter: '+result.info.delim);await dl(80);
-addChk('ok','XAUUSD M1: '+result.info.rows.toLocaleString()+' candles');await dl(80);
-addChk('ok','Range: '+fmtD(result.info.first)+' — '+fmtD(result.info.last));await dl(80);
-addChk('ok','Price: $'+result.info.minP.toFixed(2)+' – $'+result.info.maxP.toFixed(2));await dl(80);
-if(result.info.hasTV)addChk('ok','Tick Volume detected');
-if(result.info.hasSprd)addChk('ok','Spread data detected');
-addChk('ok',result.info.wkGaps+' weekend gaps, '+result.info.trGaps+' trading gaps');await dl(100);
-addChk('ok','Data ready');
-
-const sum=document.getElementById('data-summary');sum.style.display='block';
-sum.innerHTML=`<strong>Symbol:</strong> XAUUSD &nbsp; <strong>TF:</strong> M1 &nbsp; <strong>Rows:</strong> ${result.info.rows.toLocaleString()} &nbsp; <strong>Status:</strong> <span style="color:var(--gn)">READY</span>`;
-document.getElementById('open-chart-btn').classList.add('show');
+div.innerHTML=`<span class="ci ${type}">${type==='ok'?'✓':type==='wn'?'!':'✗'}</span><span>${text}</span>`;
+list.appendChild(div);requestAnimationFrame(()=>div.classList.add('v'));
 }
 function dl(ms){return new Promise(r=>setTimeout(r,ms))}
 
 // ====================== SOURCE MANAGEMENT ======================
-function addSourceFile(){
-if(S.sources.length>=10){alert('Maximum 10 data sources allowed.');return}
-srcInput.click();
-}
-
+function addSourceFile(){srcInput.click()}
 function addSource(file){
-if(S.sources.length>=10){alert('Maximum 10 data sources allowed.');return}
+if(!file)return;
 const reader=new FileReader();
 reader.onload=e=>{
-try{
 const result=parseCSV(e.target.result);
 const src={id:++S.srcId,name:file.name.replace(/\.\w+$/,''),raw:result.data,info:result.info,tfCache:{}};
 S.sources.push(src);
+if(S.sources.length===1){S.activeIdx=0;switchSource(0)}
 renderSrcList();
-switchSource(S.sources.length-1);
-}catch(err){alert('Error parsing '+file.name+': '+err.message)}
-};reader.readAsText(file);
+};
+reader.readAsText(file);
 }
 
 function renderSrcList(){
@@ -667,336 +802,690 @@ const list=document.getElementById('src-list');list.innerHTML='';
 S.sources.forEach((src,i)=>{
 const div=document.createElement('div');
 div.className='src-item'+(i===S.activeIdx?' active':'');
-div.innerHTML=`<div class="src-name">${src.name}</div><div class="src-sub">M1 · ${src.info.rows.toLocaleString()} · ${fmtD(src.info.first)}</div><button class="src-del" onclick="event.stopPropagation();rmSource(${i})">&#10005;</button>`;
+div.innerHTML=`<div class="src-name">${src.name}</div><div class="src-sub">${src.raw.length.toLocaleString()} bars</div>
+${S.sources.length>1?`<button class="src-del" onclick="event.stopPropagation();rmSource(${i})">✗</button>`:''}`;
 div.onclick=()=>switchSource(i);
-list.appendChild(div)});
+list.appendChild(div);
+});
 }
 
 function switchSource(idx){
-if(idx===S.activeIdx&&S.raw.length)return;
+if(idx<0||idx>=S.sources.length)return;
 S.activeIdx=idx;
 const src=S.sources[idx];
-S.raw=src.raw;S.info=src.info;S.tfCache=src.tfCache;
-S.indicators.forEach(ind=>{ind._cache=null});
-if(S.rOn)rExit();
-document.getElementById('sym-label').textContent=src.name;
-switchTF(S.tf);
-renderSrcList();
-updStatus();
-saveState();
+S.raw=src.raw;S.info=src.info;S.tfCache={};
+S.allCand=aggTF(S.raw,tfMin(S.tf));S.cand=S.allCand;
+if(S.cand.length){
+const a=getArea(),step=S.cw+S.cg,vis=Math.floor(a.w/step);
+S.vEnd=S.cand.length-1;S.vStart=Math.max(0,S.vEnd-vis+1);S.autoScale=true;
+}
+document.getElementById('st-src').textContent='Source: '+src.name;
+document.getElementById('st-bars').textContent='Bars: '+S.cand.length.toLocaleString();
+renderSrcList();render();
 }
 
 function rmSource(idx){
 if(S.sources.length<=1)return;
 S.sources.splice(idx,1);
 if(S.activeIdx>=S.sources.length)S.activeIdx=S.sources.length-1;
-if(S.activeIdx===idx||S.activeIdx>idx){
-S.activeIdx=Math.max(0,S.activeIdx-(idx<S.activeIdx?1:0));
-switchSource(S.activeIdx);}
-renderSrcList();saveState();
+switchSource(S.activeIdx);renderSrcList();
 }
 
 // ====================== CHART INIT ======================
 function openChart(){
 document.getElementById('analysis-screen').style.display='none';
 document.getElementById('chart-screen').style.display='flex';
+switchSource(S.activeIdx);
 buildTFBtns();buildDrawToolbar();buildIndList();
-renderSrcList();switchTF('M1');
-resizeCV();window.addEventListener('resize',resizeCV);
-setupEvents();updStatus();loadState();
+resizeCV();
+// ResizeObserver for chart container
+const ccEl=document.getElementById('cc');
+if(window.ResizeObserver){
+const ro=new ResizeObserver(()=>resizeCV());
+ro.observe(ccEl);
+}
+window.addEventListener('resize',resizeCV);
+setupEvents();loadState();
+renderSrcList();renderActInd();
 }
 
 function buildTFBtns(){
 const g=document.getElementById('tf-group');g.innerHTML='';
-TFS.forEach(t=>{const b=document.createElement('button');b.className='tb tfb'+(t.k===S.tf?' sel':'');b.textContent=t.l;b.onclick=()=>switchTF(t.k);b.dataset.tf=t.k;g.appendChild(b)});
+TFS.forEach(tf=>{const b=document.createElement('button');b.className='tb tfb'+(tf.k===S.tf?' sel':'');
+b.textContent=tf.l;b.setAttribute('data-tip','Switch to '+tf.l+' timeframe');b.onclick=()=>switchTF(tf.k);g.appendChild(b)});
 }
 
 function buildDrawToolbar(){
 const tb=document.getElementById('dtb');tb.innerHTML='';
+let lastCat='';
 TOOLS.forEach(t=>{
-if(t.id==='_sep'){const d=document.createElement('div');d.className='dsep';tb.appendChild(d);return}
+if(t.id==='_sep'){const s=document.createElement('div');s.className='dsep';tb.appendChild(s);return}
+if(t.cat&&t.cat!==lastCat){lastCat=t.cat;const ch=document.createElement('div');ch.className='dtb-cat';ch.textContent=t.cat;tb.appendChild(ch)}
 const b=document.createElement('button');b.className='db'+(t.cls?' '+t.cls:'');
-if(t.fn){
-b.setAttribute('data-tt',t.tt);b.innerHTML=t.ic;
-b.onclick=()=>{if(t.fn==='undo')undo();else if(t.fn==='redo')redo();else if(t.fn==='delAll')delAllDraw()};
-}else{
-b.setAttribute('data-tool',t.id);b.setAttribute('data-tt',t.tt);b.innerHTML=t.ic;
-b.onclick=()=>setTool(t.id);
+b.innerHTML=t.icon;b.setAttribute('data-tip',t.tt||t.id);b.setAttribute('data-tool',t.id);
+if(t.id==='undo')b.onclick=undo;
+else if(t.id==='redo')b.onclick=redo;
+else if(t.id==='delall')b.onclick=delAllDraw;
+else b.onclick=()=>setTool(t.id);
+tb.appendChild(b);
+});
+// Draw mode toggle button
+const dmBtn=document.createElement('button');
+dmBtn.className='db draw-mode-btn';dmBtn.id='btn-drawmode';
+dmBtn.textContent=S.drawMode==='single'?'1x':'∞';
+dmBtn.setAttribute('data-tip',S.drawMode==='single'?'Single Draw Mode (D to toggle)':'Continuous Draw Mode (D to toggle)');
+dmBtn.classList.toggle('continuous',S.drawMode==='continuous');
+dmBtn.onclick=toggleDrawMode;
+tb.appendChild(dmBtn);
+// Separator
+const sep2=document.createElement('div');sep2.className='dsep';tb.appendChild(sep2);
+// Toggle arrow at bottom
+const tog=document.createElement('div');tog.className='dtb-toggle';
+tog.setAttribute('data-tip','Toggle columns');
+tog.innerHTML='<svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor"><path d="M2 4h5v1H2zm0 3h5v1H2zm0 3h5v1H2zM9 4h5v1H9zm9 3h5v1H9zm9 3h5v1H9z"/></svg>';
+tog.onclick=toggleDtbCols;
+tb.appendChild(tog);
+// Active tool indicator (positioned above toolbar)
+let ati=document.getElementById('active-tool-ind');
+if(!ati){ati=document.createElement('div');ati.id='active-tool-ind';
+ati.style.cssText='position:fixed;left:48px;top:60px;background:var(--ac);color:#fff;font-size:9px;padding:2px 8px;border-radius:3px;z-index:20;pointer-events:none;display:none;white-space:nowrap';
+document.body.appendChild(ati)}
+if(S.dtb2col)tb.classList.add('two-col');
+setupDtbTooltips();
 }
-tb.appendChild(b)});
+
+// JS-positioned tooltips for draw toolbar (escapes overflow container)
+let _dtbTip=null,_dtbTipTimer=null;
+function setupDtbTooltips(){
+const tb=document.getElementById('dtb');
+tb.addEventListener('mouseover',function(e){
+  const btn=e.target.closest('[data-tip]');if(!btn||!tb.contains(btn))return;
+  clearTimeout(_dtbTipTimer);
+  _dtbTipTimer=setTimeout(()=>{
+    removeDtbTip();
+    const tip=document.createElement('div');tip.className='dtb-tip';
+    tip.textContent=btn.getAttribute('data-tip');
+    document.body.appendChild(tip);
+    const r=btn.getBoundingClientRect();
+    tip.style.left=(r.right+8)+'px';
+    tip.style.top=(r.top+r.height/2-12)+'px';
+    _dtbTip=tip;
+  },300);
+});
+tb.addEventListener('mouseout',function(e){
+  const btn=e.target.closest('[data-tip]');if(!btn)return;
+  clearTimeout(_dtbTipTimer);removeDtbTip();
+});
 }
+function removeDtbTip(){if(_dtbTip){_dtbTip.remove();_dtbTip=null}}
 
 function buildIndList(){
 const list=document.getElementById('ind-list');list.innerHTML='';
 const cats={};IND_DEFS.forEach(d=>{if(!cats[d.cat])cats[d.cat]=[];cats[d.cat].push(d)});
-for(const[cat,inds] of Object.entries(cats)){
+Object.keys(cats).forEach(cat=>{
 const h=document.createElement('div');h.className='ind-cat';h.textContent=cat;list.appendChild(h);
-inds.forEach(d=>{
-const r=document.createElement('div');r.className='ind-row';r.dataset.id=d.id;
-r.innerHTML=`<span class="dot" style="background:${d.params.color||d.params.basisColor||d.params.pivotColor}"></span>${d.name}`;
-r.onclick=()=>addIndicator(d.id);list.appendChild(r)});
-}}
-
-function filterInds(q){
-q=q.toLowerCase();
-document.querySelectorAll('#ind-list .ind-row').forEach(r=>{
-r.style.display=r.textContent.toLowerCase().includes(q)?'':'none'});
+cats[cat].forEach(ind=>{
+const d=document.createElement('div');d.className='ind-item';
+d.setAttribute('data-tip',ind.desc||'');
+d.innerHTML=`<span class="dot" style="background:${ind.params.color||ind.params.basisColor||ind.params.pivotColor};width:6px;height:6px;border-radius:50%"></span>${ind.name}`;
+d.onclick=()=>addIndicator(ind.id);list.appendChild(d);
+});
+});
 }
 
+// ====================== TIMEFRAME SWITCH ======================
 function switchTF(k){
 S.tf=k;const mins=tfMin(k);
+document.querySelectorAll('.tfb').forEach(b=>b.classList.toggle('sel',b.textContent===k));
+document.getElementById('st-tf').textContent='TF: '+k;
 const cut=S.rOn?S.rCut:null;
+S.tfCache={};
 S.allCand=aggTF(S.raw,mins,cut);S.cand=S.allCand;
-document.querySelectorAll('.tfb').forEach(b=>b.classList.toggle('sel',b.dataset.tf===k));
+S.indicators.forEach(ind=>{ind._cache=null});
 if(S.cand.length){
-const area=getArea();const step=S.cw+S.cg;
-const vis=Math.floor(area.w/step);
+const a=getArea(),step=S.cw+S.cg,vis=Math.floor(a.w/step);
 S.vEnd=S.cand.length-1;S.vStart=Math.max(0,S.vEnd-vis+1);S.autoScale=true;
 }
-// Recalc indicators
-S.indicators.forEach(ind=>{ind._cache=null});
-document.getElementById('st-tf').textContent='TF: '+k;
+document.getElementById('st-bars').textContent='Bars: '+S.cand.length.toLocaleString();
 render();saveState();
 }
 
+// ====================== RESIZE ======================
 function resizeCV(){
 const c=document.getElementById('cc');const r=c.getBoundingClientRect();
+if(r.width<1||r.height<1)return;
 S.W=r.width;S.H=r.height;
 cv.width=r.width*dpr;cv.height=r.height*dpr;
 cv.style.width=r.width+'px';cv.style.height=r.height+'px';
-cx.setTransform(dpr,0,0,dpr,0,0);render();
+cx.setTransform(dpr,0,0,dpr,0,0);
+// Recalculate visible range
+if(S.cand.length){
+const a=getArea(),step=S.cw+S.cg,vis=Math.floor(a.w/step);
+if(S.vEnd-S.vStart+1!==vis){
+S.vEnd=Math.min(S.cand.length-1,S.vStart+vis-1);
+}
+}
+render();
 }
 
 function getArea(){
 const vH=S.showVol?S.volH:0;
 return{x:0,y:0,w:S.W-S.paW,h:S.H-S.taH-vH,vY:S.H-S.taH-vH,vH,aX:S.W-S.paW,aY:S.H-S.taH}}
 
-// ====================== RENDER ======================
+// ====================== RENDER PIPELINE ======================
 function render(){
 if(!S.cand.length){cx.clearRect(0,0,S.W,S.H);cx.fillStyle=css('--bg1');cx.fillRect(0,0,S.W,S.H);return}
-const a=getArea();const cw=S.cw,cg=S.cg,step=cw+cg;
-const maxV=Math.floor(a.w/step);
+const a=getArea();const step=S.cw+S.cg;
 if(S.vEnd>=S.cand.length)S.vEnd=S.cand.length-1;
 if(S.vStart<0)S.vStart=0;
-if(S.vEnd-S.vStart+1>maxV)S.vStart=S.vEnd-maxV+1;
+
 const vis=S.cand.slice(S.vStart,S.vEnd+1);if(!vis.length)return;
 
-if(S.autoScale){let mn=Infinity,mx=-Infinity;
-for(const c of vis){if(c.l<mn)mn=c.l;if(c.h>mx)mx=c.h}
+if(S.autoScale){S.pMin=Infinity;S.pMax=-Infinity;
+vis.forEach(c=>{S.pMin=Math.min(S.pMin,c.l);S.pMax=Math.max(S.pMax,c.h)});
+const pad=(S.pMax-S.pMin)*.05||1;S.pMin-=pad;S.pMax+=pad;
 // Include indicators in scale
 S.indicators.forEach(ind=>{if(!ind.params.visible)return;const cache=getIndCache(ind,S.cand);
-if(!cache)return;
-if(cache.values){for(let i=S.vStart;i<=S.vEnd&&i<cache.values.length;i++){const v=cache.values[i];if(v<mn)mn=v;if(v>mx)mx=v}}
-if(cache.upper){for(let i=S.vStart;i<=S.vEnd&&i<cache.upper.length;i++){if(cache.upper[i]>mx)mx=cache.upper[i];if(cache.lower[i]<mn)mn=cache.lower[i]}}
-});
-const pad=(mx-mn)*.08||1;S.pMin=mn-pad;S.pMax=mx+pad}
+if(!cache)return;if(cache.basis){for(let i=S.vStart;i<=S.vEnd;i++){
+if(cache.upper&&cache.upper[i]!=null){S.pMax=Math.max(S.pMax,cache.upper[i]);S.pMin=Math.min(S.pMin,cache.lower[i])}
+if(cache.basis[i]!=null){S.pMax=Math.max(S.pMax,cache.basis[i]);S.pMin=Math.min(S.pMin,cache.basis[i])}
+}}else if(Array.isArray(cache)){for(let i=S.vStart;i<=S.vEnd;i++)if(cache[i]!=null){S.pMax=Math.max(S.pMax,cache[i]);S.pMin=Math.min(S.pMin,cache[i])}}});
+}
 
-cx.clearRect(0,0,S.W,S.H);cx.fillStyle=css('--bg1');cx.fillRect(0,0,S.W,S.H);
+cx.clearRect(0,0,S.W,S.H);
+cx.fillStyle=css('--bg1');cx.fillRect(0,0,S.W,S.H);
 
-if(S.showGrid)drawGrid(a);
-drawCandles(vis,a,step,cw);
-if(S.showVol)drawVol(vis,a,step,cw);
-drawIndicators(vis,a,step);
+if(S.showGrid)drawGrid(a,step,vis);
+drawCandles(a,step,vis);
+if(S.showVol)drawVol(a,step,vis);
+drawIndicators(a,step);
 drawAllDraw(a,step);
-if(S.showCross&&S.mx>=0&&S.mx<a.w)drawCross(a,step,vis);
-drawPriceAxis(a);drawTimeAxis(vis,a,step);
+if(S.showCross)drawCross(a,step);
+drawPriceAxis(a);
+drawTimeAxis(a,step,vis);
+// Snap indicator now rendered inside drawAllDraw
+// Replay badge on canvas
+if(S.rOn){
+const badge=document.getElementById('replay-badge');
+badge.classList.add('vis');
+const dt=new Date(S.rCut);
+document.getElementById('rb-text').textContent='REPLAY '+fmtDT(dt);
+} else {
+document.getElementById('replay-badge').classList.remove('vis');
+}
 updOHLC(vis);
+updateDebug();
 }
 
-function drawGrid(a){
-cx.strokeStyle=css('--gd');cx.lineWidth=.5;
-const range=S.pMax-S.pMin;const tc=Math.max(4,Math.floor(a.h/60));
-const gs=niceStep(range/tc);const sp=Math.ceil(S.pMin/gs)*gs;
-cx.beginPath();for(let p=sp;p<=S.pMax;p+=gs){const y=p2y(p,a);cx.moveTo(0,y);cx.lineTo(a.w,y)}cx.stroke();
+function drawGrid(a,step,vis){
+cx.strokeStyle=css('--gd');cx.lineWidth=.5;cx.setLineDash([]);
+// Horizontal
+const pr=S.pMax-S.pMin;const ps=niceStep(pr/6);
+for(let p=Math.ceil(S.pMin/ps)*ps;p<S.pMax;p+=ps){
+const y=p2y(p,a);cx.beginPath();cx.moveTo(0,y);cx.lineTo(a.w,y);cx.stroke()}
+// Vertical
+const interval=Math.max(1,Math.floor(60/step));
+for(let i=0;i<vis.length;i+=interval){
+const x=i*step+step/2;cx.beginPath();cx.moveTo(x,0);cx.lineTo(x,a.aY);cx.stroke()}
 }
 
-function drawCandles(vis,a,step,cw){
-const uc=S.upColor,dc=S.dnColor;
-for(let i=0;i<vis.length;i++){
-const c=vis[i];const x=i*step+step/2;const up=c.c>=c.o;
-const col=up?uc:dc;
+function drawCandles(a,step,vis){
+const bw=Math.max(1,S.cw);
+vis.forEach((c,i)=>{
+const x=i*step+step/2;const up=c.c>=c.o;
+const col=up?S.upColor:S.dnColor;
+const yO=p2y(c.o,a),yC=p2y(c.c,a),yH=p2y(c.h,a),yL=p2y(c.l,a);
 cx.strokeStyle=col;cx.lineWidth=1;
-cx.beginPath();cx.moveTo(x,p2y(c.h,a));cx.lineTo(x,p2y(c.l,a));cx.stroke();
-const oY=p2y(c.o,a),cY=p2y(c.c,a);const bT=Math.min(oY,cY),bH=Math.max(Math.abs(cY-oY),1);
-if(up){cx.fillStyle=css('--bg1');cx.strokeStyle=col;cx.fillRect(x-cw/2,bT,cw,bH);cx.strokeRect(x-cw/2,bT,cw,bH)}
-else{cx.fillStyle=col;cx.fillRect(x-cw/2,bT,cw,bH)}}}
+cx.beginPath();cx.moveTo(x,yH);cx.lineTo(x,yL);cx.stroke();
+const bodyT=Math.min(yO,yC),bodyH=Math.max(1,Math.abs(yC-yO));
+if(up){cx.fillStyle=css('--bg1');cx.fillRect(x-bw/2,bodyT,bw,bodyH);cx.strokeRect(x-bw/2,bodyT,bw,bodyH)}
+else{cx.fillStyle=col;cx.fillRect(x-bw/2,bodyT,bw,bodyH)}
+// Spread overlay
+if(S.showSprd&&c.s>0){const sh=Math.max(1,c.s/10*a.h/(S.pMax-S.pMin));
+cx.fillStyle='rgba(255,152,0,.15)';cx.fillRect(x-bw/2,yC-sh/2,bw,sh)}
+});
+}
 
-function drawVol(vis,a,step,cw){
-let mx=0;for(const c of vis){const v=c.tv||c.v;if(v>mx)mx=v}
-if(!mx)return;
-cx.strokeStyle=css('--bd');cx.lineWidth=.5;cx.beginPath();cx.moveTo(0,a.vY);cx.lineTo(a.w,a.vY);cx.stroke();
-for(let i=0;i<vis.length;i++){const c=vis[i];const v=c.tv||c.v;const x=i*step+step/2;
-const h=(v/mx)*(a.vH-4);cx.fillStyle=c.c>=c.o?css('--vu'):css('--vd');
-cx.fillRect(x-cw/2,a.vY+a.vH-h,cw,h)}}
+function drawVol(a,step,vis){
+if(!vis.length)return;
+let maxV=0;vis.forEach(c=>{const v=c.tv||c.v||0;if(v>maxV)maxV=v});
+if(!maxV)return;
+vis.forEach((c,i)=>{const v=c.tv||c.v||0;if(!v)return;
+const x=i*step+step/2;const bw=Math.max(1,S.cw);
+const h=v/maxV*a.vH*.8;const up=c.c>=c.o;
+cx.fillStyle=up?S.upColor:S.dnColor;cx.globalAlpha=.3;
+cx.fillRect(x-bw/2,a.vY+a.vH-h,bw,h);cx.globalAlpha=1;
+});
+}
 
-function drawIndicators(vis,a,step){
+function drawIndicators(a,step){
 S.indicators.forEach(ind=>{
 if(!ind.params.visible)return;
-const cache=getIndCache(ind,S.cand);if(!cache)return;
-
-if(ind.type==='ema'||ind.type==='sma'||ind.type==='vwap'){
-const vals=cache.values;if(!vals)return;
-cx.strokeStyle=ind.params.color;cx.lineWidth=ind.params.width||1.5;
-setDash(cx,ind.params.style);cx.beginPath();let started=false;
-for(let i=0;i<vis.length;i++){const gi=i+S.vStart;if(gi>=vals.length)break;
-const x=i*step+step/2,y=p2y(vals[gi],a);
-if(!started){cx.moveTo(x,y);started=true}else cx.lineTo(x,y)}
-cx.stroke();cx.setLineDash([]);
-}else if(ind.type==='bb'){
-const{basis,upper,lower}=cache;
-// Fill
-if(ind.params.fillColor){cx.fillStyle=ind.params.fillColor;cx.beginPath();let s=false;
-for(let i=0;i<vis.length;i++){const gi=i+S.vStart;if(gi>=upper.length)break;
-const x=i*step+step/2;if(!s){cx.moveTo(x,p2y(upper[gi],a));s=true}else cx.lineTo(x,p2y(upper[gi],a))}
-for(let i=vis.length-1;i>=0;i--){const gi=i+S.vStart;if(gi>=lower.length)continue;
-cx.lineTo(i*step+step/2,p2y(lower[gi],a))}cx.closePath();cx.fill()}
-// Lines
-[{v:basis,c:ind.params.basisColor},{v:upper,c:ind.params.upperColor},{v:lower,c:ind.params.lowerColor}].forEach(({v:vals,c:col})=>{
-cx.strokeStyle=col;cx.lineWidth=ind.params.width||1;cx.beginPath();let s=false;
-for(let i=0;i<vis.length;i++){const gi=i+S.vStart;if(gi>=vals.length)break;
-const x=i*step+step/2,y=p2y(vals[gi],a);if(!s){cx.moveTo(x,y);s=true}else cx.lineTo(x,y)}
-cx.stroke()});
-}else if(ind.type==='pivot'){
-if(!cache.levels)return;
-const levels=cache.levels;
-Object.entries(levels).forEach(([k,v])=>{
-const y=p2y(v,a);if(y<0||y>a.h)return;
-cx.strokeStyle=k==='pp'?ind.params.pivotColor:k.startsWith('r')?ind.params.rColor:ind.params.sColor;
-cx.lineWidth=ind.params.width||1;setDash(cx,ind.params.style||'dashed');
+const cache=getIndCache(ind,S.cand);
+if(!cache)return;
+if(ind.type==='pivot'&&cache.pp!=null){
+const drawPL=(val,col,label)=>{const y=p2y(val,a);if(y<0||y>a.h+a.vH)return;
+cx.strokeStyle=col;cx.lineWidth=ind.params.width||1;cx.setLineDash(ind.params.style==='dashed'?[6,3]:ind.params.style==='dotted'?[2,2]:[]);
 cx.beginPath();cx.moveTo(0,y);cx.lineTo(a.w,y);cx.stroke();cx.setLineDash([]);
-cx.font='9px '+css('--mn');cx.fillStyle=cx.strokeStyle;cx.textAlign='left';
-cx.fillText(k.toUpperCase()+' '+v.toFixed(S.prec),4,y-3)})
-}})
+cx.font='9px '+css('--mn');cx.fillStyle=col;cx.textAlign='right';cx.fillText(label+' '+val.toFixed(S.prec),a.w-4,y-3)};
+drawPL(cache.pp,ind.params.pivotColor,'P');
+drawPL(cache.r1,ind.params.rColor,'R1');drawPL(cache.r2,ind.params.rColor,'R2');drawPL(cache.r3,ind.params.rColor,'R3');
+drawPL(cache.s1,ind.params.sColor,'S1');drawPL(cache.s2,ind.params.sColor,'S2');drawPL(cache.s3,ind.params.sColor,'S3');
+return}
+const drawLine=(data,color,width,style)=>{
+cx.strokeStyle=color;cx.lineWidth=width||1.5;
+cx.setLineDash(style==='dashed'?[6,3]:style==='dotted'?[2,2]:[]);
+cx.beginPath();let started=false;
+for(let i=S.vStart;i<=S.vEnd;i++){if(data[i]==null)continue;
+const x=(i-S.vStart)*step+step/2;const y=p2y(data[i],a);
+if(!started){cx.moveTo(x,y);started=true}else cx.lineTo(x,y)}
+cx.stroke();cx.setLineDash([])};
+
+if(cache.basis){
+drawLine(cache.basis,ind.params.basisColor||ind.params.color,ind.params.width,ind.params.style);
+if(cache.upper)drawLine(cache.upper,ind.params.upperColor,ind.params.width,ind.params.style);
+if(cache.lower)drawLine(cache.lower,ind.params.lowerColor,ind.params.width,ind.params.style);
+}else if(Array.isArray(cache)){drawLine(cache,ind.params.color,ind.params.width,ind.params.style)}
+});
 }
 
 function getIndCache(ind,cands){
 if(ind._cache&&ind._cacheLen===cands.length)return ind._cache;
-let cache=null;
-if(ind.type==='ema')cache={values:calcEMA(cands,ind.params.period,ind.params.source)};
-else if(ind.type==='sma')cache={values:calcSMA(cands,ind.params.period,ind.params.source)};
-else if(ind.type==='bb'){const r=calcBB(cands,ind.params.period,ind.params.stddev,ind.params.source);cache=r}
-else if(ind.type==='vwap')cache={values:calcVWAP(cands)};
-else if(ind.type==='pivot')cache={levels:calcPivots(cands,tfMin(S.tf))};
-ind._cache=cache;ind._cacheLen=cands.length;return cache;
+const p=ind.params;let c=null;
+switch(ind.type){
+case'ema':c=calcEMA(cands,p.period,p.source);break;
+case'sma':c=calcSMA(cands,p.period,p.source);break;
+case'bb':c=calcBB(cands,p.period,p.stddev,p.source);break;
+case'vwap':c=calcVWAP(cands);break;
+case'pivot':c=calcPivots(cands,tfMin(S.tf));break;
+}
+ind._cache=c;ind._cacheLen=cands.length;return c;
 }
 
-function setDash(c,s){if(s==='dashed')c.setLineDash([6,3]);else if(s==='dotted')c.setLineDash([2,2]);else c.setLineDash([])}
-
-function drawCross(a,step,vis){
-const mx=S.mx,my=S.my;
-cx.setLineDash([4,3]);cx.strokeStyle=css('--ch');cx.lineWidth=.8;
-if(my>0&&my<a.h+a.vH){cx.beginPath();cx.moveTo(0,my);cx.lineTo(a.w,my);cx.stroke()}
-const ci=Math.floor(mx/step);
-if(ci>=0&&ci<vis.length){const cx2=ci*step+step/2;
-cx.beginPath();cx.moveTo(cx2,0);cx.lineTo(cx2,a.h+a.vH);cx.stroke();S.hoverIdx=ci}
+function drawCross(a,step){
+if(S.mx<0||S.my<0)return;
+cx.strokeStyle=css('--ch');cx.lineWidth=.5;cx.setLineDash([4,3]);
+cx.beginPath();cx.moveTo(S.mx,0);cx.lineTo(S.mx,a.aY);cx.stroke();
+cx.beginPath();cx.moveTo(0,S.my);cx.lineTo(a.w,S.my);cx.stroke();
 cx.setLineDash([]);
-
-if(my>0&&my<a.h){const pr=y2p(my,a);
-cx.fillStyle=css('--ac');cx.fillRect(a.aX,my-9,S.paW,18);
-cx.fillStyle='#fff';cx.font='10px '+css('--mn');cx.textAlign='left';cx.textBaseline='middle';
-cx.fillText(pr.toFixed(S.prec),a.aX+3,my)}
-
-if(ci>=0&&ci<vis.length){const cx2=ci*step+step/2;const c=vis[ci];
-const dt=new Date(c.t);const lb=fmtDT(dt);
-cx.font='10px '+css('--mn');const tw=cx.measureText(lb).width+8;
-cx.fillStyle=css('--ac');cx.fillRect(cx2-tw/2,a.aY,tw,S.taH);
-cx.fillStyle='#fff';cx.textAlign='center';cx.textBaseline='middle';
-cx.fillText(lb,cx2,a.aY+S.taH/2)}
-
-if(ci>=0&&ci<vis.length){const c=vis[ci];
-document.getElementById('st-cur').textContent=fmtDT(new Date(c.t))+'  O:'+c.o.toFixed(S.prec)+' H:'+c.h.toFixed(S.prec)+' L:'+c.l.toFixed(S.prec)+' C:'+c.c.toFixed(S.prec)}
+// Price label on axis
+if(S.my<a.h){
+const pr=y2p(S.my,a);cx.fillStyle=css('--ac');
+cx.fillRect(a.aX,S.my-9,S.paW,18);cx.fillStyle='#fff';cx.font='10px '+css('--mn');
+cx.textAlign='center';cx.textBaseline='middle';cx.fillText(pr.toFixed(S.prec),a.aX+S.paW/2,S.my)}
+// Time label on axis
+const idx=Math.round(S.mx/step-.5)+S.vStart;
+if(idx>=0&&idx<S.cand.length){S.hoverIdx=idx;
+const dt=new Date(S.cand[idx].t);
+const tl=fmtDT(dt);cx.fillStyle=css('--ac');const tw=cx.measureText(tl).width+10;
+cx.fillRect(S.mx-tw/2,a.aY,tw,S.taH);cx.fillStyle='#fff';cx.font='10px '+css('--mn');
+cx.textAlign='center';cx.textBaseline='middle';cx.fillText(tl,S.mx,a.aY+S.taH/2)}
 }
 
 function drawPriceAxis(a){
 cx.fillStyle=css('--bg2');cx.fillRect(a.aX,0,S.paW,S.H);
 cx.strokeStyle=css('--bd');cx.lineWidth=1;cx.beginPath();cx.moveTo(a.aX,0);cx.lineTo(a.aX,S.H);cx.stroke();
-const range=S.pMax-S.pMin;const tc=Math.max(4,Math.floor(a.h/60));const gs=niceStep(range/tc);
-const sp=Math.ceil(S.pMin/gs)*gs;
-cx.fillStyle=css('--tx2');cx.font='10px '+css('--mn');cx.textAlign='left';cx.textBaseline='middle';
-for(let p=sp;p<=S.pMax;p+=gs){const y=p2y(p,a);if(y>8&&y<a.h-8)cx.fillText(p.toFixed(S.prec),a.aX+3,y)}
+cx.font='10px '+css('--mn');cx.fillStyle=css('--tx2');cx.textAlign='center';cx.textBaseline='middle';
+const pr=S.pMax-S.pMin;const ps=niceStep(pr/6);
+for(let p=Math.ceil(S.pMin/ps)*ps;p<S.pMax;p+=ps){
+const y=p2y(p,a);cx.fillText(p.toFixed(S.prec),a.aX+S.paW/2,y)}
+// Current price
 if(S.cand.length){const last=S.cand[S.vEnd]||S.cand[S.cand.length-1];
-const y=p2y(last.c,a);if(y>0&&y<a.h){
-cx.fillStyle=last.c>=last.o?S.upColor:S.dnColor;cx.fillRect(a.aX,y-9,S.paW,18);
-cx.fillStyle='#fff';cx.font='bold 10px '+css('--mn');cx.fillText(last.c.toFixed(S.prec),a.aX+3,y)}}
+const y=p2y(last.c,a);const up=last.c>=last.o;
+cx.fillStyle=up?S.upColor:S.dnColor;cx.fillRect(a.aX,y-9,S.paW,18);
+cx.fillStyle='#fff';cx.fillText(last.c.toFixed(S.prec),a.aX+S.paW/2,y);
+// Dashed line
+cx.strokeStyle=up?S.upColor:S.dnColor;cx.lineWidth=.5;cx.setLineDash([4,4]);
+cx.beginPath();cx.moveTo(0,y);cx.lineTo(a.w,y);cx.stroke();cx.setLineDash([])}
 }
 
-function drawTimeAxis(vis,a,step){
+function drawTimeAxis(a,step,vis){
 cx.fillStyle=css('--bg2');cx.fillRect(0,a.aY,S.W,S.taH);
 cx.strokeStyle=css('--bd');cx.lineWidth=1;cx.beginPath();cx.moveTo(0,a.aY);cx.lineTo(S.W,a.aY);cx.stroke();
-cx.fillStyle=css('--tx3');cx.font='9px '+css('--mn');cx.textAlign='center';cx.textBaseline='middle';
-const lw=75;const skip=Math.max(1,Math.ceil(lw/step));
-for(let i=0;i<vis.length;i+=skip){
-const c=vis[i];const x=i*step+step/2;const dt=new Date(c.t);
-let lb;const m=tfMin(S.tf);
-if(m>=1440)lb=(dt.getMonth()+1)+'/'+dt.getDate();
-else if(m>=60){lb=p2(dt.getHours())+':'+p2(dt.getMinutes());if(i===0||new Date(vis[Math.max(0,i-skip)].t).getDate()!==dt.getDate())lb=(dt.getMonth()+1)+'/'+dt.getDate()+' '+lb}
-else lb=p2(dt.getHours())+':'+p2(dt.getMinutes());
+cx.font='10px '+css('--mn');cx.fillStyle=css('--tx3');cx.textAlign='center';cx.textBaseline='middle';
+const interval=Math.max(1,Math.floor(80/step));
+for(let i=0;i<vis.length;i+=interval){
+const dt=new Date(vis[i].t);const x=i*step+step/2;
+const lb=p2(dt.getMonth()+1)+'/'+p2(dt.getDate())+' '+p2(dt.getHours())+':'+p2(dt.getMinutes());
 cx.fillText(lb,x,a.aY+S.taH/2)}
 }
 
-// ====================== DRAWINGS ======================
-function drawAllDraw(a,step){
-S.drawings.forEach((d,i)=>{if(!d.hidden)drawOne(d,a,step,i===S.selDraw)});
-if(S.dip)drawOne(S.dip,a,step,false);
+function updOHLC(vis){
+if(!vis.length)return;
+const idx=S.hoverIdx>=S.vStart&&S.hoverIdx<=S.vEnd?S.hoverIdx:S.vEnd;
+const c=S.cand[idx];if(!c)return;
+const up=c.c>=c.o;const cls=up?'ou':'od';
+document.getElementById('o-val').textContent=c.o.toFixed(S.prec);document.getElementById('o-val').className='ov '+cls;
+document.getElementById('h-val').textContent=c.h.toFixed(S.prec);document.getElementById('h-val').className='ov '+cls;
+document.getElementById('l-val').textContent=c.l.toFixed(S.prec);document.getElementById('l-val').className='ov '+cls;
+document.getElementById('c-val').textContent=c.c.toFixed(S.prec);document.getElementById('c-val').className='ov '+cls;
+document.getElementById('v-val').textContent=(c.tv||c.v||0).toLocaleString();
+if(S.showSprd){document.getElementById('s-val-wrap').style.display='';document.getElementById('s-val').textContent=c.s.toFixed(1)}
+else document.getElementById('s-val-wrap').style.display='none';
 }
 
-function drawOne(d,a,step,sel){
-const col=d.color||css('--ac');cx.strokeStyle=col;cx.fillStyle=col;cx.lineWidth=d.lw||1.5;
-setDash(cx,d.ls);
+// ====================== DRAWING SYSTEM (TradingView-Style Click-Click Engine) ======================
+
+// ---- Coordinate Conversion ----
+function t2x(ts,step){const i=findIdx(S.cand,ts)-S.vStart;return i*step+step/2}
+function x2t(x,step){const i=Math.round(x/step-.5)+S.vStart;return(i>=0&&i<S.cand.length)?S.cand[i].t:S.cand[S.cand.length-1].t}
+function p2y(p,a){return a.y+a.h*(1-(p-S.pMin)/(S.pMax-S.pMin))}
+function y2p(y,a){return S.pMin+(1-(y-a.y)/a.h)*(S.pMax-S.pMin)}
+
+// ---- 3-State Magnet System ----
+function toggleMagnet(){
+const modes=['off','weak','strong'];
+const ci=modes.indexOf(S.magnetMode);
+S.magnetMode=modes[(ci+1)%3];
+const btn=document.getElementById('btn-mag');
+const badge=document.getElementById('mag-badge');
+btn.classList.toggle('on',S.magnetMode!=='off');
+if(S.magnetMode==='off'){badge.style.display='none'}
+else{badge.style.display='';badge.textContent=S.magnetMode==='weak'?'W':'S'}
+saveState();
+}
+
+function setMagMode(mode){
+S.magnetMode=mode;
+const btn=document.getElementById('btn-mag');
+const badge=document.getElementById('mag-badge');
+btn.classList.toggle('on',mode!=='off');
+if(mode==='off'){badge.style.display='none'}
+else{badge.style.display='';badge.textContent=mode==='weak'?'W':'S'}
+document.querySelectorAll('.mag-mode-btn').forEach(b=>b.classList.toggle('on',b.dataset.mode===mode));
+saveState();
+}
+
+function showMagSettings(){
+const m=document.getElementById('mag-settings-modal');
+document.getElementById('mag-r-weak').value=S.magnetRadius.weak;
+document.getElementById('mag-r-weak-v').textContent=S.magnetRadius.weak;
+document.getElementById('mag-r-strong').value=S.magnetRadius.strong;
+document.getElementById('mag-r-strong-v').textContent=S.magnetRadius.strong;
+document.getElementById('mag-src-o').checked=S.magnetSources.o;
+document.getElementById('mag-src-h').checked=S.magnetSources.h;
+document.getElementById('mag-src-l').checked=S.magnetSources.l;
+document.getElementById('mag-src-c').checked=S.magnetSources.c;
+document.querySelectorAll('.mag-mode-btn').forEach(b=>b.classList.toggle('on',b.dataset.mode===S.magnetMode));
+m.classList.add('show');
+}
+
+function snapToOHLC(ts,price,a,step){
+if(S.magnetMode==='off'){S.snapInfo=null;return{ts,price}}
+const idx=findIdx(S.cand,ts);if(idx<0||idx>=S.cand.length){S.snapInfo=null;return{ts,price}}
+const radius=S.magnetMode==='weak'?S.magnetRadius.weak:S.magnetRadius.strong;
+const src=S.magnetSources;
+// Check current and neighboring candles
+let bestDist=Infinity,bestTs=ts,bestPr=price,bestLabel='';
+for(let di=-1;di<=1;di++){
+const ci=idx+di;
+if(ci<0||ci>=S.cand.length)continue;
+const c=S.cand[ci];
+const cx2=t2x(c.t,step);
+const pts=[];
+if(src.o)pts.push({p:c.o,n:'Open'});
+if(src.h)pts.push({p:c.h,n:'High'});
+if(src.l)pts.push({p:c.l,n:'Low'});
+if(src.c)pts.push({p:c.c,n:'Close'});
+for(const pt of pts){
+const sy=p2y(pt.p,a);
+const sx=cx2;
+const mouseX=t2x(ts,step);
+const mouseY=p2y(price,a);
+const dist=Math.sqrt((mouseX-sx)**2+(mouseY-sy)**2);
+if(dist<bestDist){bestDist=dist;bestTs=c.t;bestPr=pt.p;bestLabel=pt.n}
+}}
+if(S.magnetMode==='weak'&&bestDist>radius){S.snapInfo=null;return{ts,price}}
+// Strong always snaps to nearest
+S.snapInfo={ts:bestTs,price:bestPr,label:bestLabel,sx:t2x(bestTs,step),sy:p2y(bestPr,a)};
+return{ts:bestTs,price:bestPr};
+}
+
+// ---- Drawing State Machine ----
+function isDrawTool(t){return t&&t!=='pointer'&&t!=='crosshair_tool'&&!(['undo','redo','delall'].includes(t))}
+function isSinglePoint(t){return['hline','vline','text','pricelabel','datelabel'].includes(t)}
+
+function beginDrawing(ts,pr){
+const td=S.toolDefaults[S.tool]||{};
+const d={type:S.tool,t1:ts,p1:pr,t2:ts,p2:pr,
+color:td.color||css('--ac'),lw:td.lw||1.5,ls:td.ls||'solid',opacity:td.opacity!=null?td.opacity:1};
+if(S.tool==='hline'){d.price=pr}
+if(S.tool==='pricelabel'){d.price=pr}
+if(S.tool==='vline'||S.tool==='datelabel'){d.t1=ts}
+if(S.tool==='fib'||S.tool==='fibext'){d.levels=td.levels||[...FIBS];d.levelColors=td.levelColors||null}
+if(S.tool==='channel'){d.chOff=td.chOff||0;d.chOffPr=0}
+if(S.tool==='text'){
+const t=prompt('Enter text:');
+if(!t)return;
+d.text=t;d.fs=td.fs||12;commitDraw(d);
+if(S.drawMode==='single')setTool('pointer');
+return;
+}
+if(isSinglePoint(S.tool)){
+commitDraw(d);
+if(S.drawMode==='single')setTool('pointer');
+render();return;
+}
+S.drawPreview=d;S.drawState='preview';
+render();
+}
+
+function updatePreview(ts,pr){
+if(!S.drawPreview)return;
+const d=S.drawPreview;
+d.t2=ts;d.p2=pr;
+if(d.type==='hline')d.price=pr;
+if(d.type==='pricelabel')d.price=pr;
+render();
+}
+
+function completeDrawing(){
+if(!S.drawPreview)return;
+const d=S.drawPreview;
+// For channel: calculate price offset from third click
+if(d.type==='channel'&&d._needThird){
+delete d._needThird;
+}
+commitDraw(d);
+S.drawPreview=null;S.drawState='idle';
+if(S.drawMode==='single')setTool('pointer');
+render();
+}
+
+function cancelDrawing(){
+S.drawPreview=null;S.drawState='idle';
+render();
+}
+
+function commitDraw(d){
+const c={...d};
+delete c._ph;delete c._needThird;
+S.undo.push({a:'add',i:S.drawings.length,d:c});S.redo=[];
+S.drawings.push(c);saveState();
+}
+
+// ---- Anchor System ----
+function getDrawingAnchors(d,a,step){
+const anchors=[];
+switch(d.type){
+case'trendline':case'ray':case'extended':case'hray':case'arrow':
+anchors.push({key:'p1',x:t2x(d.t1,step),y:p2y(d.p1,a),ts:d.t1,pr:d.p1});
+anchors.push({key:'p2',x:t2x(d.t2,step),y:p2y(d.p2,a),ts:d.t2,pr:d.p2});break;
+case'hline':case'pricelabel':
+anchors.push({key:'price',x:a.w/2,y:p2y(d.price,a),ts:0,pr:d.price});break;
+case'vline':case'datelabel':
+anchors.push({key:'t1',x:t2x(d.t1,step),y:a.h/2,ts:d.t1,pr:0});break;
+case'rect':case'srzone':case'circle':case'triangle':case'measure':case'longpos':case'shortpos':
+anchors.push({key:'p1',x:t2x(d.t1,step),y:p2y(d.p1,a),ts:d.t1,pr:d.p1});
+anchors.push({key:'p2',x:t2x(d.t2,step),y:p2y(d.p2,a),ts:d.t2,pr:d.p2});
+anchors.push({key:'tl',x:t2x(d.t1,step),y:p2y(d.p2,a),ts:d.t1,pr:d.p2});
+anchors.push({key:'br',x:t2x(d.t2,step),y:p2y(d.p1,a),ts:d.t2,pr:d.p1});break;
+case'fib':case'fibext':
+anchors.push({key:'p1',x:t2x(d.t1,step),y:p2y(d.p1,a),ts:d.t1,pr:d.p1});
+anchors.push({key:'p2',x:t2x(d.t2,step),y:p2y(d.p2,a),ts:d.t2,pr:d.p2});break;
+case'channel':
+anchors.push({key:'p1',x:t2x(d.t1,step),y:p2y(d.p1,a),ts:d.t1,pr:d.p1});
+anchors.push({key:'p2',x:t2x(d.t2,step),y:p2y(d.p2,a),ts:d.t2,pr:d.p2});
+anchors.push({key:'ch1',x:t2x(d.t1,step),y:p2y(d.p1+(d.chOffPr||0),a),ts:d.t1,pr:d.p1+(d.chOffPr||0)});
+anchors.push({key:'ch2',x:t2x(d.t2,step),y:p2y(d.p2+(d.chOffPr||0),a),ts:d.t2,pr:d.p2+(d.chOffPr||0)});break;
+case'text':
+anchors.push({key:'p1',x:t2x(d.t1,step),y:p2y(d.p1,a),ts:d.t1,pr:d.p1});break;
+}
+return anchors;
+}
+
+function hitTestAnchor(mx,my,a,step){
+const th=8;
+for(let i=S.drawings.length-1;i>=0;i--){
+const d=S.drawings[i];if(d.hidden||d.locked)continue;
+const anchors=getDrawingAnchors(d,a,step);
+for(const anc of anchors){
+if(Math.abs(mx-anc.x)<th&&Math.abs(my-anc.y)<th)return{drawIdx:i,anchor:anc};
+}}return null;
+}
+
+function moveAnchor(idx,anchorKey,ts,pr){
+const d=S.drawings[idx];
+switch(anchorKey){
+case'p1':d.t1=ts;d.p1=pr;break;
+case'p2':d.t2=ts;d.p2=pr;break;
+case'price':d.price=pr;d.p1=pr;break;
+case't1':d.t1=ts;break;
+case'tl':d.t1=ts;d.p2=pr;break;
+case'br':d.t2=ts;d.p1=pr;break;
+case'ch1':case'ch2':d.chOffPr=pr-d.p1;break;
+}
+}
+
+function moveDrawing(idx,dTs,dPr){
+const d=S.drawings[idx];
+if(d.t1!=null)d.t1+=dTs;
+if(d.t2!=null)d.t2+=dTs;
+if(d.p1!=null)d.p1+=dPr;
+if(d.p2!=null)d.p2+=dPr;
+if(d.price!=null)d.price+=dPr;
+}
+
+// ---- Draw All & Preview ----
+function drawAllDraw(a,step){
+S.drawings.forEach((d,i)=>{if(!d.hidden)drawOne(d,i===S.selDraw,a,step,1)});
+// Draw preview with reduced opacity
+if(S.drawPreview){
+cx.save();cx.globalAlpha=0.5;
+drawOne(S.drawPreview,false,a,step,0.5);
+cx.restore();
+// Draw preview anchors as open circles
+const x1=t2x(S.drawPreview.t1,step),y1=p2y(S.drawPreview.p1,a);
+cx.strokeStyle=css('--ac');cx.lineWidth=1.5;
+cx.beginPath();cx.arc(x1,y1,4,0,Math.PI*2);cx.stroke();
+if(!isSinglePoint(S.drawPreview.type)){
+const x2=t2x(S.drawPreview.t2,step),y2=p2y(S.drawPreview.p2,a);
+cx.beginPath();cx.arc(x2,y2,4,0,Math.PI*2);cx.stroke();
+}
+}
+// Draw snap indicator
+if(S.snapInfo&&S.snapInfo.sx!=null&&S.magnetMode!=='off'){
+const si=S.snapInfo;
+cx.save();
+// Snap target ring
+cx.strokeStyle=css('--ac');cx.lineWidth=2;
+cx.beginPath();cx.arc(si.sx,si.sy,6,0,Math.PI*2);cx.stroke();
+cx.beginPath();cx.arc(si.sx,si.sy,2,0,Math.PI*2);cx.fillStyle=css('--ac');cx.fill();
+// Label
+cx.font='bold 9px '+css('--mn');cx.fillStyle=css('--ac');cx.textAlign='left';
+cx.fillText(si.label,si.sx+9,si.sy+3);
+cx.restore();
+}
+}
+
+function drawOne(d,sel,a,step,opacityMul){
+const col=d.color||css('--ac');
+const baseAlpha=d.opacity!=null?d.opacity:1;
+cx.strokeStyle=col;cx.fillStyle=col;cx.lineWidth=d.lw||1.5;
+cx.globalAlpha=baseAlpha*(opacityMul||1);
+cx.setLineDash(d.ls==='dashed'?[6,3]:d.ls==='dotted'?[2,2]:[]);
 
 switch(d.type){
 case'trendline':case'ray':case'extended':case'hray':{
-let x1=t2x(d.t1,step),y1=p2y(d.p1,a),x2=t2x(d.t2,step),y2=p2y(d.p2,a);
-if(d.type==='hray'){y2=y1;x2=a.w}
-if(d.type==='ray'||d.type==='extended'){
-const dx=x2-x1,dy=y2-y1;if(dx!==0){const sl=dy/dx;
-if(d.type==='ray'||d.type==='extended'){const nx=a.w+100;y2=y1+sl*(nx-x1);x2=nx}
-if(d.type==='extended'){const nx2=-100;const ny=y1+sl*(nx2-x1);cx.beginPath();cx.moveTo(nx2,ny);cx.lineTo(x1,y1);cx.stroke()}}}
-if(d.extL){const dx=x2-x1,dy=y2-y1;if(dx!==0){const sl=dy/dx;const nx=-100;cx.beginPath();cx.moveTo(nx,y1+sl*(nx-x1));cx.lineTo(x1,y1);cx.stroke()}}
-if(d.extR&&d.type==='trendline'){const dx=x2-x1,dy=y2-y1;if(dx!==0){const sl=dy/dx;x2=a.w+100;y2=y1+sl*(x2-x1)}}
-cx.beginPath();cx.moveTo(x1,y1);cx.lineTo(x2,y2);cx.stroke();
-if(sel){drawH(x1,y1);drawH(t2x(d.t2,step),p2y(d.p2,a))}break}
-case'hline':{const y=p2y(d.price,a);cx.beginPath();cx.moveTo(0,y);cx.lineTo(a.w,y);cx.stroke();
-cx.font='9px '+css('--mn');cx.fillStyle=col;cx.textAlign='right';cx.fillText(d.price.toFixed(S.prec),a.w-4,y-3);
+const x1=t2x(d.t1,step),y1=p2y(d.p1,a),x2=t2x(d.t2,step),y2=p2y(d.p2,a);
+cx.beginPath();
+if(d.type==='extended'||d.extL){
+const dx=x2-x1,dy=y2-y1;const len=Math.sqrt(dx*dx+dy*dy)||1;
+cx.moveTo(x1-dx/len*3000,y1-dy/len*3000)}
+else cx.moveTo(x1,y1);
+if(d.type==='ray'||d.type==='extended'||d.type==='hray'||d.extR){
+const dx=x2-x1,dy=y2-y1;const len=Math.sqrt(dx*dx+dy*dy)||1;
+cx.lineTo(x2+dx/len*3000,y2+dy/len*3000)}
+else cx.lineTo(x2,y2);
+cx.stroke();
+if(sel){drawH(x1,y1);drawH(x2,y2);drawMid((x1+x2)/2,(y1+y2)/2)}break}
+case'hline':{const y=p2y(d.price,a);
+cx.beginPath();cx.moveTo(0,y);cx.lineTo(a.w,y);cx.stroke();
+// Price label
+cx.font='9px '+css('--mn');cx.fillStyle=col;cx.textAlign='right';
+cx.fillText(d.price.toFixed(S.prec),a.w-4,y-3);
 if(sel)drawH(a.w/2,y);break}
-case'vline':{const x=t2x(d.t1,step);cx.beginPath();cx.moveTo(x,0);cx.lineTo(x,a.h+a.vH);cx.stroke();
+case'vline':{const x=t2x(d.t1,step);
+cx.beginPath();cx.moveTo(x,0);cx.lineTo(x,a.h+a.vH);cx.stroke();
 if(sel)drawH(x,a.h/2);break}
 case'rect':case'srzone':{
 const x1=t2x(d.t1,step),y1=p2y(d.p1,a),x2=t2x(d.t2,step),y2=p2y(d.p2,a);
-cx.globalAlpha=d.type==='srzone'?.12:.15;
+const fillA=d.type==='srzone'?.08:.04;
+cx.fillStyle=col;cx.globalAlpha=(d.opacity!=null?d.opacity:1)*fillA;
 cx.fillRect(Math.min(x1,x2),Math.min(y1,y2),Math.abs(x2-x1),Math.abs(y2-y1));
-cx.globalAlpha=1;cx.strokeRect(Math.min(x1,x2),Math.min(y1,y2),Math.abs(x2-x1),Math.abs(y2-y1));
-if(sel){drawH(x1,y1);drawH(x2,y2);drawH(x1,y2);drawH(x2,y1)}break}
+cx.globalAlpha=d.opacity!=null?d.opacity:1;
+cx.strokeRect(Math.min(x1,x2),Math.min(y1,y2),Math.abs(x2-x1),Math.abs(y2-y1));
+if(sel){drawH(x1,y1);drawH(x2,y2);drawH(x1,y2);drawH(x2,y1);
+drawMid((x1+x2)/2,y1);drawMid((x1+x2)/2,y2);drawMid(x1,(y1+y2)/2);drawMid(x2,(y1+y2)/2)}break}
 case'circle':{
 const x1=t2x(d.t1,step),y1=p2y(d.p1,a),x2=t2x(d.t2,step),y2=p2y(d.p2,a);
 const rx=Math.abs(x2-x1)/2,ry=Math.abs(y2-y1)/2;
 const cx2=(x1+x2)/2,cy2=(y1+y2)/2;
-cx.globalAlpha=.1;cx.beginPath();cx.ellipse(cx2,cy2,rx||1,ry||1,0,0,Math.PI*2);cx.fill();
-cx.globalAlpha=1;cx.beginPath();cx.ellipse(cx2,cy2,rx||1,ry||1,0,0,Math.PI*2);cx.stroke();
+cx.beginPath();cx.ellipse(cx2,cy2,rx||1,ry||1,0,0,Math.PI*2);cx.stroke();
 if(sel){drawH(x1,y1);drawH(x2,y2)}break}
 case'triangle':{
 const x1=t2x(d.t1,step),y1=p2y(d.p1,a),x2=t2x(d.t2,step),y2=p2y(d.p2,a);
 const mx2=(x1+x2)/2;
-cx.globalAlpha=.1;cx.beginPath();cx.moveTo(mx2,y1);cx.lineTo(x1,y2);cx.lineTo(x2,y2);cx.closePath();cx.fill();
-cx.globalAlpha=1;cx.beginPath();cx.moveTo(mx2,y1);cx.lineTo(x1,y2);cx.lineTo(x2,y2);cx.closePath();cx.stroke();
-if(sel){drawH(mx2,y1);drawH(x1,y2);drawH(x2,y2)}break}
-case'fib':case'fibext':{
-const y1=p2y(d.p1,a),y2=p2y(d.p2,a),x1=t2x(d.t1,step),x2=t2x(d.t2,step);
-const range=d.p2-d.p1;const levels=d.levels||FIBS;
-cx.font='9px '+css('--mn');cx.textAlign='left';
-levels.forEach(lv=>{
-const pr=d.type==='fibext'?d.p2+range*lv:d.p1+range*(1-lv);
-const y=p2y(pr,a);cx.globalAlpha=lv===0||lv===1?.8:.4;
-cx.beginPath();cx.moveTo(Math.min(x1,x2)-20,y);cx.lineTo(a.w,y);cx.stroke();
-cx.globalAlpha=.8;cx.fillText((lv*100).toFixed(1)+'% — '+pr.toFixed(S.prec),Math.min(x1,x2)+4,y-3)});
-cx.globalAlpha=1;if(sel){drawH(x1,y1);drawH(x2,y2)}break}
+cx.beginPath();cx.moveTo(mx2,Math.min(y1,y2));cx.lineTo(x1,Math.max(y1,y2));cx.lineTo(x2,Math.max(y1,y2));cx.closePath();cx.stroke();
+if(sel){drawH(mx2,Math.min(y1,y2));drawH(x1,Math.max(y1,y2));drawH(x2,Math.max(y1,y2))}break}
 case'channel':{
 const x1=t2x(d.t1,step),y1=p2y(d.p1,a),x2=t2x(d.t2,step),y2=p2y(d.p2,a);
-const off=d.chOff||40;
+const offPr=d.chOffPr||0;
+const y1b=p2y(d.p1+offPr,a),y2b=p2y(d.p2+offPr,a);
 cx.beginPath();cx.moveTo(x1,y1);cx.lineTo(x2,y2);cx.stroke();
-cx.setLineDash([4,3]);cx.beginPath();cx.moveTo(x1,y1+off);cx.lineTo(x2,y2+off);cx.stroke();cx.setLineDash([]);
-if(sel){drawH(x1,y1);drawH(x2,y2)}break}
-case'text':{const x=t2x(d.t1,step),y=p2y(d.p1,a);
+cx.beginPath();cx.moveTo(x1,y1b);cx.lineTo(x2,y2b);cx.stroke();
+// Fill
+cx.fillStyle=col;cx.globalAlpha=(baseAlpha*(opacityMul||1))*.06;
+cx.beginPath();cx.moveTo(x1,y1);cx.lineTo(x2,y2);cx.lineTo(x2,y2b);cx.lineTo(x1,y1b);cx.closePath();cx.fill();
+cx.globalAlpha=baseAlpha*(opacityMul||1);
+if(sel){drawH(x1,y1);drawH(x2,y2);drawH(x1,y1b);drawH(x2,y2b)}break}
+case'fib':case'fibext':{
+const y1=p2y(d.p1,a),y2=p2y(d.p2,a);const range=d.p2-d.p1;
+const levels=d.levels||FIBS;
+const lColors=d.levelColors||null;
+// Draw fills between levels
+for(let li=0;li<levels.length-1;li++){
+const lv1=levels[li],lv2=levels[li+1];
+const pr1=d.type==='fibext'?d.p2+range*lv1:d.p1+range*(1-lv1);
+const pr2=d.type==='fibext'?d.p2+range*lv2:d.p1+range*(1-lv2);
+const fy1=p2y(pr1,a),fy2=p2y(pr2,a);
+const fc=lColors&&lColors[li]?lColors[li]:col;
+cx.fillStyle=fc;cx.globalAlpha=(baseAlpha*(opacityMul||1))*.06;
+cx.fillRect(0,Math.min(fy1,fy2),a.w,Math.abs(fy2-fy1));
+cx.globalAlpha=baseAlpha*(opacityMul||1);
+}
+levels.forEach((lv,li)=>{
+const pr=d.type==='fibext'?d.p2+range*lv:d.p1+range*(1-lv);
+const y=p2y(pr,a);
+const lc=lColors&&lColors[li]?lColors[li]:col;
+cx.strokeStyle=lc;cx.beginPath();cx.moveTo(0,y);cx.lineTo(a.w,y);cx.stroke();
+cx.font='9px '+css('--mn');cx.fillStyle=lc;cx.textAlign='left';
+cx.fillText((lv*100).toFixed(1)+'% '+pr.toFixed(S.prec),4,y-3);
+cx.strokeStyle=col;
+});
+if(sel){drawH(t2x(d.t1,step),y1);drawH(t2x(d.t2,step),y2)}break}
+case'text':{
+const x=t2x(d.t1,step),y=p2y(d.p1,a);
 cx.font=(d.fs||12)+'px '+css('--ft');cx.fillStyle=col;cx.textAlign='left';cx.textBaseline='top';
 cx.fillText(d.text||'Text',x,y);if(sel)drawH(x,y);break}
 case'pricelabel':{const y=p2y(d.price,a);
@@ -1040,29 +1529,14 @@ break}
 cx.setLineDash([]);cx.globalAlpha=1;
 }
 
-function drawH(x,y){cx.fillStyle=css('--ac');cx.beginPath();cx.arc(x,y,3.5,0,Math.PI*2);cx.fill();cx.strokeStyle='#fff';cx.lineWidth=1;cx.stroke()}
+function drawH(x,y){cx.fillStyle=css('--ac');cx.beginPath();cx.arc(x,y,4,0,Math.PI*2);cx.fill();cx.strokeStyle='#fff';cx.lineWidth=1.5;cx.stroke()}
+function drawMid(x,y){cx.strokeStyle=css('--ac');cx.lineWidth=1.5;cx.beginPath();cx.arc(x,y,3,0,Math.PI*2);cx.stroke()}
 
-function t2x(ts,step){const i=findIdx(S.cand,ts)-S.vStart;return i*step+step/2}
-function x2t(x,step){const i=Math.round(x/step-.5)+S.vStart;return(i>=0&&i<S.cand.length)?S.cand[i].t:S.cand[S.cand.length-1].t}
-function p2y(p,a){return a.y+a.h*(1-(p-S.pMin)/(S.pMax-S.pMin))}
-function y2p(y,a){return S.pMin+(1-(y-a.y)/a.h)*(S.pMax-S.pMin)}
-
-// ====================== MAGNET ======================
-function snapToOHLC(ts,price){
-if(!S.magnet)return{ts,price};
-const idx=findIdx(S.cand,ts);if(idx<0)return{ts,price};
-const c=S.cand[idx];
-const pts=[{p:c.o,n:'O'},{p:c.h,n:'H'},{p:c.l,n:'L'},{p:c.c,n:'C'}];
-let best=pts[0],bestD=Math.abs(price-pts[0].p);
-for(let i=1;i<pts.length;i++){const d=Math.abs(price-pts[i].p);if(d<bestD){bestD=d;best=pts[i]}}
-return{ts:c.t,price:best.p};
-}
-
-// ====================== EVENTS ======================
+// ---- Events (Click-Click Workflow) ----
 function setupEvents(){
 cv.addEventListener('mousemove',onMM);cv.addEventListener('mousedown',onMD);
 cv.addEventListener('mouseup',onMU);cv.addEventListener('wheel',onWh,{passive:false});
-cv.addEventListener('mouseleave',()=>{S.mx=-1;S.my=-1;S.hoverIdx=-1;render()});
+cv.addEventListener('mouseleave',()=>{S.mx=-1;S.my=-1;S.hoverIdx=-1;S.snapInfo=null;render()});
 cv.addEventListener('contextmenu',onCtx);document.addEventListener('keydown',onKey);
 document.addEventListener('click',e=>{
 if(!e.target.closest('.ctx'))document.getElementById('ctx-menu').classList.remove('show');
@@ -1072,56 +1546,122 @@ if(!e.target.closest('.dsp')&&!e.target.closest('.db'))document.getElementById('
 
 function onMM(e){
 const r=cv.getBoundingClientRect();S.mx=e.clientX-r.left;S.my=e.clientY-r.top;
-if(S.isPan){const dx=e.clientX-S.panS.x;const step=S.cw+S.cg;const cs=Math.round(dx/step);
+const a=getArea(),step=S.cw+S.cg;
+// Y-pan drag
+if(S.isYPan){const dy=e.clientY-S.yPanS.y;const rng=S.yPanS.pMax-S.yPanS.pMin;
+const shift=dy/cv.height*rng;S.pMin=S.yPanS.pMin+shift;S.pMax=S.yPanS.pMax+shift;S.autoScale=false;render();return}
+// X-pan drag
+if(S.isPan){const dx=e.clientX-S.panS.x;const cs=Math.round(dx/step);
 if(cs!==0){S.vStart=Math.max(0,S.panS.vs-cs);S.vEnd=Math.max(0,S.panS.ve-cs);
 if(S.vEnd>=S.cand.length){S.vEnd=S.cand.length-1;S.vStart=Math.max(0,S.vEnd-S.panS.cnt+1)}
 if(S.vStart<0){S.vStart=0;S.vEnd=Math.min(S.cand.length-1,S.vStart+S.panS.cnt-1)}
 S.autoScale=true}render();return}
-if(S.dip&&S.dip._ph==='drag'){
-const a=getArea(),step=S.cw+S.cg;
+// Editing drag (anchor or whole drawing)
+if(S.drawEditIdx>=0){
 let ts=x2t(S.mx,step),pr=y2p(S.my,a);
-if(S.magnet){const s=snapToOHLC(ts,pr);ts=s.ts;pr=s.price}
-S.dip.t2=ts;S.dip.p2=pr;
-if(S.dip.type==='hline')S.dip.price=pr;
-if(S.dip.type==='pricelabel')S.dip.price=pr;
-render();return}
+if(S.magnetMode!=='off'){const s=snapToOHLC(ts,pr,a,step);ts=s.ts;pr=s.price}
+if(S.drawEditAnchor){
+moveAnchor(S.drawEditIdx,S.drawEditAnchor.key,ts,pr);
+}else if(S.drawEditStart){
+const dTs=ts-S.drawEditStart.ts;
+const dPr=pr-S.drawEditStart.pr;
+// Restore from snapshot and apply delta
+const snap=S.drawEditStart.snapshot;
+const d=S.drawings[S.drawEditIdx];
+if(snap.t1!=null)d.t1=snap.t1+dTs;
+if(snap.t2!=null)d.t2=snap.t2+dTs;
+if(snap.p1!=null)d.p1=snap.p1+dPr;
+if(snap.p2!=null)d.p2=snap.p2+dPr;
+if(snap.price!=null)d.price=snap.price+dPr;
+}
+render();return;
+}
+// Preview update (click-click drawing in progress)
+if(S.drawState==='preview'&&S.drawPreview){
+let ts=x2t(S.mx,step),pr=y2p(S.my,a);
+if(S.magnetMode!=='off'){const s=snapToOHLC(ts,pr,a,step);ts=s.ts;pr=s.price}
+updatePreview(ts,pr);return;
+}
+// Snap indicator when tool active but not drawing
+if(isDrawTool(S.tool)&&S.magnetMode!=='off'){
+const ts=x2t(S.mx,step),pr=y2p(S.my,a);
+snapToOHLC(ts,pr,a,step);
+}else{S.snapInfo=null}
+// Cursor styling based on hover
+if(S.tool==='pointer'&&S.mx<a.w&&S.mx>=0){
+const ancHit=hitTestAnchor(S.mx,S.my,a,step);
+if(ancHit){cv.style.cursor='grab'}
+else{const hit=hitTest(S.mx,S.my,a,step);
+cv.style.cursor=hit>=0?'move':'default'}
+}
 render();
 }
 
 function onMD(e){
 if(e.button===2)return;
 const a=getArea(),step=S.cw+S.cg;
-if(S.tool!=='pointer'&&S.tool!=='crosshair_tool'&&S.mx<a.w){
+// Drawing tool active — click-click workflow
+if(isDrawTool(S.tool)&&S.mx<a.w){
 let ts=x2t(S.mx,step),pr=y2p(S.my,a);
-if(S.magnet){const s=snapToOHLC(ts,pr);ts=s.ts;pr=s.price}
-if(!S.dip){
-const d={type:S.tool,t1:ts,p1:pr,t2:ts,p2:pr,color:css('--ac'),lw:1.5,ls:'solid',_ph:'drag'};
-if(S.tool==='hline'){d.price=pr}
-if(S.tool==='pricelabel'){d.price=pr}
-if(S.tool==='vline'||S.tool==='datelabel'){d.t1=ts}
-if(S.tool==='text'){const t=prompt('Enter text:');if(t){d.text=t;d._ph='done';commitDraw(d)}return}
-S.dip=d}return}
+if(S.magnetMode!=='off'){const s=snapToOHLC(ts,pr,a,step);ts=s.ts;pr=s.price}
+if(S.drawState==='idle'){
+beginDrawing(ts,pr);
+}else if(S.drawState==='preview'){
+completeDrawing();
+}
+return;
+}
+// Pointer tool — selection, anchor drag, whole-drawing drag
 if(S.tool==='pointer'&&S.mx<a.w){
+// Check anchor drag first
+const ancHit=hitTestAnchor(S.mx,S.my,a,step);
+if(ancHit){
+const d=S.drawings[ancHit.drawIdx];
+if(!d.locked){
+S.drawEditIdx=ancHit.drawIdx;S.drawEditAnchor=ancHit.anchor;
+S.selDraw=ancHit.drawIdx;cv.style.cursor='grabbing';render();return;
+}}
+// Check hit on drawing body
 const hit=hitTest(S.mx,S.my,a,step);
 if(hit>=0){
-if(S.drawings[hit].locked){S.selDraw=hit;render();return}
-S.selDraw=hit;showDrawSettings(hit);render();return}
-S.selDraw=-1;document.getElementById('dsp').classList.remove('show')}
+S.selDraw=hit;
+const d=S.drawings[hit];
+if(!d.locked){
+// Start whole-drawing drag
+let ts=x2t(S.mx,step),pr=y2p(S.my,a);
+S.drawEditIdx=hit;S.drawEditAnchor=null;
+S.drawEditStart={ts,pr,snapshot:{...d}};
+cv.style.cursor='grabbing';
+}
+showDrawSettings(hit);render();return;
+}
+S.selDraw=-1;document.getElementById('dsp').classList.remove('show');
+}
+// Y-pan on price axis
+if(S.mx>=a.w){S.isYPan=true;S.yPanS={y:e.clientY,pMin:S.pMin,pMax:S.pMax};cv.style.cursor='ns-resize';return}
+// X-pan on chart area
 if(S.mx<a.w){S.isPan=true;S.panS={x:e.clientX,y:e.clientY,vs:S.vStart,ve:S.vEnd,cnt:S.vEnd-S.vStart+1};cv.style.cursor='grabbing'}
 }
 
 function onMU(e){
+if(S.isYPan){S.isYPan=false;cv.style.cursor=S.tool==='pointer'?'default':'crosshair';return}
 if(S.isPan){S.isPan=false;cv.style.cursor=S.tool==='pointer'?'default':'crosshair';return}
-if(S.dip&&S.dip._ph==='drag'){S.dip._ph='done';commitDraw(S.dip);S.dip=null;render()}
+// End editing drag — does NOT complete drawings (click-click, not drag)
+if(S.drawEditIdx>=0){
+S.drawEditIdx=-1;S.drawEditAnchor=null;S.drawEditStart=null;
+cv.style.cursor=S.tool==='pointer'?'default':'crosshair';
+saveState();render();
 }
-
-function commitDraw(d){const c={...d};delete c._ph;
-S.undo.push({a:'add',i:S.drawings.length,d:c});S.redo=[];
-S.drawings.push(c);saveState()}
+}
 
 function onWh(e){
 e.preventDefault();const a=getArea();
-if(S.mx>a.w){const d=e.deltaY>0?.02:-.02;const r=S.pMax-S.pMin;S.pMin-=r*d;S.pMax+=r*d;S.autoScale=false;render();return}
+if(S.mx>a.w){
+const zoomIn=e.deltaY<0;const factor=zoomIn?0.9:1.1;
+const prAtMouse=y2p(S.my,a);
+S.pMin=prAtMouse-(prAtMouse-S.pMin)*factor;
+S.pMax=prAtMouse+(S.pMax-prAtMouse)*factor;
+S.autoScale=false;render();return}
 const zIn=e.deltaY<0;
 if(zIn){S.cw=Math.min(40,S.cw*1.15);S.cg=Math.max(1,Math.min(S.cw*.3,4))}
 else{S.cw=Math.max(1,S.cw/1.15);S.cg=Math.max(.5,Math.min(S.cw*.3,4))}
@@ -1132,25 +1672,67 @@ S.vEnd=Math.min(S.cand.length-1,S.vStart+maxV-1);S.autoScale=true;render();
 }
 
 function onCtx(e){e.preventDefault();
-const m=document.getElementById('ctx-menu');m.style.left=e.clientX+'px';m.style.top=e.clientY+'px';m.classList.add('show');
-S._ctxTs=x2t(S.mx,S.cw+S.cg);S._ctxPr=y2p(S.my,getArea());
+// If in preview state, cancel drawing instead of showing menu
+if(S.drawState==='preview'){cancelDrawing();return}
+const a=getArea(),step=S.cw+S.cg;
+S._ctxTs=x2t(S.mx,step);S._ctxPr=y2p(S.my,a);
+// Build context menu dynamically based on what's under cursor
+const m=document.getElementById('ctx-menu');
+const hit=hitTest(S.mx,S.my,a,step);
+let html='';
+if(hit>=0){
+// Drawing-specific context menu
+const d=S.drawings[hit];
+S.selDraw=hit;
+html+=`<div class="ctx-item" onclick="ctxA('drawSettings')">&#9881; Settings</div>`;
+html+=`<div class="ctx-item" onclick="ctxA('dupSel')">&#128203; Duplicate</div>`;
+html+=`<div class="ctx-item" onclick="ctxA('lockSel')">${d.locked?'&#128275; Unlock':'&#128274; Lock'}</div>`;
+html+=`<div class="ctx-item" onclick="ctxA('hideSel')">${d.hidden?'&#128065; Show':'&#128064; Hide'}</div>`;
+html+=`<div class="ctx-sep"></div>`;
+html+=`<div class="ctx-item" onclick="ctxA('delSel')" style="color:var(--rd)">&#128465; Delete</div>`;
+}else{
+// Chart context menu
+html+=`<div class="ctx-item" onclick="ctxA('hline')">&#8213; Horizontal Line</div>`;
+html+=`<div class="ctx-item" onclick="ctxA('vline')">&#9474; Vertical Line</div>`;
+html+=`<div class="ctx-item" onclick="ctxA('trendline')">&#9585; Trend Line</div>`;
+html+=`<div class="ctx-item" onclick="ctxA('fib')">&#9591; Fibonacci</div>`;
+html+=`<div class="ctx-item" onclick="ctxA('rect')">&#9633; Rectangle</div>`;
+html+=`<div class="ctx-item" onclick="ctxA('measure')">&#128207; Measure</div>`;
+html+=`<div class="ctx-sep"></div>`;
+html+=`<div class="ctx-item" onclick="ctxA('replayHere')">&#9654; Replay from Here</div>`;
+html+=`<div class="ctx-item" onclick="ctxA('goto')">&#128197; Go to Date</div>`;
+html+=`<div class="ctx-item" onclick="ctxA('fit')">&#9633; Fit Chart</div>`;
+html+=`<div class="ctx-item" onclick="ctxA('settings')">&#9881; Settings</div>`;
+html+=`<div class="ctx-item" onclick="ctxA('magSettings')">&#129522; Magnet Settings</div>`;
+if(S.drawings.length){
+html+=`<div class="ctx-sep"></div>`;
+html+=`<div class="ctx-item" onclick="ctxA('delAll')" style="color:var(--rd)">&#128465; Delete All Drawings</div>`;}
+}
+m.innerHTML=html;
+m.style.left=e.clientX+'px';m.style.top=e.clientY+'px';m.classList.add('show');
+render();
 }
 
 function ctxA(a){
 document.getElementById('ctx-menu').classList.remove('show');
-const area=getArea(),step=S.cw+S.cg;
 switch(a){
-case'hline':{const d={type:'hline',price:S._ctxPr,color:css('--ac'),lw:1.5,ls:'solid'};commitDraw(d);render();break}
-case'vline':{const d={type:'vline',t1:S._ctxTs,color:css('--ac'),lw:1.5,ls:'solid'};commitDraw(d);render();break}
+case'hline':{const d={type:'hline',price:S._ctxPr,color:css('--ac'),lw:1.5,ls:'solid',opacity:1};commitDraw(d);render();break}
+case'vline':{const d={type:'vline',t1:S._ctxTs,color:css('--ac'),lw:1.5,ls:'solid',opacity:1};commitDraw(d);render();break}
 case'trendline':case'fib':case'rect':case'text':case'measure':setTool(a);break;
-case'delSel':if(S.selDraw>=0){S.undo.push({a:'rm',i:S.selDraw,d:S.drawings[S.selDraw]});S.drawings.splice(S.selDraw,1);S.selDraw=-1;render()}break;
+case'delSel':if(S.selDraw>=0){S.undo.push({a:'rm',i:S.selDraw,d:S.drawings[S.selDraw]});S.drawings.splice(S.selDraw,1);S.selDraw=-1;render();saveState()}break;
+case'dupSel':if(S.selDraw>=0)dupDraw(S.selDraw);break;
+case'lockSel':if(S.selDraw>=0){S.drawings[S.selDraw].locked=!S.drawings[S.selDraw].locked;render();saveState()}break;
+case'hideSel':if(S.selDraw>=0){S.drawings[S.selDraw].hidden=!S.drawings[S.selDraw].hidden;render();saveState()}break;
+case'drawSettings':if(S.selDraw>=0)showDrawSettings(S.selDraw);break;
 case'delAll':delAllDraw();break;
 case'goto':showGoto();break;
 case'replayHere':if(S._ctxTs)startReplay(S._ctxTs);break;
 case'fit':fitChart();break;
 case'settings':toggleCSet();break;
+case'magSettings':showMagSettings();break;
 }}
 
+// ---- Hit Testing ----
 function hitTest(mx,my,a,step){
 const th=8;
 for(let i=S.drawings.length-1;i>=0;i--){
@@ -1170,7 +1752,9 @@ for(const lv of levels){const pr=d.type==='fibext'?d.p2+range*lv:d.p1+range*(1-l
 const y=p2y(pr,a);if(Math.abs(my-y)<th)return i}break}
 case'text':{const x=t2x(d.t1,step),y=p2y(d.p1,a);if(mx>=x-5&&mx<=x+100&&my>=y-5&&my<=y+20)return i;break}
 case'channel':{const x1=t2x(d.t1,step),y1=p2y(d.p1,a),x2=t2x(d.t2,step),y2=p2y(d.p2,a);
-if(distSeg(mx,my,x1,y1,x2,y2)<th||distSeg(mx,my,x1,y1+(d.chOff||40),x2,y2+(d.chOff||40))<th)return i;break}
+const offPr=d.chOffPr||0;
+const y1b=p2y(d.p1+offPr,a),y2b=p2y(d.p2+offPr,a);
+if(distSeg(mx,my,x1,y1,x2,y2)<th||distSeg(mx,my,x1,y1b,x2,y2b)<th)return i;break}
 }}return-1}
 
 function distSeg(px,py,x1,y1,x2,y2){
@@ -1179,10 +1763,30 @@ if(ls===0)return Math.hypot(px-x1,py-y1);
 let t=((px-x1)*dx+(py-y1)*dy)/ls;t=Math.max(0,Math.min(1,t));
 return Math.hypot(px-(x1+t*dx),py-(y1+t*dy))}
 
-// ====================== TOOL / DRAWING MGMT ======================
-function setTool(id){S.tool=id;S.dip=null;S.selDraw=-1;
+// ---- Tool / Drawing Management ----
+function setTool(id){
+S.tool=id;S.selDraw=-1;
+if(S.drawState==='preview')cancelDrawing();
 document.querySelectorAll('.db[data-tool]').forEach(b=>b.classList.toggle('on',b.dataset.tool===id));
-cv.style.cursor=id==='pointer'?'default':'crosshair';render()}
+cv.style.cursor=(id==='pointer'||id==='crosshair_tool')?'default':'crosshair';
+// Update active tool indicator
+const ati=document.getElementById('active-tool-ind');
+if(ati){
+const t=TOOLS.find(t=>t.id===id);
+ati.textContent=t?t.tt:id;
+ati.style.display=(id==='pointer'||id==='crosshair_tool')?'none':'';
+}
+render();
+}
+
+function toggleDrawMode(){
+S.drawMode=S.drawMode==='single'?'continuous':'single';
+const btn=document.getElementById('btn-drawmode');
+if(btn){btn.classList.toggle('continuous',S.drawMode==='continuous');
+btn.textContent=S.drawMode==='single'?'1x':'∞';
+btn.setAttribute('data-tip',S.drawMode==='single'?'Single Draw Mode':'Continuous Draw Mode')}
+saveState();
+}
 
 function undo(){if(!S.undo.length)return;const a=S.undo.pop();
 if(a.a==='add'){S.drawings.splice(a.i,1);S.redo.push(a)}
@@ -1198,68 +1802,176 @@ function delAllDraw(){if(!S.drawings.length)return;
 for(let i=S.drawings.length-1;i>=0;i--)S.undo.push({a:'rm',i,d:S.drawings[i]});
 S.drawings=[];S.selDraw=-1;S.redo=[];render();saveState()}
 
-// ====================== DRAWING SETTINGS PANEL ======================
+// ---- Drawing Settings Panel (Enhanced with Fib Level Editor) ----
 function showDrawSettings(idx){
 const d=S.drawings[idx];if(!d)return;
 const p=document.getElementById('dsp');
-p.innerHTML=`<h4>${d.type.toUpperCase()}<button onclick="document.getElementById('dsp').classList.remove('show')">&#10005;</button></h4>
+let html=`<h4>${d.type.toUpperCase()}<button onclick="document.getElementById('dsp').classList.remove('show')">&#10005;</button></h4>
 <label>Color</label><input type="color" value="${d.color||'#2962ff'}" onchange="updDraw(${idx},'color',this.value)">
 <label>Thickness</label><input type="number" value="${d.lw||1.5}" min="0.5" max="8" step="0.5" onchange="updDraw(${idx},'lw',+this.value)">
 <label>Line Style</label><select onchange="updDraw(${idx},'ls',this.value)">
 <option value="solid"${d.ls==='solid'?' selected':''}>Solid</option>
 <option value="dashed"${d.ls==='dashed'?' selected':''}>Dashed</option>
 <option value="dotted"${d.ls==='dotted'?' selected':''}>Dotted</option></select>
-${d.type==='trendline'||d.type==='ray'||d.type==='channel'?`
-<label class="chkr"><input type="checkbox" ${d.extL?'checked':''} onchange="updDraw(${idx},'extL',this.checked)"> Extend Left</label>
-<label class="chkr"><input type="checkbox" ${d.extR?'checked':''} onchange="updDraw(${idx},'extR',this.checked)"> Extend Right</label>`:''}
-${d.type==='fib'||d.type==='fibext'?`<label>Levels</label><div style="font-size:10px;color:var(--tx2)">${(d.levels||FIBS).map(l=>(l*100).toFixed(1)+'%').join(', ')}</div>`:''}
-<label class="chkr"><input type="checkbox" ${d.locked?'checked':''} onchange="updDraw(${idx},'locked',this.checked)"> Lock</label>
+<label>Opacity</label><input type="range" min="0.1" max="1" step="0.05" value="${d.opacity!=null?d.opacity:1}" oninput="updDraw(${idx},'opacity',+this.value)" style="width:100%">`;
+if(d.type==='trendline'||d.type==='ray'||d.type==='channel'){
+html+=`<label class="chkr"><input type="checkbox" ${d.extL?'checked':''} onchange="updDraw(${idx},'extL',this.checked)"> Extend Left</label>
+<label class="chkr"><input type="checkbox" ${d.extR?'checked':''} onchange="updDraw(${idx},'extR',this.checked)"> Extend Right</label>`;}
+if(d.type==='text'){
+html+=`<label>Font Size</label><input type="number" value="${d.fs||12}" min="8" max="48" onchange="updDraw(${idx},'fs',+this.value)">
+<label>Text</label><input type="text" value="${(d.text||'').replace(/"/g,'&quot;')}" onchange="updDraw(${idx},'text',this.value)" style="width:100%;background:var(--bg1);color:var(--tx1);border:1px solid var(--bd);border-radius:3px;padding:3px">`;}
+// Fibonacci level editor
+if(d.type==='fib'||d.type==='fibext'){
+const levels=d.levels||[...FIBS];
+const colors=d.levelColors||[];
+html+=`<label>Fibonacci Levels</label><div id="fib-levels-edit">`;
+levels.forEach((lv,li)=>{
+const lc=colors[li]||d.color||'#2962ff';
+html+=`<div class="fib-level-row">
+<input type="number" value="${(lv*100).toFixed(1)}" step="0.1" style="width:55px" onchange="updFibLevel(${idx},${li},+this.value/100)">
+<span>%</span>
+<input type="color" value="${lc}" onchange="updFibColor(${idx},${li},this.value)">
+<button onclick="rmFibLevel(${idx},${li})" title="Remove">&#10005;</button>
+</div>`;
+});
+html+=`</div><div style="margin-top:4px;display:flex;gap:4px">
+<button class="mb s" style="font-size:9px;padding:2px 6px" onclick="addFibLevel(${idx})">+ Add Level</button>
+<button class="mb s" style="font-size:9px;padding:2px 6px" onclick="resetFibLevels(${idx})">Reset</button></div>`;
+}
+if(d.type==='channel'){
+html+=`<label>Channel Offset (price)</label><input type="number" value="${(d.chOffPr||0).toFixed(S.prec)}" step="0.1" onchange="updDraw(${idx},'chOffPr',+this.value)" style="width:100%;background:var(--bg1);color:var(--tx1);border:1px solid var(--bd);border-radius:3px;padding:3px">`;}
+html+=`<label class="chkr"><input type="checkbox" ${d.locked?'checked':''} onchange="updDraw(${idx},'locked',this.checked)"> Lock</label>
 <label class="chkr"><input type="checkbox" ${d.hidden?'':'checked'} onchange="updDraw(${idx},'hidden',!this.checked)"> Visible</label>
 <div style="margin-top:8px"><button class="mb s" style="font-size:10px;padding:4px 8px" onclick="dupDraw(${idx})">Duplicate</button>
+<button class="mb s" style="font-size:10px;padding:4px 8px" onclick="saveAsDefault(${idx})">Save as Default</button>
 <button class="mb s" style="font-size:10px;padding:4px 8px;color:var(--rd)" onclick="delDraw(${idx})">Delete</button></div>`;
-p.classList.add('show');
+p.innerHTML=html;p.classList.add('show');
 }
 
 function updDraw(idx,prop,val){S.drawings[idx][prop]=val;render();saveState()}
-function dupDraw(idx){const c={...S.drawings[idx]};commitDraw(c);render()}
+function dupDraw(idx){const c={...S.drawings[idx]};if(c.levels)c.levels=[...c.levels];if(c.levelColors)c.levelColors=[...c.levelColors];commitDraw(c);render()}
 function delDraw(idx){S.undo.push({a:'rm',i:idx,d:S.drawings[idx]});S.drawings.splice(idx,1);S.selDraw=-1;
 document.getElementById('dsp').classList.remove('show');render();saveState()}
+function saveAsDefault(idx){
+const d=S.drawings[idx];
+const def={color:d.color,lw:d.lw,ls:d.ls,opacity:d.opacity};
+if(d.levels)def.levels=[...d.levels];
+if(d.levelColors)def.levelColors=[...d.levelColors];
+if(d.fs)def.fs=d.fs;
+if(d.chOffPr!=null)def.chOffPr=d.chOffPr;
+S.toolDefaults[d.type]=def;
+saveState();
+}
 
-// ====================== MAGNET ======================
-function toggleMagnet(){S.magnet=!S.magnet;document.getElementById('btn-mag').classList.toggle('on',S.magnet);saveState()}
+// Fibonacci level editing helpers
+function updFibLevel(idx,li,val){const d=S.drawings[idx];if(!d.levels)d.levels=[...FIBS];d.levels[li]=val;render();saveState();showDrawSettings(idx)}
+function updFibColor(idx,li,val){const d=S.drawings[idx];if(!d.levelColors)d.levelColors=d.levels?d.levels.map(()=>d.color||'#2962ff'):FIBS.map(()=>d.color||'#2962ff');d.levelColors[li]=val;render();saveState();showDrawSettings(idx)}
+function rmFibLevel(idx,li){const d=S.drawings[idx];if(!d.levels)d.levels=[...FIBS];d.levels.splice(li,1);if(d.levelColors)d.levelColors.splice(li,1);render();saveState();showDrawSettings(idx)}
+function addFibLevel(idx){const d=S.drawings[idx];if(!d.levels)d.levels=[...FIBS];d.levels.push(0.5);if(d.levelColors)d.levelColors.push(d.color||'#2962ff');render();saveState();showDrawSettings(idx)}
+function resetFibLevels(idx){const d=S.drawings[idx];d.levels=[...FIBS];d.levelColors=null;render();saveState();showDrawSettings(idx)}
+
 
 // ====================== REPLAY ======================
 function toggleReplay(){if(S.rOn)rExit();else showGoto()}
 function startReplay(ts){
 const i=findIdx(S.raw,ts);if(i<0)return;
-S.rOn=true;S.rCut=S.raw[i].t;S.rCutI=i;S.rPlay=false;S.rSpdI=2;S.rSpd=1;S.tfCache={};
-document.getElementById('rbar').classList.add('vis');document.getElementById('btn-replay').classList.add('on');
+S.rOn=true;S.rCut=S.raw[i].t;S.rCutI=i;
+S.rCutStart=S.raw[i].t;S.rCutStartI=i;
+S.rPlay=false;S.rSpdI=2;S.rSpd=1;S.tfCache={};
+document.getElementById('rbar').classList.add('vis');
+document.getElementById('btn-replay').classList.add('on');
+document.getElementById('replay-badge').style.display='flex';
 updRSpd();rebuildR();scrollEnd();render();
 }
 function rebuildR(){const m=tfMin(S.tf);S.allCand=aggTF(S.raw,m,S.rCut);S.cand=S.allCand;
 S.indicators.forEach(ind=>{ind._cache=null});updRInfo()}
-function rStepFwd(){if(!S.rOn||S.rCutI>=S.raw.length-1)return;S.rCutI++;S.rCut=S.raw[S.rCutI].t;S.tfCache={};rebuildR();scrollEnd();render()}
-function rStepBack(){if(!S.rOn||S.rCutI<=0)return;S.rCutI--;S.rCut=S.raw[S.rCutI].t;S.tfCache={};rebuildR();scrollEnd();render()}
+
+// Step forward by 1 visible candle (aggregated), not 1 M1 bar
+function rStepFwd(){
+if(!S.rOn||S.rCutI>=S.raw.length-1)return;
+const mins=tfMin(S.tf);
+if(mins<=1){
+  // M1: step 1 bar
+  S.rCutI++;S.rCut=S.raw[S.rCutI].t;
+}else{
+  // Higher TF: step forward enough M1 bars to form next candle
+  const curCandCount=S.cand.length;
+  let newI=S.rCutI;
+  while(newI<S.raw.length-1){
+    newI++;
+    // Check if this produces a new candle
+    const testCut=S.raw[newI].t;
+    const testCand=aggTF(S.raw,mins,testCut);
+    if(testCand.length>curCandCount||newI===S.raw.length-1){
+      S.rCutI=newI;S.rCut=testCut;break;
+    }
+  }
+}
+S.tfCache={};rebuildR();scrollEnd();render();
+if(S.rCutI>=S.raw.length-1){
+  S.rPlay=false;
+  document.getElementById('ricon').innerHTML='<polygon points="5,3 19,12 5,21"/>';
+  clearTimeout(S.rTmr);
+  document.getElementById('rb-text').textContent='REPLAY — END OF DATA';
+}
+}
+
+function rStepBack(){
+if(!S.rOn||S.rCutI<=0)return;
+const mins=tfMin(S.tf);
+if(mins<=1){
+  S.rCutI--;S.rCut=S.raw[S.rCutI].t;
+}else{
+  const curCandCount=S.cand.length;
+  let newI=S.rCutI;
+  while(newI>0){
+    newI--;
+    const testCut=S.raw[newI].t;
+    const testCand=aggTF(S.raw,mins,testCut);
+    if(testCand.length<curCandCount||newI===0){
+      S.rCutI=newI;S.rCut=testCut;break;
+    }
+  }
+}
+S.tfCache={};rebuildR();scrollEnd();render();
+}
+
 function rToggle(){S.rPlay=!S.rPlay;const ic=document.getElementById('ricon');
 if(S.rPlay){ic.innerHTML='<rect x="6" y="4" width="4" height="16" fill="currentColor"/><rect x="14" y="4" width="4" height="16" fill="currentColor"/>';rTick()}
 else{ic.innerHTML='<polygon points="5,3 19,12 5,21"/>';clearTimeout(S.rTmr)}}
+
 function rTick(){if(!S.rPlay||!S.rOn)return;rStepFwd();
 if(S.rCutI>=S.raw.length-1){S.rPlay=false;document.getElementById('ricon').innerHTML='<polygon points="5,3 19,12 5,21"/>';return}
-S.rTmr=setTimeout(rTick,200/S.rSpd)}
-function rCycleSpd(){S.rSpdI=(S.rSpdI+1)%S.rSpds.length;S.rSpd=S.rSpds[S.rSpdI];updRSpd()}
+S.rTmr=setTimeout(rTick,500/S.rSpd)}
+
+function rCycleSpd(){S.rSpdI=(S.rSpdI+1)%S.rSpds.length;S.rSpd=S.rSpds[S.rSpdI];updRSpd();
+if(S.rPlay){clearTimeout(S.rTmr);rTick()}}
 function updRSpd(){document.getElementById('rspeed').textContent=S.rSpd+'x'}
 function updRInfo(){const dt=new Date(S.rCut);const rem=S.raw.length-S.rCutI-1;
-document.getElementById('rinfo').textContent=fmtDT(dt)+' | '+S.rCutI+'/'+S.raw.length+' | '+rem.toLocaleString()+' left'}
+document.getElementById('rinfo').textContent=fmtDT(dt)+' | Bar '+S.rCutI+'/'+S.raw.length+' | '+rem.toLocaleString()+' bars left'}
+
+function rReset(){
+if(!S.rOn)return;
+S.rCutI=S.rCutStartI;S.rCut=S.rCutStart;
+S.rPlay=false;clearTimeout(S.rTmr);
+document.getElementById('ricon').innerHTML='<polygon points="5,3 19,12 5,21"/>';
+document.getElementById('rb-text').textContent='REPLAY MODE';
+S.tfCache={};rebuildR();scrollEnd();render();
+}
+
 function rExit(){S.rOn=false;S.rPlay=false;clearTimeout(S.rTmr);S.tfCache={};
-document.getElementById('rbar').classList.remove('vis');document.getElementById('btn-replay').classList.remove('on');
-document.getElementById('ricon').innerHTML='<polygon points="5,3 19,12 5,21"/>';switchTF(S.tf)}
+document.getElementById('rbar').classList.remove('vis');
+document.getElementById('btn-replay').classList.remove('on');
+document.getElementById('replay-badge').style.display='none';
+document.getElementById('ricon').innerHTML='<polygon points="5,3 19,12 5,21"/>';
+switchTF(S.tf)}
+
 function scrollEnd(){const a=getArea(),step=S.cw+S.cg,vis=Math.floor(a.w/step);
 S.vEnd=S.cand.length-1;S.vStart=Math.max(0,S.vEnd-vis+1);S.autoScale=true}
 
 // ====================== GOTO / CALENDAR ======================
 function showGoto(){
 document.getElementById('goto-modal').classList.add('show');
-// Init calendar to dataset range
 if(S.info.last){const d=S.info.last;S.calYear=d.getFullYear();S.calMonth=d.getMonth();S.calDay=d.getDate()}
 renderCal();renderQuickDates();
 document.getElementById('goto-time').focus();
@@ -1276,20 +1988,15 @@ const monthNames=['January','February','March','April','May','June','July','Augu
 let h=`<div class="cal-head"><button onclick="calNav(-1)">&#9664;</button><span>${monthNames[month]} ${year}</span><button onclick="calNav(1)">&#9654;</button></div>`;
 h+=`<div class="cal-grid">`;
 ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(d=>{h+=`<div class="cal-dow">${d}</div>`});
-
-// Previous month
 for(let i=dow-1;i>=0;i--){const d=prevDays-i;h+=`<div class="cal-day out" onclick="calPick(${year},${month-1},${d})">${d}</div>`}
-// Current month
 for(let d=1;d<=daysInMonth;d++){
 const dt=new Date(year,month,d);
 let cls='cal-day';
 if(d===S.calDay&&month===S.calMonth&&year===S.calYear)cls+=' sel';
-// Check if date is in dataset range
 if(S.info.first&&S.info.last){
 if(dt<new Date(S.info.first.getFullYear(),S.info.first.getMonth(),S.info.first.getDate())||
    dt>new Date(S.info.last.getFullYear(),S.info.last.getMonth(),S.info.last.getDate()+1))cls+=' dis'}
 h+=`<div class="${cls}" onclick="calPick(${year},${month},${d})">${d}</div>`}
-// Next month
 const total=dow+daysInMonth;const rem=7-total%7;
 if(rem<7)for(let d=1;d<=rem;d++){h+=`<div class="cal-day out" onclick="calPick(${year},${month+1},${d})">${d}</div>`}
 h+=`</div>`;el.innerHTML=h;
@@ -1310,7 +2017,17 @@ return`<div class="qd" onclick="calPick(${ts.getFullYear()},${ts.getMonth()},${t
 }
 
 function gotoDate(){
-const ts=getGotoTs();if(!ts)return;navTo(ts);closeMo()}
+const ts=getGotoTs();if(!ts)return;
+if(S.rOn){
+  // During replay, move cutoff to the goto date
+  const i=findIdx(S.raw,ts);if(i<0)return;
+  S.rCutI=i;S.rCut=S.raw[i].t;S.tfCache={};
+  rebuildR();scrollEnd();render();
+}else{
+  navTo(ts);
+}
+closeMo();
+}
 function gotoReplay(){const ts=getGotoTs();if(!ts)return;closeMo();startReplay(ts)}
 
 function getGotoTs(){
@@ -1324,7 +2041,6 @@ const idx=findIdx(S.cand,ts);if(idx<0)return;
 const a=getArea(),step=S.cw+S.cg,vis=Math.floor(a.w/step);
 S.vStart=Math.max(0,idx-Math.floor(vis/2));
 S.vEnd=Math.min(S.cand.length-1,S.vStart+vis-1);S.autoScale=true;render();
-// Show hint if snapped
 const nearest=S.cand[idx];if(nearest&&Math.abs(nearest.t-ts)>60000){
 document.getElementById('goto-hint')&&(document.getElementById('goto-hint').textContent='Snapped to nearest: '+fmtDT(new Date(nearest.t)))}
 }
@@ -1347,9 +2063,9 @@ el.innerHTML='<div style="font-size:10px;color:var(--tx3);padding:4px 0;font-wei
 S.indicators.map((ind,i)=>`<div class="ai-row">
 <span class="dot" style="background:${ind.params.color||ind.params.basisColor||ind.params.pivotColor};width:6px;height:6px;border-radius:50%;display:inline-block"></span>
 <span class="ai-name">${ind.name} ${ind.params.period||''}</span>
-<button onclick="toggleIndVis(${i})" title="Toggle">${ind.params.visible?'&#128065;':'&#128064;'}</button>
-<button onclick="showIndSet(${i})" title="Settings">&#9881;</button>
-<button onclick="rmInd(${i})" title="Remove" style="color:var(--rd)">&#10005;</button>
+<button onclick="toggleIndVis(${i})" data-tip="Toggle visibility">${ind.params.visible?'&#128065;':'&#128064;'}</button>
+<button onclick="showIndSet(${i})" data-tip="Indicator settings">&#9881;</button>
+<button onclick="rmInd(${i})" data-tip="Remove indicator" style="color:var(--rd)">&#10005;</button>
 </div>`).join('');
 }
 
@@ -1416,6 +2132,54 @@ document.getElementById('btn-sprd').classList.toggle('on',S.showSprd);
 render();saveState();
 }
 
+// ====================== THEME SYSTEM ======================
+function switchTheme(name){
+S.theme=name;
+document.documentElement.setAttribute('data-theme',name);
+document.getElementById('theme-select').value=name;
+render();saveState();
+}
+
+function openCustomTheme(){
+document.getElementById('custom-theme-modal').classList.add('show');
+// Populate with current CSS variable values
+const vars=['--bg0','--bg1','--bg2','--bg3','--bg4','--tx1','--tx2','--tx3','--bd','--ac','--gn','--rd','--gd','--ch','--vu','--vd'];
+const container=document.getElementById('ct-vars');
+container.innerHTML=vars.map(v=>{
+  const cur=css(v);
+  return`<div style="display:flex;align-items:center;gap:6px;margin:3px 0">
+  <input type="color" value="${rgbToHex(cur)}" data-var="${v}" onchange="previewCustomVar(this)" style="width:28px;height:22px;border:1px solid var(--bd);background:none;cursor:pointer">
+  <span style="font-size:10px;font-family:monospace;color:var(--tx2)">${v}</span></div>`;
+}).join('');
+}
+
+function rgbToHex(c){
+if(c.startsWith('#'))return c.length>7?c.slice(0,7):c;
+const m=c.match(/\d+/g);if(!m||m.length<3)return'#888888';
+return'#'+m.slice(0,3).map(v=>(+v).toString(16).padStart(2,'0')).join('');
+}
+
+function previewCustomVar(input){
+document.documentElement.style.setProperty(input.dataset.var,input.value);render();
+}
+
+function applyCustomTheme(){
+const inputs=document.querySelectorAll('#ct-vars input[type=color]');
+const theme={};
+inputs.forEach(inp=>{theme[inp.dataset.var]=inp.value;
+document.documentElement.style.setProperty(inp.dataset.var,inp.value)});
+S.customTheme=theme;S.theme='custom';
+document.documentElement.setAttribute('data-theme','custom');
+document.getElementById('theme-select').value='custom';
+closeMo();render();saveState();
+}
+
+function resetCustomTheme(){
+const inputs=document.querySelectorAll('#ct-vars input[type=color]');
+inputs.forEach(inp=>{document.documentElement.style.removeProperty(inp.dataset.var)});
+closeMo();render();
+}
+
 // ====================== UI CONTROLS ======================
 function toggleLeftPanel(){S.lpOpen=!S.lpOpen;document.getElementById('left-panel').classList.toggle('collapsed',!S.lpOpen);
 setTimeout(resizeCV,200);saveState()}
@@ -1423,7 +2187,6 @@ function toggleVol(){S.showVol=!S.showVol;document.getElementById('btn-vol').cla
 document.getElementById('cs-vol').checked=S.showVol;S.autoScale=true;render();saveState()}
 function toggleSprd(){S.showSprd=!S.showSprd;document.getElementById('btn-sprd').classList.toggle('on',S.showSprd);
 document.getElementById('cs-sprd').checked=S.showSprd;render();saveState()}
-function toggleTheme(){S.theme=S.theme==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',S.theme);render();saveState()}
 function fitChart(){S.vStart=0;S.vEnd=S.cand.length-1;S.autoScale=true;
 const a=getArea();S.cw=Math.max(1,Math.min(8,a.w/S.cand.length-1));S.cg=Math.max(.5,Math.min(S.cw*.3,2));render()}
 function showQuality(){
@@ -1445,39 +2208,71 @@ const i=S.info;document.getElementById('qr-content').innerHTML=`
 <div class="ql"><span class="qlb">Real Volume</span><span class="qlv">${i.hasVol?'Yes':'No (CFD spot)'}</span></div>
 <div class="ql"><span class="qlb">Spread</span><span class="qlv">${i.hasSprd?'Yes':'No'}</span></div>
 <div class="ql"><span class="qlb">Status</span><span class="qlv g">READY</span></div>`;
-document.getElementById('qual-modal').classList.add('show')}
+document.getElementById('quality-modal').classList.add('show')}
+
+function toggleDebug(){S.showDebug=!S.showDebug;
+document.getElementById('debug-panel').style.display=S.showDebug?'block':'none';saveState()}
+
+function toggleDtbCols(){S.dtb2col=!S.dtb2col;
+document.querySelector('.dtb').classList.toggle('two-col',S.dtb2col);saveState()}
+
+function updateDebug(){
+if(!S.showDebug)return;
+const dp=document.getElementById('debug-panel');if(!dp)return;
+const now=performance.now();
+dp.innerHTML=`<div style="font-weight:600;margin-bottom:4px">DEBUG</div>
+<div>TF: ${S.tf} | Candles: ${S.cand.length}</div>
+<div>View: ${S.vStart}-${S.vEnd} (${S.vEnd-S.vStart+1} visible)</div>
+<div>CW: ${S.cw.toFixed(1)} CG: ${S.cg.toFixed(1)}</div>
+<div>Price: ${S.pMin.toFixed(3)}-${S.pMax.toFixed(3)}</div>
+<div>Drawings: ${S.drawings.length} | Indicators: ${S.indicators.length}</div>
+<div>Replay: ${S.rOn?'ON cut='+S.rCutI+'/'+S.raw.length:'OFF'}</div>
+<div>Mouse: ${S.mx.toFixed(0)},${S.my.toFixed(0)}</div>
+<div>Tool: ${S.tool} | Magnet: ${S.magnetMode} | DrawMode: ${S.drawMode} | DrawState: ${S.drawState}</div>
+<div>Cache keys: ${Object.keys(S.tfCache).length}</div>`;
+}
 
 function updOHLC(vis){
 const idx=S.hoverIdx>=0?S.hoverIdx:vis.length-1;if(idx<0||idx>=vis.length)return;
 const c=vis[idx];const up=c.c>=c.o;const cl=up?'ou':'od';
-['o-o','o-h','o-l','o-c'].forEach(id=>{document.getElementById(id).className='ov '+cl});
-document.getElementById('o-o').textContent=c.o.toFixed(S.prec);
-document.getElementById('o-h').textContent=c.h.toFixed(S.prec);
-document.getElementById('o-l').textContent=c.l.toFixed(S.prec);
-document.getElementById('o-c').textContent=c.c.toFixed(S.prec);
-document.getElementById('o-v').textContent=(c.tv||c.v).toLocaleString();
-document.getElementById('o-s').textContent=c.s?c.s.toFixed(0):'—';
+['o-val','h-val','l-val','c-val'].forEach(id=>{const el=document.getElementById(id);if(el)el.className='ov '+cl});
+const ov=document.getElementById('o-val');if(ov)ov.textContent=c.o.toFixed(S.prec);
+const hv=document.getElementById('h-val');if(hv)hv.textContent=c.h.toFixed(S.prec);
+const lv=document.getElementById('l-val');if(lv)lv.textContent=c.l.toFixed(S.prec);
+const cv2=document.getElementById('c-val');if(cv2)cv2.textContent=c.c.toFixed(S.prec);
+const vv=document.getElementById('v-val');if(vv)vv.textContent=(c.tv||c.v).toLocaleString();
+const sv=document.getElementById('s-val');if(sv)sv.textContent=c.s?c.s.toFixed(0):'—';
+const sw=document.getElementById('s-val-wrap');if(sw)sw.style.display=c.s?'':'none';
 }
 
 function updStatus(){
-document.getElementById('st-rows').textContent='Rows: '+(S.raw.length||0).toLocaleString();
-if(S.info.first&&S.info.last)document.getElementById('st-range').textContent=fmtD(S.info.first)+' — '+fmtD(S.info.last);
+const stb=document.getElementById('st-bars');if(stb)stb.textContent='Bars: '+(S.raw.length||0).toLocaleString();
+if(S.info.first&&S.info.last){const sts=document.getElementById('st-src');if(sts)sts.textContent='Source: '+(S.sources[S.activeIdx]?.name||'—')}
 }
 
 // ====================== KEYBOARD ======================
 function onKey(e){
 if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT')return;
 const k=e.key,ctrl=e.ctrlKey||e.metaKey;
+// Escape: cancel drawing preview first, then deselect, then close panels
+if(k==='Escape'){
+if(S.drawState==='preview'){cancelDrawing();return}
+closeMo();document.getElementById('ctx-menu').classList.remove('show');
+if(S.tool!=='pointer')setTool('pointer');
+S.selDraw=-1;S.drawEditIdx=-1;S.drawEditAnchor=null;S.drawEditStart=null;
+document.getElementById('dsp').classList.remove('show');
+document.getElementById('ind-panel').classList.remove('show');
+document.getElementById('cset').classList.remove('show');render();return}
 if(k===' '){e.preventDefault();if(S.rOn)rToggle();return}
 if(k==='ArrowRight'){e.preventDefault();if(S.rOn)rStepFwd();else{S.vStart++;S.vEnd++;if(S.vEnd>=S.cand.length)S.vEnd=S.cand.length-1;S.autoScale=true;render()}return}
 if(k==='ArrowLeft'){e.preventDefault();if(S.rOn)rStepBack();else{if(S.vStart>0){S.vStart--;S.vEnd--}S.autoScale=true;render()}return}
-if(k==='Delete'||k==='Backspace'){if(S.selDraw>=0){S.undo.push({a:'rm',i:S.selDraw,d:S.drawings[S.selDraw]});S.drawings.splice(S.selDraw,1);S.selDraw=-1;document.getElementById('dsp').classList.remove('show');render();saveState()}return}
+if(k==='Delete'||k==='Backspace'){if(S.selDraw>=0){delDraw(S.selDraw)}return}
 if(ctrl&&k==='z'){e.preventDefault();undo();return}
 if(ctrl&&k==='y'){e.preventDefault();redo();return}
 if(k==='f'||k==='F'){fitChart();return}
 if(k==='r'||k==='R'){toggleReplay();return}
 if(k==='m'||k==='M'){toggleMagnet();return}
-if(k==='Escape'){closeMo();if(S.dip){S.dip=null;render()}if(S.tool!=='pointer')setTool('pointer');S.selDraw=-1;document.getElementById('dsp').classList.remove('show');document.getElementById('ind-panel').classList.remove('show');document.getElementById('cset').classList.remove('show');render();return}
+if(k==='d'||k==='D'){toggleDrawMode();return}
 const tfMap={'1':'M1','2':'M5','3':'M15','4':'H1','5':'H4','6':'D1'};
 if(tfMap[k]){switchTF(tfMap[k]);return}
 }
@@ -1486,19 +2281,29 @@ if(tfMap[k]){switchTF(tfMap[k]);return}
 function saveState(){
 try{localStorage.setItem('xau_state',JSON.stringify({
 theme:S.theme,tf:S.tf,showVol:S.showVol,showSprd:S.showSprd,showGrid:S.showGrid,showCross:S.showCross,
-magnet:S.magnet,upColor:S.upColor,dnColor:S.dnColor,prec:S.prec,tzMode:S.tzMode,lpOpen:S.lpOpen,
-drawings:S.drawings,indicators:S.indicators.map(i=>({type:i.type,name:i.name,params:i.params}))
+magnetMode:S.magnetMode,magnetRadius:S.magnetRadius,magnetSources:S.magnetSources,drawMode:S.drawMode,
+upColor:S.upColor,dnColor:S.dnColor,prec:S.prec,tzMode:S.tzMode,lpOpen:S.lpOpen,
+drawings:S.drawings,indicators:S.indicators.map(i=>({type:i.type,name:i.name,params:i.params})),
+toolDefaults:S.toolDefaults,customTheme:S.customTheme,dtb2col:S.dtb2col,showDebug:S.showDebug
 }))}catch(e){}}
 
 function loadState(){
 try{const s=JSON.parse(localStorage.getItem('xau_state'));if(!s)return;
-if(s.theme){S.theme=s.theme;document.documentElement.setAttribute('data-theme',S.theme)}
+if(s.theme){S.theme=s.theme;document.documentElement.setAttribute('data-theme',S.theme);
+if(document.getElementById('theme-select'))document.getElementById('theme-select').value=S.theme}
 if(s.tf)switchTF(s.tf);
 if(s.showVol!==undefined){S.showVol=s.showVol;document.getElementById('btn-vol').classList.toggle('on',S.showVol);document.getElementById('cs-vol').checked=S.showVol}
 if(s.showSprd!==undefined){S.showSprd=s.showSprd;document.getElementById('btn-sprd').classList.toggle('on',S.showSprd);document.getElementById('cs-sprd').checked=S.showSprd}
 if(s.showGrid!==undefined){S.showGrid=s.showGrid;document.getElementById('cs-grid').checked=S.showGrid}
 if(s.showCross!==undefined){S.showCross=s.showCross;document.getElementById('cs-cross').checked=S.showCross}
-if(s.magnet){S.magnet=s.magnet;document.getElementById('btn-mag').classList.toggle('on',S.magnet)}
+// Legacy: migrate old magnet boolean to new mode system
+if(s.magnetMode){S.magnetMode=s.magnetMode}else if(s.magnet){S.magnetMode=s.magnet?'weak':'off'}
+document.getElementById('btn-mag').classList.toggle('on',S.magnetMode!=='off');
+const _mb=document.getElementById('mag-badge');
+if(_mb){if(S.magnetMode==='off'){_mb.style.display='none'}else{_mb.style.display='';_mb.textContent=S.magnetMode==='weak'?'W':'S'}}
+if(s.magnetRadius)S.magnetRadius=s.magnetRadius;
+if(s.magnetSources)S.magnetSources=s.magnetSources;
+if(s.drawMode){S.drawMode=s.drawMode;const dmb=document.getElementById('btn-drawmode');if(dmb){dmb.classList.toggle('continuous',S.drawMode==='continuous');dmb.textContent=S.drawMode==='single'?'1x':'∞'}}
 if(s.upColor){S.upColor=s.upColor;document.getElementById('cs-up').value=s.upColor}
 if(s.dnColor){S.dnColor=s.dnColor;document.getElementById('cs-dn').value=s.dnColor}
 if(s.prec){S.prec=s.prec;document.getElementById('cs-prec').value=s.prec}
@@ -1506,6 +2311,12 @@ if(s.tzMode){S.tzMode=s.tzMode;document.getElementById('cs-tz').value=s.tzMode}
 if(s.lpOpen!==undefined){S.lpOpen=s.lpOpen;document.getElementById('left-panel').classList.toggle('collapsed',!S.lpOpen)}
 if(s.drawings)S.drawings=s.drawings;
 if(s.indicators){S.indicators=s.indicators.map(i=>({...i,_cache:null,_cacheLen:0}));renderActInd()}
+if(s.toolDefaults)S.toolDefaults=s.toolDefaults;
+if(s.customTheme){S.customTheme=s.customTheme;
+if(S.theme==='custom'){Object.entries(s.customTheme).forEach(([k,v])=>{document.documentElement.style.setProperty(k,v)})}}
+if(s.dtb2col!==undefined){S.dtb2col=s.dtb2col;document.querySelector('.dtb')?.classList.toggle('two-col',S.dtb2col)}
+if(s.showDebug!==undefined){S.showDebug=s.showDebug;
+const dp=document.getElementById('debug-panel');if(dp)dp.style.display=S.showDebug?'block':'none'}
 render();
 }catch(e){}}
 
