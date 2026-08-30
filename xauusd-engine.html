@@ -1540,7 +1540,7 @@ cv.addEventListener('mouseleave',()=>{S.mx=-1;S.my=-1;S.hoverIdx=-1;S.snapInfo=n
 cv.addEventListener('contextmenu',onCtx);document.addEventListener('keydown',onKey);
 document.addEventListener('click',e=>{
 if(!e.target.closest('.ctx'))document.getElementById('ctx-menu').classList.remove('show');
-if(!e.target.closest('.dsp')&&!e.target.closest('.db'))document.getElementById('dsp').classList.remove('show');
+if(!e.target.closest('.dsp')&&!e.target.closest('.db')&&e.target!==cv)document.getElementById('dsp').classList.remove('show');
 });
 }
 
