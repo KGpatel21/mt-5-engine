@@ -164,12 +164,31 @@ label{font-size:11px;color:var(--tx2);display:block;margin:6px 0 2px}
 .sbar span{display:flex;align-items:center;gap:4px}
 .sbar .sd{width:5px;height:5px;border-radius:50%;background:var(--gn)}
 
-/* Drawing settings panel */
-.dsp{position:absolute;left:42px;top:6px;background:var(--bg2);border:1px solid var(--bd);border-radius:8px;padding:10px;width:220px;z-index:15;display:none;box-shadow:0 4px 16px rgba(0,0,0,.3);max-height:80vh;overflow-y:auto}
-.dsp.show{display:block}
-.dsp h4{font-size:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
-.dsp h4 button{background:none;border:none;color:var(--tx3);cursor:pointer;font-size:14px;padding:2px}
-.dsp h4 button:hover{color:var(--tx1)}
+/* Drawing settings panel — TradingView-style tabbed */
+.dsp{position:absolute;left:42px;top:6px;background:var(--bg2);border:1px solid var(--bd);border-radius:8px;padding:0;width:280px;z-index:15;display:none;box-shadow:0 4px 16px rgba(0,0,0,.3);max-height:80vh;overflow:hidden}
+.dsp.show{display:flex;flex-direction:column}
+.dsp-header{display:flex;justify-content:space-between;align-items:center;padding:8px 10px 4px;border-bottom:1px solid var(--bd)}
+.dsp-header h4{font-size:12px;margin:0;font-weight:600}
+.dsp-header button{background:none;border:none;color:var(--tx3);cursor:pointer;font-size:14px;padding:2px}
+.dsp-header button:hover{color:var(--tx1)}
+.dsp-tabs{display:flex;border-bottom:1px solid var(--bd);padding:0 6px;gap:0}
+.dsp-tab{background:none;border:none;color:var(--tx3);font-size:10px;padding:6px 10px;cursor:pointer;border-bottom:2px solid transparent;font-family:var(--ft);transition:.15s}
+.dsp-tab:hover{color:var(--tx1)}
+.dsp-tab.active{color:var(--ac);border-bottom-color:var(--ac)}
+.dsp-body{padding:8px 10px;overflow-y:auto;max-height:calc(80vh - 70px)}
+.dsp-tc{display:none}
+.dsp-tc.active{display:block}
+.dsp-sec{font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;padding:6px 0 3px;font-weight:600;border-bottom:1px solid var(--bd);margin-bottom:4px}
+.dsp-row{display:flex;align-items:center;gap:6px;margin:4px 0;font-size:11px;color:var(--tx2)}
+.dsp-row label{flex:1;min-width:60px}
+.dsp-row input,.dsp-row select{flex:1;max-width:120px}
+.dsp-row input[type=color]{width:28px;height:22px;padding:1px;flex:0 0 28px;cursor:pointer;border:1px solid var(--bd);border-radius:3px}
+.dsp-row input[type=number]{width:60px;flex:0 0 60px}
+.dsp-row input[type=range]{flex:1}
+.dsp-chk{display:flex;align-items:center;gap:6px;margin:3px 0;font-size:11px;color:var(--tx2);cursor:pointer}
+.dsp-chk input{margin:0}
+.dsp-actions{display:flex;gap:4px;margin-top:8px;padding-top:6px;border-top:1px solid var(--bd)}
+.dsp-actions button{flex:1;font-size:10px;padding:4px 6px}
 /* Magnet badge */
 .mag-badge{position:absolute;top:-2px;right:-2px;background:var(--ac);color:#fff;font-size:7px;padding:0 3px;border-radius:3px;line-height:12px;font-weight:700;pointer-events:none}
 /* Draw mode toggle */
@@ -184,7 +203,7 @@ label{font-size:11px;color:var(--tx2);display:block;margin:6px 0 2px}
 .mag-set .chkr{font-size:11px;display:flex;align-items:center;gap:4px;margin:2px 0}
 /* Fibonacci level editor */
 .fib-level-row{display:flex;align-items:center;gap:4px;margin:2px 0;font-size:10px}
-.fib-level-row input[type=checkbox]{margin:0}
+.fib-level-row input[type=checkbox]{margin:0;flex:0 0 auto}
 .fib-level-row input[type=number]{width:50px;padding:1px 3px;font-size:10px;background:var(--bg1);color:var(--tx1);border:1px solid var(--bd);border-radius:3px}
 .fib-level-row input[type=color]{width:20px;height:16px;padding:0;border:none;cursor:pointer}
 .fib-level-row button{background:none;border:none;color:var(--rd);cursor:pointer;font-size:12px;padding:0 2px}
@@ -1418,7 +1437,33 @@ const dx=x2-x1,dy=y2-y1;const len=Math.sqrt(dx*dx+dy*dy)||1;
 cx.lineTo(x2+dx/len*3000,y2+dy/len*3000)}
 else cx.lineTo(x2,y2);
 cx.stroke();
-if(sel){drawH(x1,y1);drawH(x2,y2);drawMid((x1+x2)/2,(y1+y2)/2)}break}
+if(sel||d.showMid!==false){if(d.showMid!==false&&sel)drawMid((x1+x2)/2,(y1+y2)/2)}
+if(sel){drawH(x1,y1);drawH(x2,y2)}
+// Stats display
+if(d.showStats&&(sel||d.alwaysStats)){
+const pd=d.p2-d.p1;const pct=(pd/d.p1*100);
+const i1=findIdx(S.cand,d.t1),i2=findIdx(S.cand,d.t2);
+const bars=Math.abs(i2-i1);
+let parts=[];
+if(d.statPrice!==false)parts.push((pd>=0?'+':'')+pd.toFixed(S.prec));
+if(d.statPct!==false)parts.push((pct>=0?'+':'')+pct.toFixed(2)+'%');
+if(d.statBars!==false)parts.push(bars+' bars');
+if(d.statAngle){const ang=Math.atan2(y1-y2,x2-x1)*180/Math.PI;parts.push(ang.toFixed(1)+'°')}
+if(parts.length){
+const lb=parts.join(' | ');
+cx.font='9px '+css('--mn');const tw=cx.measureText(lb).width+8;
+const sx=(x1+x2)/2,sy=(y1+y2)/2-10;
+cx.fillStyle='rgba(0,0,0,.75)';cx.fillRect(sx-tw/2,sy-8,tw,14);
+cx.fillStyle=pd>=0?S.upColor:S.dnColor;cx.textAlign='center';cx.textBaseline='middle';
+cx.fillText(lb,sx,sy-1);
+}}
+// Price labels on axis
+if(d.showPriceLabel){
+cx.font='9px '+css('--mn');
+[d.p1,d.p2].forEach(pr=>{const py=p2y(pr,a);const lb=pr.toFixed(S.prec);const tw=cx.measureText(lb).width+6;
+cx.fillStyle=col;cx.fillRect(a.w,py-7,tw+4,14);cx.fillStyle='#fff';cx.textAlign='left';cx.textBaseline='middle';cx.fillText(lb,a.w+2,py)});
+}
+break}
 case'hline':{const y=p2y(d.price,a);
 cx.beginPath();cx.moveTo(0,y);cx.lineTo(a.w,y);cx.stroke();
 // Price label
@@ -1458,32 +1503,55 @@ cx.beginPath();cx.moveTo(x1,y1b);cx.lineTo(x2,y2b);cx.stroke();
 cx.fillStyle=col;cx.globalAlpha=(baseAlpha*(opacityMul||1))*.06;
 cx.beginPath();cx.moveTo(x1,y1);cx.lineTo(x2,y2);cx.lineTo(x2,y2b);cx.lineTo(x1,y1b);cx.closePath();cx.fill();
 cx.globalAlpha=baseAlpha*(opacityMul||1);
+// Middle line
+if(d.showMidLine){
+const y1m=(y1+y1b)/2,y2m=(y2+y2b)/2;
+cx.setLineDash([4,3]);cx.beginPath();cx.moveTo(x1,y1m);cx.lineTo(x2,y2m);cx.stroke();cx.setLineDash(d.ls==='dashed'?[6,3]:d.ls==='dotted'?[2,2]:[]);
+}
 if(sel){drawH(x1,y1);drawH(x2,y2);drawH(x1,y1b);drawH(x2,y2b)}break}
 case'fib':case'fibext':{
 const y1=p2y(d.p1,a),y2=p2y(d.p2,a);const range=d.p2-d.p1;
 const levels=d.levels||FIBS;
 const lColors=d.levelColors||null;
-// Draw fills between levels
+const lVis=d.levelVis||null;
+const fibReverse=d.reverse||false;
+const showBg=d.showBg!==false;
+const showPrices=d.showPrices!==false;
+const showLevels=d.showLevels!==false;
+const extLines=d.extLines||false;
+const x1f=t2x(d.t1,step),x2f=t2x(d.t2,step);
+const fLeft=Math.min(x1f,x2f),fRight=Math.max(x1f,x2f);
+// Draw fills between visible levels
+if(showBg){
 for(let li=0;li<levels.length-1;li++){
+if(lVis&&lVis[li]===false)continue;
+if(lVis&&lVis[li+1]===false)continue;
 const lv1=levels[li],lv2=levels[li+1];
-const pr1=d.type==='fibext'?d.p2+range*lv1:d.p1+range*(1-lv1);
-const pr2=d.type==='fibext'?d.p2+range*lv2:d.p1+range*(1-lv2);
+const pr1=d.type==='fibext'?d.p2+range*lv1:fibReverse?d.p2-range*(1-lv1):d.p1+range*(1-lv1);
+const pr2=d.type==='fibext'?d.p2+range*lv2:fibReverse?d.p2-range*(1-lv2):d.p1+range*(1-lv2);
 const fy1=p2y(pr1,a),fy2=p2y(pr2,a);
 const fc=lColors&&lColors[li]?lColors[li]:col;
 cx.fillStyle=fc;cx.globalAlpha=(baseAlpha*(opacityMul||1))*.06;
-cx.fillRect(0,Math.min(fy1,fy2),a.w,Math.abs(fy2-fy1));
+cx.fillRect(extLines?0:fLeft,Math.min(fy1,fy2),extLines?a.w:(fRight-fLeft),Math.abs(fy2-fy1));
 cx.globalAlpha=baseAlpha*(opacityMul||1);
-}
+}}
 levels.forEach((lv,li)=>{
-const pr=d.type==='fibext'?d.p2+range*lv:d.p1+range*(1-lv);
+if(lVis&&lVis[li]===false)return;
+const pr=d.type==='fibext'?d.p2+range*lv:fibReverse?d.p2-range*(1-lv):d.p1+range*(1-lv);
 const y=p2y(pr,a);
 const lc=lColors&&lColors[li]?lColors[li]:col;
-cx.strokeStyle=lc;cx.beginPath();cx.moveTo(0,y);cx.lineTo(a.w,y);cx.stroke();
+cx.strokeStyle=lc;cx.beginPath();
+if(extLines){cx.moveTo(0,y);cx.lineTo(a.w,y)}
+else{cx.moveTo(fLeft,y);cx.lineTo(fRight,y)}
+cx.stroke();
 cx.font='9px '+css('--mn');cx.fillStyle=lc;cx.textAlign='left';
-cx.fillText((lv*100).toFixed(1)+'% '+pr.toFixed(S.prec),4,y-3);
+let lbl='';
+if(showLevels)lbl+=(lv*100).toFixed(1)+'%';
+if(showPrices)lbl+=(lbl?' ':'')+ pr.toFixed(S.prec);
+if(lbl)cx.fillText(lbl,(extLines?4:fLeft+4),y-3);
 cx.strokeStyle=col;
 });
-if(sel){drawH(t2x(d.t1,step),y1);drawH(t2x(d.t2,step),y2)}break}
+if(sel){drawH(x1f,y1);drawH(x2f,y2)}break}
 case'text':{
 const x=t2x(d.t1,step),y=p2y(d.p1,a);
 cx.font=(d.fs||12)+'px '+css('--ft');cx.fillStyle=col;cx.textAlign='left';cx.textBaseline='top';
@@ -1505,25 +1573,74 @@ const ang=Math.atan2(y2-y1,x2-x1);const hs=10;
 cx.beginPath();cx.moveTo(x2,y2);cx.lineTo(x2-hs*Math.cos(ang-.4),y2-hs*Math.sin(ang-.4));
 cx.lineTo(x2-hs*Math.cos(ang+.4),y2-hs*Math.sin(ang+.4));cx.closePath();cx.fill();
 if(sel){drawH(x1,y1);drawH(x2,y2)}break}
-case'measure':case'longpos':case'shortpos':{
+case'measure':{
 const x1=t2x(d.t1,step),y1=p2y(d.p1,a),x2=t2x(d.t2,step),y2=p2y(d.p2,a);
-const isLong=d.type==='longpos';const isShort=d.type==='shortpos';
-const fillC=isLong?'rgba(38,166,154,.12)':isShort?'rgba(239,83,80,.12)':'rgba(41,98,255,.1)';
-cx.fillStyle=fillC;cx.fillRect(Math.min(x1,x2),Math.min(y1,y2),Math.abs(x2-x1),Math.abs(y2-y1));
-cx.strokeRect(Math.min(x1,x2),Math.min(y1,y2),Math.abs(x2-x1),Math.abs(y2-y1));
 const pd=d.p2-d.p1;const pct=(pd/d.p1*100);
 const i1=findIdx(S.cand,d.t1),i2=findIdx(S.cand,d.t2);
 const bars=Math.abs(i2-i1);const tdiff=Math.abs(d.t2-d.t1);
-let lb;
-if(isLong||isShort){
-const dir=isLong?(pd>=0?'TP':'SL'):(pd<=0?'TP':'SL');
-lb=`${dir} ${pd>=0?'+':''}${pd.toFixed(S.prec)} (${pct>=0?'+':''}${pct.toFixed(2)}%)`}
-else lb=`${pd>=0?'+':''}${pd.toFixed(S.prec)} (${pct>=0?'+':''}${pct.toFixed(2)}%) | ${bars} bars | ${fmtDur(tdiff)}`;
-cx.font='10px '+css('--mn');const tw=cx.measureText(lb).width+10;
-const lx=(x1+x2)/2,ly=Math.min(y1,y2)-8;
-cx.fillStyle='rgba(0,0,0,.75)';cx.fillRect(lx-tw/2,ly-13,tw,16);
-cx.fillStyle=isLong?S.upColor:isShort?S.dnColor:(pd>=0?S.upColor:S.dnColor);
-cx.textAlign='center';cx.textBaseline='middle';cx.fillText(lb,lx,ly-5);
+// Dashed border rect
+cx.setLineDash([4,3]);cx.strokeStyle=col;
+cx.strokeRect(Math.min(x1,x2),Math.min(y1,y2),Math.abs(x2-x1),Math.abs(y2-y1));
+cx.setLineDash([]);
+// Background fill
+cx.fillStyle=col;cx.globalAlpha=(baseAlpha*(opacityMul||1))*.06;
+cx.fillRect(Math.min(x1,x2),Math.min(y1,y2),Math.abs(x2-x1),Math.abs(y2-y1));
+cx.globalAlpha=baseAlpha*(opacityMul||1);
+// Rounded rect label
+const lb=`${pd>=0?'+':''}${pd.toFixed(S.prec)} (${pct>=0?'+':''}${pct.toFixed(2)}%) | ${bars} bars | ${fmtDur(tdiff)}`;
+cx.font='10px '+css('--mn');const tw=cx.measureText(lb).width+14;const th=20;
+const lx=(x1+x2)/2,ly=Math.min(y1,y2)-th/2-4;
+cx.fillStyle='rgba(30,30,30,.85)';
+cx.beginPath();const rr=4,rx=lx-tw/2,ry=ly-th/2;
+cx.moveTo(rx+rr,ry);cx.lineTo(rx+tw-rr,ry);cx.quadraticCurveTo(rx+tw,ry,rx+tw,ry+rr);
+cx.lineTo(rx+tw,ry+th-rr);cx.quadraticCurveTo(rx+tw,ry+th,rx+tw-rr,ry+th);
+cx.lineTo(rx+rr,ry+th);cx.quadraticCurveTo(rx,ry+th,rx,ry+th-rr);
+cx.lineTo(rx,ry+rr);cx.quadraticCurveTo(rx,ry,rx+rr,ry);cx.closePath();cx.fill();
+cx.fillStyle=pd>=0?S.upColor:S.dnColor;cx.textAlign='center';cx.textBaseline='middle';
+cx.fillText(lb,lx,ly);
+if(sel){drawH(x1,y1);drawH(x2,y2)}
+break}
+case'longpos':case'shortpos':{
+const x1=t2x(d.t1,step),y1=p2y(d.p1,a),x2=t2x(d.t2,step),y2=p2y(d.p2,a);
+const isLong=d.type==='longpos';
+const entry=d.p1,target=d.p2;
+const lotSize=d.lotSize||0.01,account=d.account||10000,riskPct=d.riskPct||1;
+// TP and SL zones
+let tp,sl;
+if(isLong){tp=Math.max(entry,target);sl=Math.min(entry,target)}
+else{tp=Math.min(entry,target);sl=Math.max(entry,target)}
+const entryY=p2y(entry,a),tpY=p2y(tp,a),slY=p2y(sl,a);
+const w=Math.abs(x2-x1)||100,left=Math.min(x1,x2);
+// TP Zone (green)
+cx.fillStyle='rgba(38,166,154,0.15)';
+cx.fillRect(left,Math.min(entryY,tpY),w,Math.abs(tpY-entryY));
+cx.strokeStyle='rgba(38,166,154,0.8)';cx.lineWidth=1;
+cx.beginPath();cx.moveTo(left,tpY);cx.lineTo(left+w,tpY);cx.stroke();
+// SL Zone (red)
+cx.fillStyle='rgba(239,83,80,0.15)';
+cx.fillRect(left,Math.min(entryY,slY),w,Math.abs(slY-entryY));
+cx.strokeStyle='rgba(239,83,80,0.8)';
+cx.beginPath();cx.moveTo(left,slY);cx.lineTo(left+w,slY);cx.stroke();
+// Entry line
+cx.strokeStyle=col;cx.lineWidth=d.lw||1.5;cx.setLineDash([]);
+cx.beginPath();cx.moveTo(left,entryY);cx.lineTo(left+w,entryY);cx.stroke();
+// Calculations
+const tpPips=Math.abs(tp-entry),slPips=Math.abs(sl-entry);
+const tpPct=(tpPips/entry*100),slPct=(slPips/entry*100);
+const rratio=slPips>0?(tpPips/slPips):0;
+const pipVal=lotSize*100;
+const tpMoney=tpPips*pipVal,slMoney=slPips*pipVal;
+cx.font='9px '+css('--mn');cx.textAlign='left';cx.textBaseline='middle';
+// TP label
+const tpLb=d.compact?`TP ${tpPct.toFixed(1)}%`:`TP: ${tpPips.toFixed(S.prec)} (${tpPct.toFixed(2)}%) $${tpMoney.toFixed(0)}`;
+cx.fillStyle='#26a69a';cx.fillText(tpLb,left+4,(entryY+tpY)/2);
+// SL label
+const slLb=d.compact?`SL ${slPct.toFixed(1)}%`:`SL: ${slPips.toFixed(S.prec)} (${slPct.toFixed(2)}%) -$${slMoney.toFixed(0)}`;
+cx.fillStyle='#ef5350';cx.fillText(slLb,left+4,(entryY+slY)/2);
+// Entry label with R:R
+const rrLb=`Entry: ${entry.toFixed(S.prec)} | R:R ${rratio.toFixed(2)} | Lot ${lotSize}`;
+cx.fillStyle=col;cx.fillText(rrLb,left+4,entryY-8);
+if(sel){drawH(left,entryY);drawH(left+w,entryY);drawH(left,tpY);drawH(left+w,slY)}
 break}
 }
 cx.setLineDash([]);cx.globalAlpha=1;
@@ -1805,47 +1922,184 @@ S.drawings=[];S.selDraw=-1;S.redo=[];render();saveState()}
 // ---- Drawing Settings Panel (Enhanced with Fib Level Editor) ----
 function showDrawSettings(idx){
 const d=S.drawings[idx];if(!d)return;
+S.selDraw=idx;
 const p=document.getElementById('dsp');
-let html=`<h4>${d.type.toUpperCase()}<button onclick="document.getElementById('dsp').classList.remove('show')">&#10005;</button></h4>
-<label>Color</label><input type="color" value="${d.color||'#2962ff'}" onchange="updDraw(${idx},'color',this.value)">
-<label>Thickness</label><input type="number" value="${d.lw||1.5}" min="0.5" max="8" step="0.5" onchange="updDraw(${idx},'lw',+this.value)">
-<label>Line Style</label><select onchange="updDraw(${idx},'ls',this.value)">
-<option value="solid"${d.ls==='solid'?' selected':''}>Solid</option>
-<option value="dashed"${d.ls==='dashed'?' selected':''}>Dashed</option>
-<option value="dotted"${d.ls==='dotted'?' selected':''}>Dotted</option></select>
-<label>Opacity</label><input type="range" min="0.1" max="1" step="0.05" value="${d.opacity!=null?d.opacity:1}" oninput="updDraw(${idx},'opacity',+this.value)" style="width:100%">`;
+const tn=({trendline:'Trend Line',ray:'Ray',extended:'Extended Line',hline:'Horizontal Line',vline:'Vertical Line',hray:'Horizontal Ray',channel:'Parallel Channel',rect:'Rectangle',srzone:'S/R Zone',circle:'Ellipse',triangle:'Triangle',fib:'Fib Retracement',fibext:'Fib Extension',text:'Text',arrow:'Arrow',pricelabel:'Price Label',datelabel:'Date Label',measure:'Measure',longpos:'Long Position',shortpos:'Short Position'})[d.type]||d.type;
+
+// Determine which tabs to show
+const hasTxt=['trendline','ray','extended','hray','hline','channel'].includes(d.type);
+const hasCoords=!['text'].includes(d.type);
+const isFib=d.type==='fib'||d.type==='fibext';
+const isLine=['trendline','ray','extended','hray','arrow'].includes(d.type);
+const isPos=d.type==='longpos'||d.type==='shortpos';
+
+let html=`<div class="dsp-header"><h4>${tn}</h4><button onclick="document.getElementById('dsp').classList.remove('show')">&times;</button></div>`;
+html+=`<div class="dsp-tabs">`;
+html+=`<button class="dsp-tab active" onclick="dspTab(this,'style')">Style</button>`;
+if(hasTxt)html+=`<button class="dsp-tab" onclick="dspTab(this,'text')">Text</button>`;
+if(hasCoords)html+=`<button class="dsp-tab" onclick="dspTab(this,'coords')">Coordinates</button>`;
+html+=`<button class="dsp-tab" onclick="dspTab(this,'vis')">Visibility</button>`;
+html+=`</div><div class="dsp-body">`;
+
+// ===== STYLE TAB =====
+html+=`<div class="dsp-tc active" data-tab="style">`;
+html+=`<div class="dsp-sec">Line</div>`;
+html+=`<div class="dsp-row"><label>Color</label><input type="color" value="${d.color||'#2962ff'}" onchange="updDraw(${idx},'color',this.value)"></div>`;
+html+=`<div class="dsp-row"><label>Width</label><select onchange="updDraw(${idx},'lw',+this.value)">`;
+[1,1.5,2,3,4].forEach(w=>{html+=`<option value="${w}"${(d.lw||1.5)===w?' selected':''}>${w}px</option>`});
+html+=`</select></div>`;
+html+=`<div class="dsp-row"><label>Style</label><select onchange="updDraw(${idx},'ls',this.value)">`;
+html+=`<option value="solid"${d.ls==='solid'?' selected':''}>─── Solid</option>`;
+html+=`<option value="dashed"${d.ls==='dashed'?' selected':''}>- - - Dashed</option>`;
+html+=`<option value="dotted"${d.ls==='dotted'?' selected':''}>··· Dotted</option></select></div>`;
+html+=`<div class="dsp-row"><label>Opacity</label><input type="range" min="0.1" max="1" step="0.05" value="${d.opacity!=null?d.opacity:1}" oninput="updDraw(${idx},'opacity',+this.value)"></div>`;
+
+// Extend options for lines
 if(d.type==='trendline'||d.type==='ray'||d.type==='channel'){
-html+=`<label class="chkr"><input type="checkbox" ${d.extL?'checked':''} onchange="updDraw(${idx},'extL',this.checked)"> Extend Left</label>
-<label class="chkr"><input type="checkbox" ${d.extR?'checked':''} onchange="updDraw(${idx},'extR',this.checked)"> Extend Right</label>`;}
-if(d.type==='text'){
-html+=`<label>Font Size</label><input type="number" value="${d.fs||12}" min="8" max="48" onchange="updDraw(${idx},'fs',+this.value)">
-<label>Text</label><input type="text" value="${(d.text||'').replace(/"/g,'&quot;')}" onchange="updDraw(${idx},'text',this.value)" style="width:100%;background:var(--bg1);color:var(--tx1);border:1px solid var(--bd);border-radius:3px;padding:3px">`;}
-// Fibonacci level editor
-if(d.type==='fib'||d.type==='fibext'){
+html+=`<div class="dsp-chk"><input type="checkbox" ${d.extL?'checked':''} onchange="updDraw(${idx},'extL',this.checked)"><span>Extend Left</span></div>`;
+html+=`<div class="dsp-chk"><input type="checkbox" ${d.extR?'checked':''} onchange="updDraw(${idx},'extR',this.checked)"><span>Extend Right</span></div>`;
+}
+
+// Middle point for lines
+if(isLine){
+html+=`<div class="dsp-sec">Middle Point</div>`;
+html+=`<div class="dsp-chk"><input type="checkbox" ${d.showMid!==false?'checked':''} onchange="updDraw(${idx},'showMid',this.checked)"><span>Show Middle Point</span></div>`;
+}
+
+// Price labels
+if(isLine||d.type==='hline'){
+html+=`<div class="dsp-sec">Price Labels</div>`;
+html+=`<div class="dsp-chk"><input type="checkbox" ${d.showPriceLabel?'checked':''} onchange="updDraw(${idx},'showPriceLabel',this.checked)"><span>Show Price Labels</span></div>`;
+}
+
+// Stats for lines
+if(isLine){
+html+=`<div class="dsp-sec">Stats</div>`;
+html+=`<div class="dsp-chk"><input type="checkbox" ${d.showStats?'checked':''} onchange="updDraw(${idx},'showStats',this.checked)"><span>Show Stats</span></div>`;
+html+=`<div class="dsp-chk"><input type="checkbox" ${d.statPrice!==false?'checked':''} onchange="updDraw(${idx},'statPrice',this.checked)"><span>Price Range</span></div>`;
+html+=`<div class="dsp-chk"><input type="checkbox" ${d.statPct!==false?'checked':''} onchange="updDraw(${idx},'statPct',this.checked)"><span>Percent Change</span></div>`;
+html+=`<div class="dsp-chk"><input type="checkbox" ${d.statBars!==false?'checked':''} onchange="updDraw(${idx},'statBars',this.checked)"><span>Bars Range</span></div>`;
+html+=`<div class="dsp-chk"><input type="checkbox" ${d.statAngle?'checked':''} onchange="updDraw(${idx},'statAngle',this.checked)"><span>Angle</span></div>`;
+}
+
+// Channel offset
+if(d.type==='channel'){
+html+=`<div class="dsp-sec">Channel</div>`;
+html+=`<div class="dsp-row"><label>Offset (price)</label><input type="number" value="${(d.chOffPr||0).toFixed(S.prec)}" step="0.1" onchange="updDraw(${idx},'chOffPr',+this.value)"></div>`;
+html+=`<div class="dsp-chk"><input type="checkbox" ${d.showMidLine?'checked':''} onchange="updDraw(${idx},'showMidLine',this.checked)"><span>Show Middle Line</span></div>`;
+}
+
+// Rectangle/Shape fill
+if(['rect','srzone','circle','triangle'].includes(d.type)){
+html+=`<div class="dsp-sec">Background</div>`;
+html+=`<div class="dsp-chk"><input type="checkbox" ${d.fill!==false?'checked':''} onchange="updDraw(${idx},'fill',this.checked)"><span>Background Fill</span></div>`;
+}
+
+// Fibonacci options
+if(isFib){
+html+=`<div class="dsp-sec">Levels</div>`;
+html+=`<div class="dsp-chk"><input type="checkbox" ${d.showPrices!==false?'checked':''} onchange="updDraw(${idx},'showPrices',this.checked)"><span>Prices</span></div>`;
+html+=`<div class="dsp-chk"><input type="checkbox" ${d.showLevels!==false?'checked':''} onchange="updDraw(${idx},'showLevels',this.checked)"><span>Percentages</span></div>`;
+html+=`<div class="dsp-chk"><input type="checkbox" ${d.showBg!==false?'checked':''} onchange="updDraw(${idx},'showBg',this.checked)"><span>Background</span></div>`;
+html+=`<div class="dsp-chk"><input type="checkbox" ${d.extLines?'checked':''} onchange="updDraw(${idx},'extLines',this.checked)"><span>Extend Lines</span></div>`;
+html+=`<div class="dsp-chk"><input type="checkbox" ${d.reverse?'checked':''} onchange="updDraw(${idx},'reverse',this.checked)"><span>Reverse</span></div>`;
 const levels=d.levels||[...FIBS];
 const colors=d.levelColors||[];
-html+=`<label>Fibonacci Levels</label><div id="fib-levels-edit">`;
+const vis=d.levelVis||levels.map(()=>true);
+html+=`<div id="fib-levels-edit">`;
 levels.forEach((lv,li)=>{
 const lc=colors[li]||d.color||'#2962ff';
+const lvis=vis[li]!==false;
 html+=`<div class="fib-level-row">
+<input type="checkbox" ${lvis?'checked':''} onchange="toggleFibVis(${idx},${li},this.checked)">
 <input type="number" value="${(lv*100).toFixed(1)}" step="0.1" style="width:55px" onchange="updFibLevel(${idx},${li},+this.value/100)">
 <span>%</span>
 <input type="color" value="${lc}" onchange="updFibColor(${idx},${li},this.value)">
-<button onclick="rmFibLevel(${idx},${li})" title="Remove">&#10005;</button>
+<button onclick="rmFibLevel(${idx},${li})" title="Remove">&times;</button>
 </div>`;
 });
 html+=`</div><div style="margin-top:4px;display:flex;gap:4px">
-<button class="mb s" style="font-size:9px;padding:2px 6px" onclick="addFibLevel(${idx})">+ Add Level</button>
+<button class="mb s" style="font-size:9px;padding:2px 6px" onclick="addFibLevel(${idx})">+ Add</button>
 <button class="mb s" style="font-size:9px;padding:2px 6px" onclick="resetFibLevels(${idx})">Reset</button></div>`;
 }
-if(d.type==='channel'){
-html+=`<label>Channel Offset (price)</label><input type="number" value="${(d.chOffPr||0).toFixed(S.prec)}" step="0.1" onchange="updDraw(${idx},'chOffPr',+this.value)" style="width:100%;background:var(--bg1);color:var(--tx1);border:1px solid var(--bd);border-radius:3px;padding:3px">`;}
-html+=`<label class="chkr"><input type="checkbox" ${d.locked?'checked':''} onchange="updDraw(${idx},'locked',this.checked)"> Lock</label>
-<label class="chkr"><input type="checkbox" ${d.hidden?'':'checked'} onchange="updDraw(${idx},'hidden',!this.checked)"> Visible</label>
-<div style="margin-top:8px"><button class="mb s" style="font-size:10px;padding:4px 8px" onclick="dupDraw(${idx})">Duplicate</button>
-<button class="mb s" style="font-size:10px;padding:4px 8px" onclick="saveAsDefault(${idx})">Save as Default</button>
-<button class="mb s" style="font-size:10px;padding:4px 8px;color:var(--rd)" onclick="delDraw(${idx})">Delete</button></div>`;
+
+// Long/Short Position inputs
+if(isPos){
+html+=`<div class="dsp-sec">Position</div>`;
+html+=`<div class="dsp-row"><label>Lot Size</label><input type="number" value="${d.lotSize||0.01}" step="0.01" min="0.01" onchange="updDraw(${idx},'lotSize',+this.value)"></div>`;
+html+=`<div class="dsp-row"><label>Risk %</label><input type="number" value="${d.riskPct||1}" step="0.1" min="0.1" onchange="updDraw(${idx},'riskPct',+this.value)"></div>`;
+html+=`<div class="dsp-row"><label>Account</label><input type="number" value="${d.account||10000}" step="100" onchange="updDraw(${idx},'account',+this.value)"></div>`;
+html+=`<div class="dsp-chk"><input type="checkbox" ${d.compact?'checked':''} onchange="updDraw(${idx},'compact',this.checked)"><span>Compact Stats</span></div>`;
+}
+
+// Text tool font size
+if(d.type==='text'){
+html+=`<div class="dsp-sec">Font</div>`;
+html+=`<div class="dsp-row"><label>Size</label><input type="number" value="${d.fs||12}" min="8" max="48" onchange="updDraw(${idx},'fs',+this.value)"></div>`;
+html+=`<div class="dsp-row"><label>Text</label><input type="text" value="${(d.text||'').replace(/"/g,'&amp;quot;')}" onchange="updDraw(${idx},'text',this.value)" style="width:100%"></div>`;
+}
+
+html+=`</div>`; // end style tab
+
+// ===== TEXT TAB =====
+if(hasTxt){
+html+=`<div class="dsp-tc" data-tab="text">`;
+html+=`<div class="dsp-sec">Label</div>`;
+html+=`<div class="dsp-chk"><input type="checkbox" ${d.showLabel?'checked':''} onchange="updDraw(${idx},'showLabel',this.checked)"><span>Show Text Label</span></div>`;
+html+=`<div class="dsp-row"><label>Text</label><input type="text" value="${(d.label||'').replace(/"/g,'&amp;quot;')}" onchange="updDraw(${idx},'label',this.value)" style="width:100%"></div>`;
+html+=`<div class="dsp-row"><label>Size</label><input type="number" value="${d.labelFs||11}" min="8" max="24" onchange="updDraw(${idx},'labelFs',+this.value)"></div>`;
+html+=`<div class="dsp-row"><label>Color</label><input type="color" value="${d.labelColor||d.color||'#2962ff'}" onchange="updDraw(${idx},'labelColor',this.value)"></div>`;
+html+=`</div>`;
+}
+
+// ===== COORDINATES TAB =====
+if(hasCoords){
+html+=`<div class="dsp-tc" data-tab="coords">`;
+if(d.type==='hline'||d.type==='pricelabel'){
+html+=`<div class="dsp-sec">Price</div>`;
+html+=`<div class="dsp-row"><label>Price</label><input type="number" value="${(d.price||0).toFixed(S.prec)}" step="0.001" onchange="updDraw(${idx},'price',+this.value);updDraw(${idx},'p1',+this.value)"></div>`;
+}else if(d.type==='vline'||d.type==='datelabel'){
+html+=`<div class="dsp-sec">Time</div>`;
+html+=`<div class="dsp-row"><label>Date</label><input type="text" value="${new Date(d.t1).toISOString().slice(0,16)}" style="width:100%;font-size:10px" readonly></div>`;
+}else{
+html+=`<div class="dsp-sec">Point 1</div>`;
+html+=`<div class="dsp-row"><label>Price</label><input type="number" value="${(d.p1||0).toFixed(S.prec)}" step="0.001" onchange="updDraw(${idx},'p1',+this.value)"></div>`;
+html+=`<div class="dsp-row"><label>Date</label><input type="text" value="${new Date(d.t1).toISOString().slice(0,16)}" style="width:100%;font-size:10px" readonly></div>`;
+if(d.t2!=null){
+html+=`<div class="dsp-sec">Point 2</div>`;
+html+=`<div class="dsp-row"><label>Price</label><input type="number" value="${(d.p2||0).toFixed(S.prec)}" step="0.001" onchange="updDraw(${idx},'p2',+this.value)"></div>`;
+html+=`<div class="dsp-row"><label>Date</label><input type="text" value="${new Date(d.t2).toISOString().slice(0,16)}" style="width:100%;font-size:10px" readonly></div>`;
+}}
+html+=`</div>`;
+}
+
+// ===== VISIBILITY TAB =====
+html+=`<div class="dsp-tc" data-tab="vis">`;
+html+=`<div class="dsp-sec">Timeframes</div>`;
+html+=`<div class="dsp-chk"><input type="checkbox" ${d.visAll!==false?'checked':''} onchange="updDraw(${idx},'visAll',this.checked)"><span>All Timeframes</span></div>`;
+html+=`</div>`;
+
+// ===== ACTIONS =====
+html+=`<div class="dsp-actions">`;
+html+=`<button class="mb s" onclick="dupDraw(${idx})">Duplicate</button>`;
+html+=`<button class="mb s" onclick="saveAsDefault(${idx})">Save Default</button>`;
+html+=`<button class="mb s" style="color:var(--rd)" onclick="delDraw(${idx})">Delete</button>`;
+html+=`</div>`;
+
+html+=`</div>`; // end dsp-body
 p.innerHTML=html;p.classList.add('show');
+}
+
+function dspTab(btn,tab){
+btn.closest('.dsp').querySelectorAll('.dsp-tab').forEach(t=>t.classList.remove('active'));
+btn.classList.add('active');
+btn.closest('.dsp').querySelectorAll('.dsp-tc').forEach(t=>t.classList.toggle('active',t.dataset.tab===tab));
+}
+
+function toggleFibVis(idx,li,val){
+const d=S.drawings[idx];
+if(!d.levelVis)d.levelVis=(d.levels||FIBS).map(()=>true);
+d.levelVis[li]=val;render();saveState();showDrawSettings(idx);
 }
 
 function updDraw(idx,prop,val){S.drawings[idx][prop]=val;render();saveState()}
