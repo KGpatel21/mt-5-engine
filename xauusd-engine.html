@@ -564,7 +564,7 @@ rOn:false,rCut:0,rCutI:0,rCutStart:0,rCutStartI:0,
 rPlay:false,rSpd:1,rTmr:null,
 rSpds:[.25,.5,1,2,5,10,20],rSpdI:2,
 // UI state
-lpOpen:true,isPan:false,panS:null,isYPan:false,yPanS:null,
+lpOpen:true,isPan:false,panS:null,isYPan:false,yPanS:null,isVPan:false,vPanS:null,
 calYear:2025,calMonth:0,calDay:1,
 theme:'dark',
 dtb2col:false,showDebug:false,
@@ -1679,9 +1679,13 @@ const a=getArea(),step=S.cw+S.cg;
 // Always update hoverIdx for OHLC display
 const _hi=Math.round(S.mx/step-.5)+S.vStart;
 if(_hi>=0&&_hi<S.cand.length)S.hoverIdx=_hi;
-// Y-pan drag
-if(S.isYPan){const dy=e.clientY-S.yPanS.y;const rng=S.yPanS.pMax-S.yPanS.pMin;
-const shift=dy/cv.height*rng;S.pMin=S.yPanS.pMin+shift;S.pMax=S.yPanS.pMax+shift;S.autoScale=false;render();return}
+// Y-axis drag zoom (stretch/compress like TradingView)
+if(S.isYPan){const dy=e.clientY-S.yPanS.y;const factor=1+dy*0.005;
+const mid=(S.yPanS.pMax+S.yPanS.pMin)/2;const halfRng=(S.yPanS.pMax-S.yPanS.pMin)/2*Math.max(0.1,factor);
+S.pMin=mid-halfRng;S.pMax=mid+halfRng;S.autoScale=false;render();return}
+// Vertical pan (Shift+drag or middle-click drag on chart)
+if(S.isVPan){const dy=e.clientY-S.vPanS.y;const rng=S.vPanS.pMax-S.vPanS.pMin;
+const shift=dy/cv.height*rng;S.pMin=S.vPanS.pMin+shift;S.pMax=S.vPanS.pMax+shift;S.autoScale=false;render();return}
 // X-pan drag
 if(S.isPan){const dx=e.clientX-S.panS.x;const cs=Math.round(dx/step);
 if(cs!==0){S.vStart=Math.max(0,S.panS.vs-cs);S.vEnd=Math.max(0,S.panS.ve-cs);
@@ -1733,6 +1737,9 @@ function onMD(e){
 if(S.gotoHighlight){S.gotoHighlight=null;render();}
 if(e.button===2)return;
 const a=getArea(),step=S.cw+S.cg;
+// Middle-click or Shift+click on chart area → vertical pan
+if(S.mx<a.w&&(e.button===1||(e.button===0&&e.shiftKey&&!isDrawTool(S.tool)))){
+e.preventDefault();S.isVPan=true;S.vPanS={y:e.clientY,pMin:S.pMin,pMax:S.pMax};cv.style.cursor='ns-resize';S.autoScale=false;return}
 // Drawing tool active — click-click workflow
 if(isDrawTool(S.tool)&&S.mx<a.w){
 let ts=x2t(S.mx,step),pr=y2p(S.my,a);
@@ -1778,6 +1785,7 @@ if(S.mx<a.w){S.isPan=true;S.panS={x:e.clientX,y:e.clientY,vs:S.vStart,ve:S.vEnd,
 
 function onMU(e){
 if(S.isYPan){S.isYPan=false;cv.style.cursor=S.tool==='pointer'?'default':'crosshair';return}
+if(S.isVPan){S.isVPan=false;cv.style.cursor=S.tool==='pointer'?'default':'crosshair';return}
 if(S.isPan){S.isPan=false;cv.style.cursor=S.tool==='pointer'?'default':'crosshair';return}
 // End editing drag — does NOT complete drawings (click-click, not drag)
 if(S.drawEditIdx>=0){
