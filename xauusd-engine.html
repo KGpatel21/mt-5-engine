@@ -413,8 +413,8 @@ Chart Settings<button style="background:none;border:none;color:var(--tx3);cursor
 <label class="chkr"><input type="checkbox" id="cs-sprd" onchange="updCS()"> Show Spread</label>
 <label class="chkr"><input type="checkbox" id="cs-auto" checked onchange="updCS()"> Auto Scale</label>
 <label>Price Precision</label><input type="number" id="cs-prec" value="3" min="0" max="6" onchange="updCS()">
-<label>Timezone</label><select id="cs-tz" onchange="updCS()"><option value="source">Source</option><option value="utc">UTC</option><option value="local">Local</option></select>
-<div id="tz-info" style="font-size:10px;color:var(--tx3);margin-top:4px">Timestamps as received from MT5</div>
+<label>Timezone</label><select id="cs-tz" onchange="updCS()"><option value="ist">IST (UTC+5:30)</option><option value="utc">UTC</option><option value="local">Local</option><option value="source">Source (MT5)</option></select>
+<div id="tz-info" style="font-size:10px;color:var(--tx3);margin-top:4px">All times in IST (UTC+5:30)</div>
 </div>
 
 <!-- Replay badge -->
@@ -450,7 +450,7 @@ Chart Settings<button style="background:none;border:none;color:var(--tx3);cursor
 <span id="st-src">Source: —</span>
 <span id="st-tf">TF: M1</span>
 <span id="st-bars">Bars: —</span>
-<span id="st-tz">TZ: Source</span>
+<span id="st-tz">TZ: IST</span>
 </div>
 </div>
 
@@ -551,7 +551,7 @@ vStart:0,vEnd:0,
 pMin:0,pMax:0,paW:70,taH:24,volH:60,
 showVol:true,showSprd:false,showGrid:true,showCross:true,autoScale:true,
 upColor:'#26a69a',dnColor:'#ef5350',
-prec:3,tzMode:'source',
+prec:3,tzMode:'ist',
 mx:-1,my:-1,hoverIdx:-1,
 tool:'pointer',dip:null,drawings:[],selDraw:-1,
 undo:[],redo:[],
@@ -1148,8 +1148,7 @@ cx.textAlign='center';cx.textBaseline='middle';cx.fillText(pr.toFixed(S.prec),a.
 // Time label on axis
 const idx=Math.round(S.mx/step-.5)+S.vStart;
 if(idx>=0&&idx<S.cand.length){S.hoverIdx=idx;
-const dt=new Date(S.cand[idx].t);
-const tl=fmtDT(dt);cx.fillStyle=css('--ac');const tw=cx.measureText(tl).width+10;
+const tl=fmtDT(S.cand[idx].t);cx.fillStyle=css('--ac');const tw=cx.measureText(tl).width+10;
 cx.fillRect(S.mx-tw/2,a.aY,tw,S.taH);cx.fillStyle='#fff';cx.font='10px '+css('--mn');
 cx.textAlign='center';cx.textBaseline='middle';cx.fillText(tl,S.mx,a.aY+S.taH/2)}
 }
@@ -1177,8 +1176,8 @@ cx.strokeStyle=css('--bd');cx.lineWidth=1;cx.beginPath();cx.moveTo(0,a.aY);cx.li
 cx.font='10px '+css('--mn');cx.fillStyle=css('--tx3');cx.textAlign='center';cx.textBaseline='middle';
 const interval=Math.max(1,Math.floor(80/step));
 for(let i=0;i<vis.length;i+=interval){
-const dt=new Date(vis[i].t);const x=i*step+step/2;
-const lb=p2(dt.getMonth()+1)+'/'+p2(dt.getDate())+' '+p2(dt.getHours())+':'+p2(dt.getMinutes());
+const tp=tzParts(vis[i].t);const x=i*step+step/2;
+const lb=p2(tp.mo+1)+'/'+p2(tp.da)+' '+p2(tp.h)+':'+p2(tp.mi);
 cx.fillText(lb,x,a.aY+S.taH/2)}
 }
 
@@ -1575,7 +1574,7 @@ const tw=cx.measureText(lb).width+8;cx.fillRect(a.w-tw-4,y-9,tw,18);
 cx.fillStyle='#fff';cx.textAlign='center';cx.textBaseline='middle';cx.fillText(lb,a.w-tw/2-4,y);
 if(sel)drawH(a.w-tw/2-4,y);break}
 case'datelabel':{const x=t2x(d.t1,step);
-cx.fillStyle=col;const lb=fmtDT(new Date(d.t1));cx.font='10px '+css('--mn');
+cx.fillStyle=col;const lb=fmtDT(d.t1);cx.font='10px '+css('--mn');
 const tw=cx.measureText(lb).width+8;cx.fillRect(x-tw/2,a.aY-20,tw,16);
 cx.fillStyle='#fff';cx.textAlign='center';cx.textBaseline='middle';cx.fillText(lb,x,a.aY-12);
 if(sel)drawH(x,a.aY-20);break}
@@ -2074,15 +2073,15 @@ html+=`<div class="dsp-sec">Price</div>`;
 html+=`<div class="dsp-row"><label>Price</label><input type="number" value="${(d.price||0).toFixed(S.prec)}" step="0.001" onchange="updDraw(${idx},'price',+this.value);updDraw(${idx},'p1',+this.value)"></div>`;
 }else if(d.type==='vline'||d.type==='datelabel'){
 html+=`<div class="dsp-sec">Time</div>`;
-html+=`<div class="dsp-row"><label>Date</label><input type="text" value="${new Date(d.t1).toISOString().slice(0,16)}" style="width:100%;font-size:10px" readonly></div>`;
+html+=`<div class="dsp-row"><label>Date</label><input type="text" value="${fmtDT(d.t1)}" style="width:100%;font-size:10px" readonly></div>`;
 }else{
 html+=`<div class="dsp-sec">Point 1</div>`;
 html+=`<div class="dsp-row"><label>Price</label><input type="number" value="${(d.p1||0).toFixed(S.prec)}" step="0.001" onchange="updDraw(${idx},'p1',+this.value)"></div>`;
-html+=`<div class="dsp-row"><label>Date</label><input type="text" value="${new Date(d.t1).toISOString().slice(0,16)}" style="width:100%;font-size:10px" readonly></div>`;
+html+=`<div class="dsp-row"><label>Date</label><input type="text" value="${fmtDT(d.t1)}" style="width:100%;font-size:10px" readonly></div>`;
 if(d.t2!=null){
 html+=`<div class="dsp-sec">Point 2</div>`;
 html+=`<div class="dsp-row"><label>Price</label><input type="number" value="${(d.p2||0).toFixed(S.prec)}" step="0.001" onchange="updDraw(${idx},'p2',+this.value)"></div>`;
-html+=`<div class="dsp-row"><label>Date</label><input type="text" value="${new Date(d.t2).toISOString().slice(0,16)}" style="width:100%;font-size:10px" readonly></div>`;
+html+=`<div class="dsp-row"><label>Date</label><input type="text" value="${fmtDT(d.t2)}" style="width:100%;font-size:10px" readonly></div>`;
 }}
 html+=`</div>`;
 }
@@ -2240,7 +2239,7 @@ S.vEnd=S.cand.length-1;S.vStart=Math.max(0,S.vEnd-vis+1);S.autoScale=true}
 // ====================== GOTO / CALENDAR ======================
 function showGoto(){
 document.getElementById('goto-modal').classList.add('show');
-if(S.info.last){const d=S.info.last;S.calYear=d.getFullYear();S.calMonth=d.getMonth();S.calDay=d.getDate()}
+if(S.info.last){const p=tzParts(S.info.last);S.calYear=p.y;S.calMonth=p.mo;S.calDay=p.da}
 renderCal();renderQuickDates();
 document.getElementById('goto-time').focus();
 }
@@ -2262,8 +2261,8 @@ const dt=new Date(year,month,d);
 let cls='cal-day';
 if(d===S.calDay&&month===S.calMonth&&year===S.calYear)cls+=' sel';
 if(S.info.first&&S.info.last){
-if(dt<new Date(S.info.first.getFullYear(),S.info.first.getMonth(),S.info.first.getDate())||
-   dt>new Date(S.info.last.getFullYear(),S.info.last.getMonth(),S.info.last.getDate()+1))cls+=' dis'}
+const fp=tzParts(S.info.first),lp=tzParts(S.info.last);
+if(dt<new Date(fp.y,fp.mo,fp.da)||dt>new Date(lp.y,lp.mo,lp.da+1))cls+=' dis'}
 h+=`<div class="${cls}" onclick="calPick(${year},${month},${d})">${d}</div>`}
 const total=dow+daysInMonth;const rem=7-total%7;
 if(rem<7)for(let d=1;d<=rem;d++){h+=`<div class="cal-day out" onclick="calPick(${year},${month+1},${d})">${d}</div>`}
@@ -2279,8 +2278,9 @@ const last=S.info.last;const presets=[
 {l:'Latest',d:0},{l:'1 Day Ago',d:1},{l:'1 Week Ago',d:7},{l:'1 Month Ago',d:30},
 {l:'3 Months Ago',d:90},{l:'Start',d:-1}];
 el.innerHTML=presets.map(p=>{
-const ts=p.d===-1?S.info.first:new Date(last.getTime()-p.d*86400000);
-return`<div class="qd" onclick="calPick(${ts.getFullYear()},${ts.getMonth()},${ts.getDate()});document.getElementById('goto-time').value='${p2(ts.getHours())}:${p2(ts.getMinutes())}'">${p.l}</div>`
+const raw=p.d===-1?S.info.first:new Date(last.getTime()-p.d*86400000);
+const tp=tzParts(raw);
+return`<div class="qd" onclick="calPick(${tp.y},${tp.mo},${tp.da});document.getElementById('goto-time').value='${p2(tp.h)}:${p2(tp.mi)}'">${p.l}</div>`
 }).join('');
 }
 
@@ -2301,6 +2301,8 @@ function gotoReplay(){const ts=getGotoTs();if(!ts)return;closeMo();startReplay(t
 function getGotoTs(){
 const timeStr=document.getElementById('goto-time').value.trim()||'00:00';
 const tp=timeStr.split(':');const h=+tp[0]||0,m=+tp[1]||0;
+if(S.tzMode==='ist'){return Date.UTC(S.calYear,S.calMonth,S.calDay,h,m,0)-19800000}
+if(S.tzMode==='utc'){return Date.UTC(S.calYear,S.calMonth,S.calDay,h,m,0)}
 return new Date(S.calYear,S.calMonth,S.calDay,h,m,0).getTime();
 }
 
@@ -2312,7 +2314,7 @@ S.vEnd=Math.min(S.cand.length-1,S.vStart+vis-1);S.autoScale=true;
 S.gotoHighlight={idx:idx,t:S.cand[idx].t};
 render();
 const nearest=S.cand[idx];if(nearest&&Math.abs(nearest.t-ts)>60000){
-document.getElementById('goto-hint')&&(document.getElementById('goto-hint').textContent='Snapped to nearest: '+fmtDT(new Date(nearest.t)))}
+document.getElementById('goto-hint')&&(document.getElementById('goto-hint').textContent='Snapped to nearest: '+fmtDT(nearest.t))}
 }
 
 function closeMo(){document.querySelectorAll('.mo').forEach(m=>m.classList.remove('show'))}
@@ -2395,8 +2397,8 @@ S.autoScale=document.getElementById('cs-auto').checked;
 S.prec=+document.getElementById('cs-prec').value;
 S.tzMode=document.getElementById('cs-tz').value;
 document.getElementById('tz-info').textContent=
-S.tzMode==='utc'?'All times in UTC':S.tzMode==='local'?'Converted to local time':'Timestamps as received from MT5';
-document.getElementById('st-tz').textContent='TZ: '+(S.tzMode==='utc'?'UTC':S.tzMode==='local'?'Local':'Source');
+S.tzMode==='ist'?'All times in IST (UTC+5:30)':S.tzMode==='utc'?'All times in UTC':S.tzMode==='local'?'Converted to local time':'Timestamps as received from MT5';
+document.getElementById('st-tz').textContent='TZ: '+(S.tzMode==='ist'?'IST':S.tzMode==='utc'?'UTC':S.tzMode==='local'?'Local':'Source');
 document.getElementById('btn-vol').classList.toggle('on',S.showVol);
 document.getElementById('btn-sprd').classList.toggle('on',S.showSprd);
 render();saveState();
@@ -2591,8 +2593,12 @@ render();
 }catch(e){}}
 
 // ====================== UTILS ======================
-function fmtD(d){return d?d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate()):'—'}
-function fmtDT(d){return d?fmtD(d)+' '+p2(d.getHours())+':'+p2(d.getMinutes()):'—'}
+function tzParts(d){if(!d)return null;const t=d instanceof Date?d.getTime():d;
+if(S.tzMode==='utc'){const u=new Date(t);return{y:u.getUTCFullYear(),mo:u.getUTCMonth(),da:u.getUTCDate(),h:u.getUTCHours(),mi:u.getUTCMinutes(),s:u.getUTCSeconds(),dow:u.getUTCDay()}}
+if(S.tzMode==='ist'){const ist=new Date(t+19800000);return{y:ist.getUTCFullYear(),mo:ist.getUTCMonth(),da:ist.getUTCDate(),h:ist.getUTCHours(),mi:ist.getUTCMinutes(),s:ist.getUTCSeconds(),dow:ist.getUTCDay()}}
+const lo=new Date(t);return{y:lo.getFullYear(),mo:lo.getMonth(),da:lo.getDate(),h:lo.getHours(),mi:lo.getMinutes(),s:lo.getSeconds(),dow:lo.getDay()}}
+function fmtD(d){const p=tzParts(d);return p?p.y+'-'+p2(p.mo+1)+'-'+p2(p.da):'—'}
+function fmtDT(d){const p=tzParts(d);return p?p.y+'-'+p2(p.mo+1)+'-'+p2(p.da)+' '+p2(p.h)+':'+p2(p.mi):'—'}
 function p2(n){return n<10?'0'+n:''+n}
 function niceStep(r){const pw=Math.pow(10,Math.floor(Math.log10(r)));const n=r/pw;if(n<=1)return pw;if(n<=2)return 2*pw;if(n<=5)return 5*pw;return 10*pw}
 function fmtDur(ms){const s=Math.floor(ms/1000);if(s<60)return s+'s';const m=Math.floor(s/60);if(m<60)return m+'m';const h=Math.floor(m/60);if(h<24)return h+'h '+m%60+'m';return Math.floor(h/24)+'d '+h%24+'h'}
