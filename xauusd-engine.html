@@ -367,7 +367,6 @@ label{font-size:11px;color:var(--tx2);display:block;margin:6px 0 2px}
 <option value="custom">Custom...</option>
 </select>
 </div>
-<button class="tb" data-tip="Fit Chart to Screen" onclick="fitChart()">Fit</button>
 <button class="tb" id="btn-lp" data-tip="Toggle Data Sources Panel" onclick="toggleLeftPanel()">&#9776;</button>
 <button class="tb" id="btn-debug" data-tip="Debug Panel" onclick="toggleDebug()" style="font-size:10px">&#128027;</button>
 <button class="tb" id="btn-2col" data-tip="Toggle Two-Column Draw Toolbar" onclick="toggleDtbCols()">&#9638;</button>
@@ -1032,9 +1031,9 @@ drawIndicators(a,step);
 drawAllDraw(a,step);
 // GoTo highlight marker
 if(S.gotoHighlight){const gi=S.gotoHighlight.idx;if(gi>=S.vStart&&gi<=S.vEnd){const gx=((gi-S.vStart)*(S.cw+S.cg))+(S.cw+S.cg)/2;const gc=S.cand[gi];if(gc){const gy=p2y(gc.h,a)-12;cx.save();cx.fillStyle='#ffeb3b';cx.strokeStyle='#f57f17';cx.lineWidth=1.5;cx.beginPath();cx.moveTo(gx,gy);cx.lineTo(gx-6,gy-10);cx.lineTo(gx+6,gy-10);cx.closePath();cx.fill();cx.stroke();cx.restore()}}}
-if(S.showCross)drawCross(a,step);
 drawPriceAxis(a);
 drawTimeAxis(a,step,vis);
+if(S.showCross)drawCross(a,step);
 // Snap indicator now rendered inside drawAllDraw
 // Replay badge on canvas
 if(S.rOn){
@@ -1666,6 +1665,7 @@ function setupEvents(){
 cv.addEventListener('mousemove',onMM);cv.addEventListener('mousedown',onMD);
 cv.addEventListener('mouseup',onMU);cv.addEventListener('wheel',onWh,{passive:false});
 cv.addEventListener('mouseleave',()=>{S.mx=-1;S.my=-1;S.hoverIdx=-1;S.snapInfo=null;render()});
+cv.addEventListener('dblclick',e=>{const a=getArea();const r=cv.getBoundingClientRect();const mx=e.clientX-r.left;if(mx>=a.w){S.autoScale=true;render()}});
 cv.addEventListener('contextmenu',onCtx);document.addEventListener('keydown',onKey);
 document.addEventListener('click',e=>{
 if(!e.target.closest('.ctx'))document.getElementById('ctx-menu').classList.remove('show');
@@ -1676,6 +1676,9 @@ if(!e.target.closest('.dsp')&&!e.target.closest('.db')&&e.target!==cv)document.g
 function onMM(e){
 const r=cv.getBoundingClientRect();S.mx=e.clientX-r.left;S.my=e.clientY-r.top;
 const a=getArea(),step=S.cw+S.cg;
+// Always update hoverIdx for OHLC display
+const _hi=Math.round(S.mx/step-.5)+S.vStart;
+if(_hi>=0&&_hi<S.cand.length)S.hoverIdx=_hi;
 // Y-pan drag
 if(S.isYPan){const dy=e.clientY-S.yPanS.y;const rng=S.yPanS.pMax-S.yPanS.pMin;
 const shift=dy/cv.height*rng;S.pMin=S.yPanS.pMin+shift;S.pMax=S.yPanS.pMax+shift;S.autoScale=false;render();return}
@@ -1684,7 +1687,7 @@ if(S.isPan){const dx=e.clientX-S.panS.x;const cs=Math.round(dx/step);
 if(cs!==0){S.vStart=Math.max(0,S.panS.vs-cs);S.vEnd=Math.max(0,S.panS.ve-cs);
 if(S.vEnd>=S.cand.length){S.vEnd=S.cand.length-1;S.vStart=Math.max(0,S.vEnd-S.panS.cnt+1)}
 if(S.vStart<0){S.vStart=0;S.vEnd=Math.min(S.cand.length-1,S.vStart+S.panS.cnt-1)}
-S.autoScale=true}render();return}
+}render();return}
 // Editing drag (anchor or whole drawing)
 if(S.drawEditIdx>=0){
 let ts=x2t(S.mx,step),pr=y2p(S.my,a);
@@ -1798,7 +1801,7 @@ else{S.cw=Math.max(1,S.cw/1.15);S.cg=Math.max(.5,Math.min(S.cw*.3,4))}
 const step=S.cw+S.cg;const maxV=Math.floor(a.w/step);
 const mr=S.mx/a.w;const center=S.vStart+Math.floor((S.vEnd-S.vStart)*mr);
 S.vStart=Math.max(0,center-Math.floor(maxV*mr));
-S.vEnd=Math.min(S.cand.length-1,S.vStart+maxV-1);S.autoScale=true;render();
+S.vEnd=Math.min(S.cand.length-1,S.vStart+maxV-1);render();
 }
 
 function onCtx(e){e.preventDefault();
@@ -2536,8 +2539,8 @@ document.getElementById('dsp').classList.remove('show');
 document.getElementById('ind-panel').classList.remove('show');
 document.getElementById('cset').classList.remove('show');render();return}
 if(k===' '){e.preventDefault();if(S.rOn)rToggle();return}
-if(k==='ArrowRight'){e.preventDefault();if(S.rOn)rStepFwd();else{S.vStart++;S.vEnd++;if(S.vEnd>=S.cand.length)S.vEnd=S.cand.length-1;S.autoScale=true;render()}return}
-if(k==='ArrowLeft'){e.preventDefault();if(S.rOn)rStepBack();else{if(S.vStart>0){S.vStart--;S.vEnd--}S.autoScale=true;render()}return}
+if(k==='ArrowRight'){e.preventDefault();if(S.rOn)rStepFwd();else{S.vStart++;S.vEnd++;if(S.vEnd>=S.cand.length)S.vEnd=S.cand.length-1;render()}return}
+if(k==='ArrowLeft'){e.preventDefault();if(S.rOn)rStepBack();else{if(S.vStart>0){S.vStart--;S.vEnd--}render()}return}
 if(k==='Delete'||k==='Backspace'){if(S.selDraw>=0){delDraw(S.selDraw)}return}
 if(ctrl&&k==='z'){e.preventDefault();undo();return}
 if(ctrl&&k==='y'){e.preventDefault();redo();return}
