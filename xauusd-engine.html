@@ -700,7 +700,10 @@ const ms=mins*60000;
 function barStart(ts){
 if(mins>=10080){// weekly
 const d=new Date(ts);const dy=d.getDay();const df=dy===0?6:dy-1;const mn=new Date(d.getFullYear(),d.getMonth(),d.getDate()-df);return mn.getTime()}
-return Math.floor(ts/ms)*ms}
+// Align to LOCAL timezone boundaries (IST for user) — matches TradingView UTC+5:30
+const d=new Date(ts);const dayStart=new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime();
+if(mins>=1440)return dayStart;// daily: midnight local
+const inDay=ts-dayStart;return dayStart+Math.floor(inDay/ms)*ms}
 const r=[];let cs=barStart(src[0].t);
 let b={t:cs,o:src[0].o,h:src[0].h,l:src[0].l,c:src[0].c,tv:src[0].tv,v:src[0].v,s:src[0].s};
 for(let i=1;i<src.length;i++){const ns=barStart(src[i].t);
