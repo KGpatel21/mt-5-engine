@@ -410,6 +410,7 @@ Chart Settings<button style="background:none;border:none;color:var(--tx3);cursor
 <label class="chkr"><input type="checkbox" id="cs-cross" checked onchange="updCS()"> Show Crosshair</label>
 <label class="chkr"><input type="checkbox" id="cs-vol" checked onchange="updCS()"> Show Volume</label>
 <label class="chkr"><input type="checkbox" id="cs-sprd" onchange="updCS()"> Show Spread</label>
+<label class="chkr"><input type="checkbox" id="cs-news" checked onchange="updCS()"> Show News Events</label>
 <label class="chkr"><input type="checkbox" id="cs-auto" checked onchange="updCS()"> Auto Scale</label>
 <label>Price Precision</label><input type="number" id="cs-prec" value="3" min="0" max="6" onchange="updCS()">
 <label>Timezone</label><select id="cs-tz" onchange="updCS()"><option value="ist">IST (UTC+5:30)</option><option value="utc">UTC</option><option value="local">Local</option><option value="source">Source (MT5)</option></select>
@@ -558,6 +559,7 @@ magnetMode:'off',magnetRadius:{weak:15,strong:30},magnetSources:{o:true,h:true,l
 snapInfo:null,drawMode:'single',drawState:'idle',drawPreview:null,
 drawEditIdx:-1,drawEditAnchor:null,drawEditStart:null,
 indicators:[],
+newsEvents:[],showNews:true,
 info:{},
 // Replay state
 rOn:false,rCut:0,rCutI:0,rCutStart:0,rCutStartI:0,
@@ -626,6 +628,18 @@ const IND_DEFS=[
 {id:'vwap',name:'VWAP',cat:'Volume',desc:'Volume-Weighted Average Price — institutional benchmark (uses tick volume for CFD)',params:{color:'#ab47bc',width:1.5,style:'solid',visible:true}},
 {id:'pivot',name:'Pivot Points',cat:'Support/Resistance',desc:'Classic/Fibonacci/Woodie pivot levels for S/R trading',params:{type:'classic',pivotColor:'#ff9800',rColor:'#ef5350',sColor:'#26a69a',width:1,style:'dashed',visible:true}}
 ];
+
+// ====================== NEWS EVENTS (USD High Impact — Forex Factory) ======================
+// Dates are in MT5 server time (EET/EEST) so parseDT will match candle timestamps
+const NEWS_RAW=[{"d":"2025.01.02","t":"15:30","e":"Unemployment Claims","a":"211K","f":"222K","p":"220K"},{"d":"2025.01.03","t":"17:00","e":"ISM Manufacturing PMI","a":"49.3","f":"48.2","p":"48.4"},{"d":"2025.01.06","t":"22:30","e":"JOLTS Job Openings","a":"8.10M","f":"7.73M","p":"7.84M"},{"d":"2025.01.06","t":"22:30","e":"ISM Services PMI","a":"54.1","f":"53.5","p":"52.1"},{"d":"2025.01.08","t":"15:15","e":"ADP Non-Farm Employment Change","a":"122K","f":"139K","p":"146K"},{"d":"2025.01.08","t":"15:30","e":"Unemployment Claims","a":"201K","f":"214K","p":"211K"},{"d":"2025.01.08","t":"21:00","e":"FOMC Meeting Minutes","a":"","f":"","p":""},{"d":"2025.01.09","t":"22:30","e":"Unemployment Rate","a":"4.1%","f":"4.2%","p":"4.2%"},{"d":"2025.01.09","t":"22:30","e":"Non-Farm Employment Change","a":"256K","f":"164K","p":"212K"},{"d":"2025.01.09","t":"22:30","e":"Average Hourly Earnings m/m","a":"0.3%","f":"0.3%","p":"0.4%"},{"d":"2025.01.13","t":"22:30","e":"PPI m/m","a":"0.2%","f":"0.4%","p":"0.4%"},{"d":"2025.01.14","t":"15:30","e":"Core PPI m/m","a":"0.0%","f":"0.2%","p":"0.2%"},{"d":"2025.01.14","t":"22:30","e":"CPI y/y","a":"2.9%","f":"2.9%","p":"2.7%"},{"d":"2025.01.14","t":"22:30","e":"CPI m/m","a":"0.4%","f":"0.4%","p":"0.3%"},{"d":"2025.01.14","t":"22:30","e":"Core CPI m/m","a":"0.2%","f":"0.3%","p":"0.3%"},{"d":"2025.01.15","t":"22:30","e":"Unemployment Claims","a":"217K","f":"210K","p":"203K"},{"d":"2025.01.15","t":"22:30","e":"Retail Sales m/m","a":"0.4%","f":"0.6%","p":"0.8%"},{"d":"2025.01.16","t":"15:30","e":"Core Retail Sales m/m","a":"0.4%","f":"0.5%","p":"0.2%"},{"d":"2025.01.20","t":"19:00","e":"President Trump Speaks","a":"","f":"","p":""},{"d":"2025.01.22","t":"22:30","e":"Unemployment Claims","a":"223K","f":"221K","p":"217K"},{"d":"2025.01.23","t":"18:00","e":"President Trump Speaks","a":"","f":"","p":""},{"d":"2025.01.23","t":"22:30","e":"Flash Services PMI","a":"52.8","f":"56.4","p":"56.8"},{"d":"2025.01.24","t":"16:45","e":"Flash Manufacturing PMI","a":"50.1","f":"49.8","p":"49.4"},{"d":"2025.01.28","t":"17:00","e":"CB Consumer Confidence","a":"104.1","f":"105.7","p":"109.5"},{"d":"2025.01.28","t":"22:30","e":"FOMC Statement","a":"","f":"","p":""},{"d":"2025.01.29","t":"21:00","e":"Federal Funds Rate","a":"4.50%","f":"4.50%","p":"4.50%"},{"d":"2025.01.29","t":"21:30","e":"FOMC Press Conference","a":"","f":"","p":""},{"d":"2025.01.29","t":"22:30","e":"Unemployment Claims","a":"207K","f":"224K","p":"223K"},{"d":"2025.01.30","t":"15:30","e":"Advance GDP q/q","a":"2.3%","f":"2.7%","p":"3.1%"},{"d":"2025.01.30","t":"22:30","e":"Employment Cost Index q/q","a":"0.9%","f":"0.9%","p":"0.8%"},{"d":"2025.01.30","t":"22:30","e":"Core PCE Price Index m/m","a":"0.2%","f":"0.2%","p":"0.1%"},{"d":"2025.02.03","t":"17:00","e":"ISM Manufacturing PMI","a":"50.9","f":"49.3","p":"49.3"},{"d":"2025.02.04","t":"17:00","e":"JOLTS Job Openings","a":"7.60M","f":"8.01M","p":"8.16M"},{"d":"2025.02.05","t":"00:10","e":"President Trump Speaks","a":"","f":"","p":""},{"d":"2025.02.05","t":"15:15","e":"ADP Non-Farm Employment Change","a":"183K","f":"148K","p":"176K"},{"d":"2025.02.05","t":"17:00","e":"ISM Services PMI","a":"52.8","f":"54.2","p":"54.1"},{"d":"2025.02.06","t":"15:30","e":"Unemployment Claims","a":"219K","f":"214K","p":"208K"},{"d":"2025.02.06","t":"22:30","e":"Unemployment Rate","a":"4.0%","f":"4.1%","p":"4.1%"},{"d":"2025.02.06","t":"22:30","e":"Non-Farm Employment Change","a":"143K","f":"169K","p":"307K"},{"d":"2025.02.06","t":"22:30","e":"Average Hourly Earnings m/m","a":"0.5%","f":"0.3%","p":"0.3%"},{"d":"2025.02.10","t":"23:30","e":"President Trump Speaks","a":"","f":"","p":""},{"d":"2025.02.11","t":"17:00","e":"Fed Chair Powell Testifies","a":"","f":"","p":""},{"d":"2025.02.11","t":"22:30","e":"CPI y/y","a":"3.0%","f":"2.9%","p":"2.9%"},{"d":"2025.02.11","t":"22:30","e":"CPI m/m","a":"0.5%","f":"0.3%","p":"0.4%"},{"d":"2025.02.11","t":"22:30","e":"Fed Chair Powell Testifies","a":"","f":"","p":""},{"d":"2025.02.11","t":"22:40","e":"President Trump Speaks","a":"","f":"","p":""},{"d":"2025.02.12","t":"15:30","e":"Core CPI m/m","a":"0.4%","f":"0.3%","p":"0.2%"},{"d":"2025.02.12","t":"22:30","e":"Unemployment Claims","a":"213K","f":"217K","p":"220K"},{"d":"2025.02.12","t":"22:30","e":"PPI m/m","a":"0.4%","f":"0.3%","p":"0.5%"},{"d":"2025.02.12","t":"22:48","e":"President Trump Speaks","a":"","f":"","p":""},{"d":"2025.02.13","t":"15:30","e":"Core PPI m/m","a":"0.3%","f":"0.3%","p":"0.4%"},{"d":"2025.02.13","t":"20:36","e":"President Trump Speaks","a":"","f":"","p":""},{"d":"2025.02.13","t":"22:30","e":"Retail Sales m/m","a":"-0.9%","f":"-0.2%","p":"0.7%"},{"d":"2025.02.13","t":"22:30","e":"Core Retail Sales m/m","a":"-0.4%","f":"0.3%","p":"0.7%"},{"d":"2025.02.14","t":"21:08","e":"President Trump Speaks","a":"","f":"","p":""},{"d":"2025.02.18","t":"22:30","e":"President Trump Speaks","a":"","f":"","p":""},{"d":"2025.02.18","t":"23:13","e":"President Trump Speaks","a":"","f":"","p":""},{"d":"2025.02.19","t":"21:00","e":"FOMC Meeting Minutes","a":"","f":"","p":""},{"d":"2025.02.19","t":"22:30","e":"Unemployment Claims","a":"219K","f":"215K","p":"214K"},{"d":"2025.02.20","t":"00:00","e":"President Trump Speaks","a":"","f":"","p":""},{"d":"2025.02.20","t":"22:30","e":"Flash Services PMI","a":"49.7","f":"53.0","p":"52.9"},{"d":"2025.02.21","t":"02:20","e":"President Trump Speaks","a":"","f":"","p":""},{"d":"2025.02.21","t":"16:45","e":"Flash Manufacturing PMI","a":"51.6","f":"51.3","p":"51.2"},{"d":"2025.02.21","t":"22:56","e":"President Trump Speaks","a":"","f":"","p":""},{"d":"2025.02.24","t":"21:49","e":"President Trump Speaks","a":"","f":"","p":""},{"d":"2025.02.25","t":"22:59","e":"President Trump Speaks","a":"","f":"","p":""},{"d":"2025.02.26","t":"22:30","e":"Unemployment Claims","a":"242K","f":"222K","p":"220K"},{"d":"2025.02.26","t":"22:30","e":"Prelim GDP q/q","a":"2.3%","f":"2.3%","p":"2.3%"},{"d":"2025.02.27","t":"22:30","e":"Core PCE Price Index m/m","a":"0.3%","f":"0.3%","p":"0.2%"},{"d":"2025.02.28","t":"19:15","e":"President Trump Speaks","a":"","f":"","p":""},{"d":"2025.03.03","t":"17:00","e":"ISM Manufacturing PMI","a":"50.3","f":"50.6","p":"50.9"},{"d":"2025.03.05","t":"04:10","e":"President Trump Speaks","a":"","f":"","p":""},{"d":"2025.03.05","t":"15:15","e":"ADP Non-Farm Employment Change","a":"77K","f":"141K","p":"186K"},{"d":"2025.03.05","t":"17:00","e":"ISM Services PMI","a":"53.5","f":"52.5","p":"52.8"},{"d":"2025.03.05","t":"22:30","e":"Unemployment Claims","a":"221K","f":"234K","p":"242K"},{"d":"2025.03.06","t":"22:30","e":"Average Hourly Earnings m/m","a":"0.3%","f":"0.3%","p":"0.4%"},{"d":"2025.03.06","t":"22:30","e":"Non-Farm Employment Change","a":"151K","f":"159K","p":"125K"},{"d":"2025.03.06","t":"22:30","e":"Unemployment Rate","a":"4.1%","f":"4.0%","p":"4.0%"},{"d":"2025.03.07","t":"19:30","e":"Fed Chair Powell Speaks","a":"","f":"","p":""},{"d":"2025.03.11","t":"16:00","e":"JOLTS Job Openings","a":"7.74M","f":"7.65M","p":"7.51M"},{"d":"2025.03.11","t":"22:30","e":"CPI y/y","a":"2.8%","f":"2.9%","p":"3.0%"},{"d":"2025.03.11","t":"22:30","e":"CPI m/m","a":"0.2%","f":"0.3%","p":"0.5%"},{"d":"2025.03.12","t":"14:30","e":"Core CPI m/m","a":"0.2%","f":"0.3%","p":"0.4%"},{"d":"2025.03.12","t":"22:30","e":"Core PPI m/m","a":"-0.1%","f":"0.3%","p":"0.5%"},{"d":"2025.03.12","t":"22:30","e":"PPI m/m","a":"0.0%","f":"0.3%","p":"0.6%"},{"d":"2025.03.12","t":"22:30","e":"Unemployment Claims","a":"220K","f":"226K","p":"222K"},{"d":"2025.03.13","t":"22:30","e":"Prelim UoM Inflation Expectations","a":"4.9%","f":"","p":"4.3%"},{"d":"2025.03.14","t":"16:00","e":"Prelim UoM Consumer Sentiment","a":"57.9","f":"63.1","p":"64.7"},{"d":"2025.03.16","t":"22:30","e":"Core Retail Sales m/m","a":"0.3%","f":"0.3%","p":"-0.6%"},{"d":"2025.03.16","t":"22:30","e":"Retail Sales m/m","a":"0.2%","f":"0.6%","p":"-1.2%"},{"d":"2025.03.18","t":"22:30","e":"FOMC Statement","a":"","f":"","p":""},{"d":"2025.03.18","t":"22:30","e":"FOMC Economic Projections","a":"","f":"","p":""},{"d":"2025.03.19","t":"20:00","e":"Federal Funds Rate","a":"4.50%","f":"4.50%","p":"4.50%"},{"d":"2025.03.19","t":"20:30","e":"FOMC Press Conference","a":"","f":"","p":""},{"d":"2025.03.19","t":"22:30","e":"Unemployment Claims","a":"223K","f":"224K","p":"221K"},{"d":"2025.03.23","t":"21:30","e":"Flash Services PMI","a":"54.3","f":"51.2","p":"51.0"},{"d":"2025.03.24","t":"14:45","e":"Flash Manufacturing PMI","a":"49.8","f":"51.9","p":"52.7"},{"d":"2025.03.26","t":"21:00","e":"President Trump Speaks","a":"","f":"","p":""},{"d":"2025.03.26","t":"21:30","e":"Unemployment Claims","a":"224K","f":"225K","p":"225K"},{"d":"2025.03.27","t":"13:30","e":"Final GDP q/q","a":"2.4%","f":"2.3%","p":"2.3%"},{"d":"2025.03.27","t":"21:30","e":"Core PCE Price Index m/m","a":"0.4%","f":"0.3%","p":"0.3%"},{"d":"2025.03.31","t":"22:30","e":"JOLTS Job Openings","a":"7.57M","f":"7.69M","p":"7.76M"},{"d":"2025.04.01","t":"16:00","e":"ISM Manufacturing PMI","a":"49.0","f":"49.5","p":"50.3"},{"d":"2025.04.02","t":"14:15","e":"ADP Non-Farm Employment Change","a":"155K","f":"118K","p":"84K"},{"d":"2025.04.02","t":"22:00","e":"President Trump Speaks","a":"","f":"","p":""},{"d":"2025.04.02","t":"22:30","e":"Unemployment Claims","a":"219K","f":"225K","p":"225K"},{"d":"2025.04.03","t":"16:00","e":"ISM Services PMI","a":"50.8","f":"53.0","p":"53.5"},{"d":"2025.04.03","t":"22:30","e":"Non-Farm Employment Change","a":"228K","f":"137K","p":"117K"},{"d":"2025.04.03","t":"22:30","e":"Average Hourly Earnings m/m","a":"0.3%","f":"0.3%","p":"0.2%"},{"d":"2025.04.03","t":"22:30","e":"Unemployment Rate","a":"4.2%","f":"4.1%","p":"4.1%"},{"d":"2025.04.04","t":"17:25","e":"Fed Chair Powell Speaks","a":"","f":"","p":""}];
+
+function initNewsEvents(){
+// Convert news dates to timestamps using same parseDT as candle data
+S.newsEvents=NEWS_RAW.map(n=>{
+const dt=parseDT(n.d,n.t);
+return{ts:dt.getTime(),event:n.e,actual:n.a,forecast:n.f,previous:n.p};
+}).sort((a,b)=>a.ts-b.ts);
+}
 
 // ====================== DATA PARSER ======================
 function detectDelim(t){const l=t.split(/\r?\n/)[0];const a=(l.match(/\t/g)||[]).length,b=(l.match(/,/g)||[]).length,c=(l.match(/;/g)||[]).length;if(a>=b&&a>=c&&a>0)return'\t';if(b>=c&&b>0)return',';if(c>0)return';';return'\t'}
@@ -857,6 +871,7 @@ function openChart(){
 document.getElementById('analysis-screen').style.display='none';
 document.getElementById('chart-screen').style.display='flex';
 switchSource(S.activeIdx);
+initNewsEvents();
 buildTFBtns();buildDrawToolbar();buildIndList();
 resizeCV();
 // ResizeObserver for chart container
@@ -1029,6 +1044,7 @@ drawCandles(a,step,vis);
 if(S.showVol)drawVol(a,step,vis);
 drawIndicators(a,step);
 drawAllDraw(a,step);
+drawNewsEvents(a,step);
 // GoTo highlight marker
 if(S.gotoHighlight){const gi=S.gotoHighlight.idx;if(gi>=S.vStart&&gi<=S.vEnd){const gx=((gi-S.vStart)*(S.cw+S.cg))+(S.cw+S.cg)/2;const gc=S.cand[gi];if(gc){const gy=p2y(gc.h,a)-12;cx.save();cx.fillStyle='#ffeb3b';cx.strokeStyle='#f57f17';cx.lineWidth=1.5;cx.beginPath();cx.moveTo(gx,gy);cx.lineTo(gx-6,gy-10);cx.lineTo(gx+6,gy-10);cx.closePath();cx.fill();cx.stroke();cx.restore()}}}
 drawPriceAxis(a);
@@ -1178,6 +1194,74 @@ for(let i=0;i<vis.length;i+=interval){
 const tp=tzParts(vis[i].t);const x=i*step+step/2;
 const lb=p2(tp.mo+1)+'/'+p2(tp.da)+' '+p2(tp.h)+':'+p2(tp.mi);
 cx.fillText(lb,x,a.aY+S.taH/2)}
+}
+
+function drawNewsEvents(a,step){
+if(!S.showNews||!S.newsEvents.length||!S.cand.length)return;
+const vStartTs=S.cand[S.vStart].t,vEndTs=S.cand[S.vEnd].t;
+const visNews=[];
+for(let i=0;i<S.newsEvents.length;i++){
+const ne=S.newsEvents[i];
+if(ne.ts>=vStartTs&&ne.ts<=vEndTs)visNews.push(ne);
+else if(ne.ts>vEndTs)break;
+}
+if(!visNews.length)return;
+const groups={};
+visNews.forEach(ne=>{
+const ci=findIdx(S.cand,ne.ts);
+if(ci<S.vStart||ci>S.vEnd)return;
+if(!groups[ci])groups[ci]={ci,events:[]};
+groups[ci].events.push(ne);
+});
+cx.save();
+Object.values(groups).forEach(g=>{
+const x=(g.ci-S.vStart)*step+step/2;
+cx.strokeStyle='rgba(255,82,82,0.35)';cx.lineWidth=1;cx.setLineDash([3,3]);
+cx.beginPath();cx.moveTo(x,a.y);cx.lineTo(x,a.y+a.h);cx.stroke();cx.setLineDash([]);
+const markerY=a.y+a.h-10;
+const evCount=g.events.length;
+cx.fillStyle='#ef5350';cx.beginPath();cx.arc(x,markerY,8,0,Math.PI*2);cx.fill();
+cx.fillStyle='#fff';cx.font='bold 9px '+css('--ft');cx.textAlign='center';cx.textBaseline='middle';
+cx.fillText(evCount>1?String(evCount):'!',x,markerY);
+if(S.mx>=x-14&&S.mx<=x+14&&S.my>=markerY-14&&S.my<=markerY+14){
+drawNewsTooltip(x,markerY-18,g.events);}
+});
+cx.restore();
+}
+
+function drawNewsTooltip(x,y,events){
+cx.save();
+const font='11px '+css('--ft');cx.font=font;
+const pad=8,lineH=16,headerH=22;
+let maxW=140;
+events.forEach(ev=>{
+let txt=ev.event;
+if(ev.actual)txt+='  A:'+ev.actual;
+if(ev.forecast)txt+='  F:'+ev.forecast;
+if(ev.previous)txt+='  P:'+ev.previous;
+maxW=Math.max(maxW,cx.measureText(txt).width+pad*2+10);
+});
+maxW=Math.min(maxW,380);
+const h=headerH+events.length*lineH+pad;
+let tx=x-maxW/2;if(tx<2)tx=2;if(tx+maxW>S.W-2)tx=S.W-maxW-2;
+let ty=y-h;if(ty<2)ty=y+24;
+cx.fillStyle='rgba(20,20,35,0.96)';
+cx.strokeStyle='#ef5350';cx.lineWidth=1.5;
+cx.beginPath();cx.roundRect(tx,ty,maxW,h,6);cx.fill();cx.stroke();
+cx.fillStyle='#ef5350';cx.font='bold 11px '+css('--ft');cx.textAlign='left';cx.textBaseline='top';
+const tp=tzParts(events[0].ts);
+const timeStr=p2(tp.h)+':'+p2(tp.mi)+' '+p2(tp.da)+'/'+p2(tp.mo+1)+'/'+tp.y;
+cx.fillText('\u{1F4F0} HIGH IMPACT — '+timeStr,tx+pad,ty+5);
+cx.font=font;
+events.forEach((ev,i)=>{
+const ey=ty+headerH+i*lineH;
+cx.fillStyle='#e1e1e8';cx.fillText(ev.event,tx+pad,ey);
+let valX=tx+pad+cx.measureText(ev.event+'  ').width;
+if(valX>tx+maxW-110)valX=tx+maxW-110;
+if(ev.actual){cx.fillStyle='#26a69a';cx.fillText('A:'+ev.actual,valX,ey);valX+=52;}
+if(ev.forecast){cx.fillStyle='#ff9800';cx.fillText('F:'+ev.forecast,valX,ey);}
+});
+cx.restore();
 }
 
 function updOHLC(vis){
@@ -1686,12 +1770,15 @@ S.pMin=mid-halfRng;S.pMax=mid+halfRng;S.autoScale=false;render();return}
 // Vertical pan (Shift+drag or middle-click drag on chart)
 if(S.isVPan){const dy=e.clientY-S.vPanS.y;const rng=S.vPanS.pMax-S.vPanS.pMin;
 const shift=dy/cv.height*rng;S.pMin=S.vPanS.pMin+shift;S.pMax=S.vPanS.pMax+shift;S.autoScale=false;render();return}
-// X-pan drag
+// X+Y pan drag (both axes move together like TradingView)
 if(S.isPan){const dx=e.clientX-S.panS.x;const cs=Math.round(dx/step);
 if(cs!==0){S.vStart=Math.max(0,S.panS.vs-cs);S.vEnd=Math.max(0,S.panS.ve-cs);
 if(S.vEnd>=S.cand.length){S.vEnd=S.cand.length-1;S.vStart=Math.max(0,S.vEnd-S.panS.cnt+1)}
 if(S.vStart<0){S.vStart=0;S.vEnd=Math.min(S.cand.length-1,S.vStart+S.panS.cnt-1)}
-}render();return}
+}
+const dy=e.clientY-S.panS.y;const rng=S.panS.pMax-S.panS.pMin;
+const shift=dy/cv.height*rng;S.pMin=S.panS.pMin+shift;S.pMax=S.panS.pMax+shift;
+render();return}
 // Editing drag (anchor or whole drawing)
 if(S.drawEditIdx>=0){
 let ts=x2t(S.mx,step),pr=y2p(S.my,a);
@@ -1779,8 +1866,8 @@ S.selDraw=-1;document.getElementById('dsp').classList.remove('show');
 }
 // Y-pan on price axis
 if(S.mx>=a.w){S.isYPan=true;S.yPanS={y:e.clientY,pMin:S.pMin,pMax:S.pMax};cv.style.cursor='ns-resize';return}
-// X-pan on chart area
-if(S.mx<a.w){S.isPan=true;S.panS={x:e.clientX,y:e.clientY,vs:S.vStart,ve:S.vEnd,cnt:S.vEnd-S.vStart+1};cv.style.cursor='grabbing'}
+// X+Y pan on chart area (drag moves both axes like TradingView)
+if(S.mx<a.w){S.isPan=true;S.panS={x:e.clientX,y:e.clientY,vs:S.vStart,ve:S.vEnd,cnt:S.vEnd-S.vStart+1,pMin:S.pMin,pMax:S.pMax};cv.style.cursor='grabbing';S.autoScale=false}
 }
 
 function onMU(e){
@@ -2404,6 +2491,7 @@ S.showGrid=document.getElementById('cs-grid').checked;
 S.showCross=document.getElementById('cs-cross').checked;
 S.showVol=document.getElementById('cs-vol').checked;
 S.showSprd=document.getElementById('cs-sprd').checked;
+S.showNews=document.getElementById('cs-news').checked;
 S.autoScale=document.getElementById('cs-auto').checked;
 S.prec=+document.getElementById('cs-prec').value;
 S.tzMode=document.getElementById('cs-tz').value;
@@ -2563,7 +2651,7 @@ if(tfMap[k]){switchTF(tfMap[k]);return}
 // ====================== PERSISTENCE ======================
 function saveState(){
 try{localStorage.setItem('xau_state',JSON.stringify({
-theme:S.theme,tf:S.tf,showVol:S.showVol,showSprd:S.showSprd,showGrid:S.showGrid,showCross:S.showCross,
+theme:S.theme,tf:S.tf,showVol:S.showVol,showSprd:S.showSprd,showNews:S.showNews,showGrid:S.showGrid,showCross:S.showCross,
 magnetMode:S.magnetMode,magnetRadius:S.magnetRadius,magnetSources:S.magnetSources,drawMode:S.drawMode,
 upColor:S.upColor,dnColor:S.dnColor,prec:S.prec,tzMode:S.tzMode,lpOpen:S.lpOpen,
 drawings:S.drawings,indicators:S.indicators.map(i=>({type:i.type,name:i.name,params:i.params})),
@@ -2577,6 +2665,7 @@ if(document.getElementById('theme-select'))document.getElementById('theme-select
 if(s.tf)switchTF(s.tf);
 if(s.showVol!==undefined){S.showVol=s.showVol;document.getElementById('btn-vol').classList.toggle('on',S.showVol);document.getElementById('cs-vol').checked=S.showVol}
 if(s.showSprd!==undefined){S.showSprd=s.showSprd;document.getElementById('btn-sprd').classList.toggle('on',S.showSprd);document.getElementById('cs-sprd').checked=S.showSprd}
+if(s.showNews!==undefined){S.showNews=s.showNews;document.getElementById('cs-news').checked=S.showNews}
 if(s.showGrid!==undefined){S.showGrid=s.showGrid;document.getElementById('cs-grid').checked=S.showGrid}
 if(s.showCross!==undefined){S.showCross=s.showCross;document.getElementById('cs-cross').checked=S.showCross}
 // Legacy: migrate old magnet boolean to new mode system
