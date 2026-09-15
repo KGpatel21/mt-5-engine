@@ -354,6 +354,7 @@ label{font-size:11px;color:var(--tx2);display:block;margin:6px 0 2px}
 <div class="tg">
 <button class="tb" id="btn-vol" data-tip="Toggle Volume" onclick="toggleVol()">Vol</button>
 <button class="tb" id="btn-sprd" data-tip="Toggle Spread" onclick="toggleSprd()">Sprd</button>
+<button class="tb" id="btn-news" data-tip="Toggle News Events" onclick="toggleNews()">News</button>
 <button class="tb" id="btn-mag" data-tip="Magnet Mode: Snap to OHLC (M to cycle)" onclick="toggleMagnet()" style="position:relative">&#129522;<span class="mag-badge" id="mag-badge" style="display:none"></span></button>
 <button class="tb" data-tip="Chart Settings" onclick="toggleCSet()">&#9881;</button>
 <div class="theme-sel">
@@ -1198,33 +1199,39 @@ cx.fillText(lb,x,a.aY+S.taH/2)}
 
 function drawNewsEvents(a,step){
 if(!S.showNews||!S.newsEvents.length||!S.cand.length)return;
-const vStartTs=S.cand[S.vStart].t,vEndTs=S.cand[S.vEnd].t;
-const visNews=[];
+// Use candle index range instead of timestamp range — works on all TFs
+const groups={};
 for(let i=0;i<S.newsEvents.length;i++){
 const ne=S.newsEvents[i];
-if(ne.ts>=vStartTs&&ne.ts<=vEndTs)visNews.push(ne);
-else if(ne.ts>vEndTs)break;
-}
-if(!visNews.length)return;
-const groups={};
-visNews.forEach(ne=>{
 const ci=findIdx(S.cand,ne.ts);
-if(ci<S.vStart||ci>S.vEnd)return;
+if(ci<S.vStart||ci>S.vEnd)continue;
+// Verify the news ts actually falls within this candle's range (not a prior candle match)
+if(S.cand[ci].t>ne.ts)continue;
 if(!groups[ci])groups[ci]={ci,events:[]};
 groups[ci].events.push(ne);
-});
+}
+if(!Object.keys(groups).length)return;
 cx.save();
 Object.values(groups).forEach(g=>{
 const x=(g.ci-S.vStart)*step+step/2;
-cx.strokeStyle='rgba(255,82,82,0.35)';cx.lineWidth=1;cx.setLineDash([3,3]);
+// Vertical dashed line
+cx.strokeStyle='rgba(255,82,82,0.5)';cx.lineWidth=1;cx.setLineDash([4,4]);
 cx.beginPath();cx.moveTo(x,a.y);cx.lineTo(x,a.y+a.h);cx.stroke();cx.setLineDash([]);
-const markerY=a.y+a.h-10;
+// Bottom marker circle
+const markerY=a.y+a.h-14;
 const evCount=g.events.length;
-cx.fillStyle='#ef5350';cx.beginPath();cx.arc(x,markerY,8,0,Math.PI*2);cx.fill();
-cx.fillStyle='#fff';cx.font='bold 9px '+css('--ft');cx.textAlign='center';cx.textBaseline='middle';
+const r=Math.max(8,Math.min(12,step*0.4));
+cx.fillStyle='#ef5350';cx.beginPath();cx.arc(x,markerY,r,0,Math.PI*2);cx.fill();
+cx.strokeStyle='#fff';cx.lineWidth=1;cx.beginPath();cx.arc(x,markerY,r,0,Math.PI*2);cx.stroke();
+cx.fillStyle='#fff';cx.font='bold '+Math.max(9,Math.min(11,r))+'px '+css('--ft');cx.textAlign='center';cx.textBaseline='middle';
 cx.fillText(evCount>1?String(evCount):'!',x,markerY);
-if(S.mx>=x-14&&S.mx<=x+14&&S.my>=markerY-14&&S.my<=markerY+14){
-drawNewsTooltip(x,markerY-18,g.events);}
+// Top marker triangle
+const triY=a.y+6;
+cx.fillStyle='rgba(255,82,82,0.7)';cx.beginPath();cx.moveTo(x,triY+8);cx.lineTo(x-5,triY);cx.lineTo(x+5,triY);cx.closePath();cx.fill();
+// Tooltip on hover (check both markers)
+if((S.mx>=x-16&&S.mx<=x+16&&S.my>=markerY-16&&S.my<=markerY+16)||
+(S.mx>=x-10&&S.mx<=x+10&&S.my>=triY-4&&S.my<=triY+14)){
+drawNewsTooltip(x,markerY-20,g.events);}
 });
 cx.restore();
 }
@@ -2500,6 +2507,7 @@ S.tzMode==='ist'?'All times in IST (UTC+5:30)':S.tzMode==='utc'?'All times in UT
 document.getElementById('st-tz').textContent='TZ: '+(S.tzMode==='ist'?'IST':S.tzMode==='utc'?'UTC':S.tzMode==='local'?'Local':'Source');
 document.getElementById('btn-vol').classList.toggle('on',S.showVol);
 document.getElementById('btn-sprd').classList.toggle('on',S.showSprd);
+document.getElementById('btn-news').classList.toggle('on',S.showNews);
 render();saveState();
 }
 
@@ -2558,6 +2566,8 @@ function toggleVol(){S.showVol=!S.showVol;document.getElementById('btn-vol').cla
 document.getElementById('cs-vol').checked=S.showVol;S.autoScale=true;render();saveState()}
 function toggleSprd(){S.showSprd=!S.showSprd;document.getElementById('btn-sprd').classList.toggle('on',S.showSprd);
 document.getElementById('cs-sprd').checked=S.showSprd;render();saveState()}
+function toggleNews(){S.showNews=!S.showNews;document.getElementById('btn-news').classList.toggle('on',S.showNews);
+document.getElementById('cs-news').checked=S.showNews;render();saveState()}
 function fitChart(){S.vStart=0;S.vEnd=S.cand.length-1;S.autoScale=true;
 const a=getArea();S.cw=Math.max(1,Math.min(8,a.w/S.cand.length-1));S.cg=Math.max(.5,Math.min(S.cw*.3,2));render()}
 function showQuality(){
@@ -2665,7 +2675,7 @@ if(document.getElementById('theme-select'))document.getElementById('theme-select
 if(s.tf)switchTF(s.tf);
 if(s.showVol!==undefined){S.showVol=s.showVol;document.getElementById('btn-vol').classList.toggle('on',S.showVol);document.getElementById('cs-vol').checked=S.showVol}
 if(s.showSprd!==undefined){S.showSprd=s.showSprd;document.getElementById('btn-sprd').classList.toggle('on',S.showSprd);document.getElementById('cs-sprd').checked=S.showSprd}
-if(s.showNews!==undefined){S.showNews=s.showNews;document.getElementById('cs-news').checked=S.showNews}
+if(s.showNews!==undefined){S.showNews=s.showNews;document.getElementById('btn-news').classList.toggle('on',S.showNews);document.getElementById('cs-news').checked=S.showNews}
 if(s.showGrid!==undefined){S.showGrid=s.showGrid;document.getElementById('cs-grid').checked=S.showGrid}
 if(s.showCross!==undefined){S.showCross=s.showCross;document.getElementById('cs-cross').checked=S.showCross}
 // Legacy: migrate old magnet boolean to new mode system
@@ -2761,6 +2771,7 @@ buildTFBtns();buildDrawToolbar();buildIndList();
 renderSrcList();switchTF('M1');
 resizeCV();window.addEventListener('resize',resizeCV);
 setupEvents();updStatus();loadState();
+document.getElementById('btn-news').classList.toggle('on',S.showNews);
 console.log('Embedded data loaded: '+data.length+' candles');
 }catch(e){console.error('Auto-load failed:',e);
 document.getElementById('upload-screen').style.display='flex'}
